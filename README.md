@@ -17,6 +17,8 @@ All four harnesses implement (or converge on) the same convention: a directory c
 
 ## Install
 
+Development requires Node.js 24.12 or newer (stable TypeScript type stripping).
+
 > **Status: pre-release.** M1 (profile + language rules) in progress; the installer ships at M4 and nothing is published to npm yet. Sections below describe the target behavior.
 
 ```bash
