@@ -21,7 +21,7 @@ test('package.json declares the M1 step-1 scaffolding contract', () => {
   assert.equal(pkg.type, 'module');
   assert.equal(pkg.private, true);
   assert.equal(pkg.engines.node, '>=24');
-  assert.equal(pkg.scripts.build, 'tsc');
+  assert.equal(pkg.scripts.build, 'tsc -p tsconfig.build.json');
   assert.equal(pkg.scripts.typecheck, 'tsc --noEmit');
   assert.equal(pkg.scripts.test, "node --test 'test/**/*.test.ts'");
 
@@ -43,6 +43,13 @@ test('tsconfig.json enforces the strict, dependency-free compile target', () => 
   assert.equal(co.rewriteRelativeImportExtensions, true);
   assert.equal(co.outDir, 'dist');
   assert.deepEqual(tsconfig.include, ['src', 'test']);
+});
+
+test('tsconfig.build.json narrows the build (not typecheck) to src only, so dist only ever gets compiled skill scripts', () => {
+  const buildConfig = readJson('tsconfig.build.json');
+  assert.equal(buildConfig.extends, './tsconfig.json');
+  assert.equal(buildConfig.compilerOptions.rootDir, 'src');
+  assert.deepEqual(buildConfig.include, ['src']);
 });
 
 test('.gitattributes normalizes line endings to LF', () => {
