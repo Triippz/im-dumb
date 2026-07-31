@@ -549,7 +549,15 @@ function main(): void {
   }
 }
 
-const isMainModule = process.argv[1] !== undefined && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href;
-if (isMainModule) {
+function isDirectExecution(argv1: string | undefined): boolean {
+  if (argv1 === undefined) return false;
+  try {
+    return import.meta.url === pathToFileURL(realpathSync(argv1)).href;
+  } catch {
+    return false;
+  }
+}
+
+if (isDirectExecution(process.argv[1])) {
   main();
 }
