@@ -15,6 +15,7 @@ const comprehensionPath = path.join(skillDir, 'references', 'comprehension.md');
 const scriptsDir = path.join(skillDir, 'scripts');
 
 const skillMdContent = readFileSync(skillMdPath, 'utf8');
+const packageVersion = (JSON.parse(readFileSync(path.join(repoRoot, 'package.json'), 'utf8')) as { version: string }).version;
 const onboardingContent = readFileSync(onboardingPath, 'utf8');
 const comprehensionContent = readFileSync(comprehensionPath, 'utf8');
 const combined = `${skillMdContent}\n${onboardingContent}\n${comprehensionContent}`;
@@ -79,7 +80,8 @@ test('skill directory, frontmatter name, description, and version satisfy the sh
   assert.match(description, /confusion|confused/i);
   assert.match(description, /non-understanding|doesn't understand|does not understand/i);
   assert.match(description, /after (?:an|the) answer/i);
-  assert.equal(extractNested(frontmatterText, 'metadata', 'version'), '0.1.0');
+  assert.equal(extractNested(frontmatterText, 'metadata', 'version'), '0.2.0');
+  assert.equal(extractNested(frontmatterText, 'metadata', 'version'), packageVersion);
   assert.deepEqual(
     checkSkillFrontmatter(skillMdContent, { expectedName: 'im-dumb' }).filter((v) => v.severity === 'error'),
     [],
