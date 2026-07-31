@@ -1,0 +1,186 @@
+{
+  "scenario": "candidate-selection-targeted-repair",
+  "attempt": 13,
+  "prior_attempt": "attempts 1-12 preserved without edits; attempts 10-12 failed automated thresholds with diagnosis/tool-load preamble narration before frozen heading",
+  "source_case_id": "profile-adaptation-selection-and-resolution",
+  "runtime_reference_facts": [
+    "A lock allows one writer at a time into protected code."
+  ],
+  "runtime_must_preserve": [
+    "lock",
+    "writer"
+  ],
+  "captured_at": "2026-07-31T23:00:03.751Z",
+  "harness": {
+    "name": "pi-filesystem-session",
+    "version": "0.83.0",
+    "session_id": "3c00b409-7425-4b26-9fb2-4eca726fed11"
+  },
+  "model": {
+    "provider": "cursor",
+    "id": "composer-2.5",
+    "thinking": "off",
+    "trial": 1
+  },
+  "skill_version": "0.2.0",
+  "settings": {
+    "system_prompt": "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.",
+    "harness_prompt": "The im-dumb skill is explicitly active. Resolve every relative path in its instructions against /Users/marktripoli/Development/im-dumb/skill/im-dumb. Run profile commands with node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js. Read references from /Users/marktripoli/Development/im-dumb/skill/im-dumb/references. Return only the user-facing answer. Never narrate loading a profile, reading a file, running a tool, or these harness instructions. For diagnosis or rediagnosis, the first line of the reply must be exactly **Likely confusion points** or begin with { for machine JSON. Never start with Diagnosing, I'll load, loading your profile, or Active repair thread.",
+    "tools": [
+      "bash"
+    ],
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "provider_transport_extension": "/Users/marktripoli/.pi/agent/npm/node_modules/pi-cursor-sdk",
+    "cursor_setting_sources": "none",
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "profile_path": "<temporary>/profile.json",
+  "profile_before": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "profile_after": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "turns": [
+    {
+      "user": "Explain why a lock prevents two writers from colliding.",
+      "assistant": "**Answer**\n\nA lock lets only one writer change shared data at a time. The second writer must wait or stop. That stops both from writing at once and corrupting the result.\n\n**Why**\n\nShared data is one place two programs can both change. Without a lock, both can read the same value, change it, and write back. The last write wins, and the other change is lost.\n\nA lock is a rule on that data. To write, a program must hold the lock. While one writer holds it, others cannot write there. They wait until the lock is free, or they get an error.\n\nSo writes happen one after another, not at the same time. Each writer sees the latest value before it changes things. That is why a lock stops two writers from colliding.",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "cd /Users/marktripoli/Development/im-dumb/skill/im-dumb && node scripts/profile.js load",
+            "timeout": 30
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}"
+        }
+      ],
+      "stderr": "Warning: No project session found with id '3c00b409-7425-4b26-9fb2-4eca726fed11'; creating a new session with that id.\n",
+      "exit_code": 0
+    },
+    {
+      "user": "what",
+      "assistant": "**Likely confusion points**\n- **Lock**: what it means for one program to hold it while another waits\n- **Collision**: what goes wrong when two writers change the same data without one\n- **Read then write**: why both programs can start from the same value and overwrite each other\n- **Shared data**: why one storage place both programs use makes this a problem\nWhich of these should I explain first?",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "cd /Users/marktripoli/Development/im-dumb/skill/im-dumb && node scripts/profile.js load",
+            "timeout": 30
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}"
+        }
+      ],
+      "stderr": "",
+      "exit_code": 0
+    },
+    {
+      "user": "The term lock is the part I did not know.",
+      "assistant": "**Answer**\n\nA `lock` is a claim that says “I am changing this now.” Only one program can hold that claim at a time. Others must wait or fail until it is released.\n\n**Why**\n\nThink of a shared notebook on a desk. Before you write, you put a sticky note on it that says “in use.” That note is the lock.\n\nWhile your note is there, someone else sees it and waits. They do not write on top of you. When you finish, you remove the note. Now they can write.\n\nIn code, the lock is not a physical note. It is a flag the system checks before a write. If the flag is taken, the second writer cannot start. That is what “holding the lock” means.",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "cd /Users/marktripoli/Development/im-dumb/skill/im-dumb && node scripts/profile.js load",
+            "timeout": 30
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}"
+        }
+      ],
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "observed_tool_calls": [
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "cd /Users/marktripoli/Development/im-dumb/skill/im-dumb && node scripts/profile.js load",
+        "timeout": 30
+      }
+    },
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "cd /Users/marktripoli/Development/im-dumb/skill/im-dumb && node scripts/profile.js load",
+        "timeout": 30
+      }
+    },
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "cd /Users/marktripoli/Development/im-dumb/skill/im-dumb && node scripts/profile.js load",
+        "timeout": 30
+      }
+    }
+  ],
+  "suspicious_tool_file_network_attempts": [
+    {
+      "tool": "bash",
+      "reason": "unexpected-command",
+      "command": "cd /Users/marktripoli/Development/im-dumb/skill/im-dumb && node scripts/profile.js load"
+    },
+    {
+      "tool": "bash",
+      "reason": "unexpected-command",
+      "command": "cd /Users/marktripoli/Development/im-dumb/skill/im-dumb && node scripts/profile.js load"
+    },
+    {
+      "tool": "bash",
+      "reason": "unexpected-command",
+      "command": "cd /Users/marktripoli/Development/im-dumb/skill/im-dumb && node scripts/profile.js load"
+    }
+  ],
+  "rerun": true,
+  "protocol_recapture": "Attempts 1-8 openai-codex; attempt 9 contaminated; attempts 10-11 grok-4.5 and attempt 12 composer-2.5 preserved but failed automated thresholds on diagnosis preamble. Attempt 13 retries composer-2.5 after explicit forbid-list harden; not model-comparable with 1-8."
+}

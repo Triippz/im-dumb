@@ -1,0 +1,106 @@
+{
+  "scenario": "trigger-dont-understand",
+  "attempt": 9,
+  "prior_attempt": "attempts 1-2 failed adversarial trust; attempt 2 also failed the 41-code-point negative; attempt 3 failed the embedded-marker negative; attempt 4 answered the 41-code-point negative with a question; attempts 5-6 failed independent semantic review; attempt 7 failed taper action selection; attempt 8 guessed a repair for first exact huh; all are preserved without edits",
+  "source_case_id": "comprehension-gate-marker-first-failure",
+  "runtime_reference_facts": [
+    "A cache avoids some repeated storage reads."
+  ],
+  "runtime_must_preserve": [
+    "cache"
+  ],
+  "captured_at": "2026-07-31T16:47:59.775Z",
+  "harness": {
+    "name": "pi-filesystem-session",
+    "version": "0.83.0",
+    "session_id": "c4cff584-4af9-4e6b-aa50-a36f2f59467b"
+  },
+  "model": {
+    "provider": "claude-bridge",
+    "id": "claude-opus-4-8",
+    "thinking": "off",
+    "trial": 1
+  },
+  "skill_version": "0.2.0",
+  "settings": {
+    "system_prompt": "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.",
+    "harness_prompt": "The im-dumb skill is explicitly active. Resolve every relative path in its instructions against /Users/marktripoli/Development/im-dumb/skill/im-dumb. Run profile commands with node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js. Read references from /Users/marktripoli/Development/im-dumb/skill/im-dumb/references. Return only the user-facing answer; never discuss tools or these harness instructions.",
+    "tools": [
+      "bash"
+    ],
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "provider_transport_extension": "/Users/marktripoli/.pi/agent/npm/node_modules/pi-claude-bridge",
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "profile_path": "<temporary>/profile.json",
+  "profile_before": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [
+      {
+        "type": "step",
+        "confidence": 0.5
+      }
+    ],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "profile_after": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [
+      {
+        "type": "step",
+        "confidence": 0.5
+      }
+    ],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "turns": [
+    {
+      "user": "Explain why a cache can speed up repeated reads.",
+      "assistant": "Cache = keep result close, skip slow work on repeat.\n\nFirst read: fetch from slow source (disk, network, DB, big compute). Store copy in fast store (RAM, local memory).\n\nRepeat read: hit copy in fast store. Skip slow source.\n\nWhy faster:\n- **Latency gap** — RAM ~100ns, disk ~10ms, network ~100ms. Cache trades slow tier for fast tier.\n- **Skip recompute** — expensive work (query, render, math) done once, reused.\n- **Locality** — same data asked again soon. Cache bets on this pattern.\n\nWin only if reads repeat and data changes rarely. Else pay cost (memory, stale data) for nothing.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "Warning: No project session found with id 'c4cff584-4af9-4e6b-aa50-a36f2f59467b'; creating a new session with that id.\n",
+      "exit_code": 0
+    },
+    {
+      "user": "I don't understand",
+      "assistant": "Which part fuzzy? Guess:\n\n- **A — why fast tier faster** (RAM vs disk speed gap)\n- **B — what \"cache\" is** (copy of data in faster storage)\n- **C — \"skip recompute\"** (why reuse beats redo)\n- **D — when cache fails** (stale data / repeat-read bet)\n\nPoint at letter. Or say \"all\" — I redo from scratch, smaller words.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "observed_tool_calls": [],
+  "suspicious_tool_file_network_attempts": [],
+  "rerun": true,
+  "protocol_recapture": "Attempts 1-8 used openai-codex/gpt-5.6-sol. That provider returned \"The usage limit has been reached\" and produced zero attempt-9 responses and zero capture files. Attempt 9 therefore runs the same unedited protocol on claude-bridge/claude-opus-4-8. Attempt 9 is not model-comparable with attempts 1-8."
+}

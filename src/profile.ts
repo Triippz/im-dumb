@@ -1,4 +1,14 @@
-import { readFileSync, writeFileSync, mkdirSync, renameSync, unlinkSync, realpathSync } from 'node:fs';
+import {
+  linkSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  realpathSync,
+  renameSync,
+  statSync,
+  unlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { homedir } from 'node:os';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
@@ -13,6 +23,7 @@ export type JargonPolicy = 'define-on-first-use' | 'avoid' | 'allow';
 export type Tone = 'direct' | 'friendly' | 'neutral';
 export type OutputShape = 'answer-first' | 'narrative';
 export type LearningAssetFormat = 'markdown' | 'html';
+export type GapType = 'term' | 'step' | 'assumption' | 'framing';
 
 export interface KnownGap {
   type: string;
@@ -52,8 +63,33 @@ export type LoadOutcome =
 
 export type SaveOutcome =
   | { ok: true; profile: Profile; warnings: string[] }
-  | { ok: false; error: 'env-path-invalid' }
+  | { ok: false; error: 'env-path-invalid' | 'lock-timeout' }
   | { ok: false; error: 'invalid'; reasons: string[] };
+
+export interface LearnGapInput {
+  type: GapType;
+  outcome: 'success';
+  expectedConfidence: number | null;
+  decrement?: {
+    type: GapType;
+    expectedConfidence: number;
+    by: 0.25;
+  };
+}
+
+export type LearnGapOutcome =
+  | { ok: true; applied: true; profile: Profile }
+  | { ok: false; error: 'conflict'; currentConfidence: number | null }
+  | {
+      ok: false;
+      error:
+        | 'missing'
+        | 'unparseable'
+        | 'unsupported-schema-version'
+        | 'invalid'
+        | 'lock-timeout'
+        | 'env-path-invalid';
+    };
 
 // ---------------------------------------------------------------------------
 // Defaults
@@ -85,6 +121,12 @@ const JARGON_POLICIES: readonly JargonPolicy[] = ['define-on-first-use', 'avoid'
 const TONES: readonly Tone[] = ['direct', 'friendly', 'neutral'];
 const OUTPUT_SHAPES: readonly OutputShape[] = ['answer-first', 'narrative'];
 const LEARNING_ASSET_FORMATS: readonly LearningAssetFormat[] = ['markdown', 'html'];
+const GAP_TYPES: readonly GapType[] = ['term', 'step', 'assumption', 'framing'];
+
+export const PROFILE_LOCK_SUFFIX = '.lock';
+export const PROFILE_LOCK_RETRY_MS = 25;
+export const PROFILE_LOCK_TIMEOUT_MS = 500;
+export const PROFILE_LOCK_STALE_MS = 30_000;
 
 const KNOWN_KEYS: readonly string[] = [
   'schema_version',
@@ -370,7 +412,7 @@ export function validate(raw: unknown, mode: ValidationMode): ValidateOutcome {
 function resolveProfilePath(): { profilePath: string; fromEnv: boolean } {
   const envPath = process.env.IM_DUMB_PROFILE;
   if (envPath !== undefined) {
-    return { profilePath: envPath, fromEnv: true };
+    return { profilePath: envPath.trim() === '' ? envPath : path.resolve(envPath), fromEnv: true };
   }
   return { profilePath: path.join(homedir(), '.im-dumb', 'profile.json'), fromEnv: false };
 }
@@ -402,7 +444,376 @@ function readProfileFile(): ReadProfileFileOutcome {
 }
 
 // ---------------------------------------------------------------------------
-// load() / save()
+// Shared profile-writer lock + atomic replacement (M2 §4.3)
+// ---------------------------------------------------------------------------
+
+interface LockRecord {
+  token: string;
+  pid: number;
+  createdAt: number;
+}
+
+type LockOutcome =
+  | { ok: true; token: string; lockPath: string }
+  | { ok: false; error: 'lock-timeout' | 'env-path-invalid' };
+
+function sleepSync(milliseconds: number): void {
+  if (milliseconds > 0) Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, milliseconds);
+}
+
+function readLockRecord(lockPath: string): LockRecord | undefined {
+  try {
+    const parsed: unknown = JSON.parse(readFileSync(lockPath, 'utf8'));
+    if (
+      !isPlainObject(parsed) ||
+      typeof parsed.token !== 'string' ||
+      parsed.token === '' ||
+      typeof parsed.pid !== 'number' ||
+      !Number.isInteger(parsed.pid) ||
+      parsed.pid <= 0 ||
+      typeof parsed.createdAt !== 'number' ||
+      !Number.isFinite(parsed.createdAt)
+    ) {
+      return undefined;
+    }
+    return { token: parsed.token, pid: parsed.pid, createdAt: parsed.createdAt };
+  } catch {
+    return undefined;
+  }
+}
+
+function sameLockRecord(value: LockRecord | undefined, expected: LockRecord): value is LockRecord {
+  return (
+    value?.token === expected.token &&
+    value.pid === expected.pid &&
+    value.createdAt === expected.createdAt
+  );
+}
+
+function processIsProvenDead(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return false;
+  } catch (error) {
+    return (error as NodeJS.ErrnoException).code === 'ESRCH';
+  }
+}
+
+interface FileIdentity {
+  dev: number;
+  ino: number;
+}
+
+const PROFILE_RECLAIM_MARKER = '.reclaim.';
+const UUID_PATTERN = '[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}';
+
+interface ReclaimCandidate {
+  path: string;
+  record: LockRecord;
+  identity: FileIdentity;
+}
+
+function fileIdentity(filePath: string): FileIdentity | undefined {
+  try {
+    const stat = statSync(filePath);
+    return { dev: stat.dev, ino: stat.ino };
+  } catch {
+    return undefined;
+  }
+}
+
+function hasIdentity(filePath: string, identity: FileIdentity): boolean {
+  const current = fileIdentity(filePath);
+  return current?.dev === identity.dev && current.ino === identity.ino;
+}
+
+function isProvenStale(record: LockRecord | undefined): record is LockRecord {
+  return (
+    record !== undefined &&
+    Date.now() - record.createdAt > PROFILE_LOCK_STALE_MS &&
+    processIsProvenDead(record.pid)
+  );
+}
+
+function removePathWithIdentity(filePath: string, identity: FileIdentity | undefined): void {
+  if (identity === undefined || !hasIdentity(filePath, identity)) return;
+  try {
+    unlinkSync(filePath);
+  } catch {
+    // Best effort; never unlink a replacement path.
+  }
+}
+
+function createReadyRecord(finalPath: string, record: LockRecord): 'created' | 'exists' | 'error' {
+  const tmpPath = path.join(path.dirname(finalPath), `.${path.basename(finalPath)}.${randomUUID()}.tmp`);
+  try {
+    writeFileSync(tmpPath, `${JSON.stringify(record)}\n`, { encoding: 'utf8', mode: 0o600, flag: 'wx' });
+    try {
+      linkSync(tmpPath, finalPath);
+      return 'created';
+    } catch (error) {
+      return (error as NodeJS.ErrnoException).code === 'EEXIST' ? 'exists' : 'error';
+    }
+  } catch {
+    return 'error';
+  } finally {
+    try {
+      unlinkSync(tmpPath);
+    } catch {
+      // The private unique temp may already be absent.
+    }
+  }
+}
+
+function candidatePath(lockPath: string, record: LockRecord): string {
+  return `${lockPath}${PROFILE_RECLAIM_MARKER}${record.createdAt}.${record.pid}.${record.token}`;
+}
+
+function candidateLinkPath(candidate: ReclaimCandidate): string {
+  return `${candidate.path}.main-link`;
+}
+
+function parseCandidate(lockPath: string, filename: string): ReclaimCandidate | undefined {
+  const prefix = `${path.basename(lockPath)}${PROFILE_RECLAIM_MARKER}`;
+  if (!filename.startsWith(prefix)) return undefined;
+  const suffix = filename.slice(prefix.length);
+  const match = new RegExp(`^(\\d+)\\.(\\d+)\\.(${UUID_PATTERN})$`, 'u').exec(suffix);
+  if (match === null) return undefined;
+  const createdAt = Number(match[1]);
+  const pid = Number(match[2]);
+  const token = match[3]!;
+  if (!Number.isSafeInteger(createdAt) || !Number.isSafeInteger(pid) || pid <= 0) return undefined;
+
+  const candidateFile = path.join(path.dirname(lockPath), filename);
+  const record = readLockRecord(candidateFile);
+  const expected: LockRecord = { token, pid, createdAt };
+  const identity = fileIdentity(candidateFile);
+  if (!sameLockRecord(record, expected) || identity === undefined) return undefined;
+  return { path: candidateFile, record: expected, identity };
+}
+
+function listCandidates(lockPath: string, deadline: number): ReclaimCandidate[] | undefined {
+  try {
+    const candidates: ReclaimCandidate[] = [];
+    for (const filename of readdirSync(path.dirname(lockPath))) {
+      if (performance.now() >= deadline) break;
+      const candidate = parseCandidate(lockPath, filename);
+      if (candidate !== undefined) candidates.push(candidate);
+    }
+    return candidates;
+  } catch {
+    return undefined;
+  }
+}
+
+function removeOwnedCandidate(candidate: ReclaimCandidate): void {
+  removePathWithIdentity(candidateLinkPath(candidate), fileIdentity(candidateLinkPath(candidate)));
+  if (
+    sameLockRecord(readLockRecord(candidate.path), candidate.record) &&
+    hasIdentity(candidate.path, candidate.identity)
+  ) {
+    try {
+      unlinkSync(candidate.path);
+    } catch {
+      // Best effort; this immutable unique path cannot belong to another owner.
+    }
+  }
+}
+
+function removeStaleCandidate(candidate: ReclaimCandidate): boolean {
+  const reread = readLockRecord(candidate.path);
+  if (
+    !sameLockRecord(reread, candidate.record) ||
+    !hasIdentity(candidate.path, candidate.identity) ||
+    !isProvenStale(reread)
+  ) {
+    return false;
+  }
+  removePathWithIdentity(candidateLinkPath(candidate), fileIdentity(candidateLinkPath(candidate)));
+  const immediate = readLockRecord(candidate.path);
+  if (!sameLockRecord(immediate, candidate.record) || !hasIdentity(candidate.path, candidate.identity)) return false;
+  try {
+    unlinkSync(candidate.path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function activeCandidates(lockPath: string, deadline: number): ReclaimCandidate[] | undefined {
+  const first = listCandidates(lockPath, deadline);
+  if (first === undefined) return undefined;
+  for (const candidate of first) {
+    if (performance.now() >= deadline) break;
+    if (isProvenStale(candidate.record)) removeStaleCandidate(candidate);
+  }
+  return listCandidates(lockPath, deadline);
+}
+
+function electedCandidate(candidates: ReclaimCandidate[]): ReclaimCandidate | undefined {
+  return [...candidates].sort(
+    (a, b) =>
+      a.record.createdAt - b.record.createdAt ||
+      (a.record.token < b.record.token ? -1 : a.record.token > b.record.token ? 1 : 0),
+  )[0];
+}
+
+function ownsElection(lockPath: string, own: ReclaimCandidate, deadline: number): boolean {
+  const contenders = activeCandidates(lockPath, deadline);
+  if (contenders === undefined) return false;
+  const current = contenders.find((candidate) => candidate.path === own.path);
+  const elected = electedCandidate(contenders);
+  return (
+    current !== undefined &&
+    sameLockRecord(readLockRecord(own.path), own.record) &&
+    hasIdentity(own.path, own.identity) &&
+    elected?.path === own.path
+  );
+}
+
+function tryReclaimProvenStaleLock(lockPath: string, deadline: number): boolean {
+  if (performance.now() >= deadline) return false;
+  const first = readLockRecord(lockPath);
+  if (!isProvenStale(first)) return false;
+
+  const record: LockRecord = { token: randomUUID(), pid: process.pid, createdAt: Date.now() };
+  const ownPath = candidatePath(lockPath, record);
+  if (createReadyRecord(ownPath, record) !== 'created') return false;
+  const ownIdentity = fileIdentity(ownPath);
+  if (ownIdentity === undefined) {
+    try {
+      unlinkSync(ownPath);
+    } catch {
+      // Best effort for this immutable unique path.
+    }
+    return false;
+  }
+  const own: ReclaimCandidate = { path: ownPath, record, identity: ownIdentity };
+
+  const linkPath = candidateLinkPath(own);
+  let linkIdentity: FileIdentity | undefined;
+  try {
+    if (!ownsElection(lockPath, own, deadline)) return false;
+    try {
+      linkSync(lockPath, linkPath);
+    } catch {
+      return false;
+    }
+    linkIdentity = fileIdentity(linkPath);
+
+    const main = readLockRecord(lockPath);
+    const linked = readLockRecord(linkPath);
+    if (
+      !ownsElection(lockPath, own, deadline) ||
+      !sameLockRecord(main, first) ||
+      !sameLockRecord(linked, first) ||
+      !isProvenStale(main) ||
+      !isProvenStale(linked) ||
+      linkIdentity === undefined ||
+      !hasIdentity(lockPath, linkIdentity) ||
+      !hasIdentity(linkPath, linkIdentity)
+    ) {
+      return false;
+    }
+
+    const immediateMain = readLockRecord(lockPath);
+    if (
+      performance.now() >= deadline ||
+      !ownsElection(lockPath, own, deadline) ||
+      !sameLockRecord(immediateMain, first) ||
+      !hasIdentity(lockPath, linkIdentity)
+    ) {
+      return false;
+    }
+    try {
+      unlinkSync(lockPath);
+      return true;
+    } catch {
+      return false;
+    }
+  } finally {
+    try {
+      unlinkSync(linkPath);
+    } catch {
+      // Token-keyed path is private to this reclaimer and may be absent.
+    }
+    removeOwnedCandidate(own);
+  }
+}
+
+function acquireProfileLock(profilePath: string): LockOutcome {
+  const lockPath = `${profilePath}${PROFILE_LOCK_SUFFIX}`;
+  const token = randomUUID();
+  const deadline = performance.now() + PROFILE_LOCK_TIMEOUT_MS;
+
+  while (true) {
+    if (performance.now() >= deadline) return { ok: false, error: 'lock-timeout' };
+    const before = activeCandidates(lockPath, deadline);
+    if (before === undefined) return { ok: false, error: 'env-path-invalid' };
+    if (performance.now() >= deadline) return { ok: false, error: 'lock-timeout' };
+    if (before.length === 0) {
+      const record: LockRecord = { token, pid: process.pid, createdAt: Date.now() };
+      const create = createReadyRecord(lockPath, record);
+      if (create === 'error') return { ok: false, error: 'env-path-invalid' };
+      if (create === 'created') {
+        // Load-bearing invariant: a reclaimer candidate lives from before its
+        // first election check until after main-lock unlink. A candidate that
+        // appears after our pre-scan may therefore unlink this fresh lock; the
+        // post-scan must release our token instead of entering the writer.
+        const after = activeCandidates(lockPath, deadline);
+        if (after === undefined) {
+          releaseProfileLock({ token, lockPath });
+          return { ok: false, error: 'env-path-invalid' };
+        }
+        if (performance.now() >= deadline) {
+          releaseProfileLock({ token, lockPath });
+          return { ok: false, error: 'lock-timeout' };
+        }
+        if (after.length === 0) return { ok: true, token, lockPath };
+        releaseProfileLock({ token, lockPath });
+      }
+
+      if (tryReclaimProvenStaleLock(lockPath, deadline)) {
+        if (performance.now() >= deadline) return { ok: false, error: 'lock-timeout' };
+        continue;
+      }
+    }
+
+    const remaining = deadline - performance.now();
+    if (remaining <= 0) return { ok: false, error: 'lock-timeout' };
+    sleepSync(Math.min(PROFILE_LOCK_RETRY_MS, remaining));
+  }
+}
+
+function releaseProfileLock(lock: { token: string; lockPath: string }): void {
+  const record = readLockRecord(lock.lockPath);
+  if (record?.token !== lock.token) return;
+  try {
+    unlinkSync(lock.lockPath);
+  } catch {
+    // Best effort. Never remove a lock whose token is not ours.
+  }
+}
+
+function atomicWriteProfile(profilePath: string, value: unknown): 'ok' | 'env-path-invalid' {
+  const dir = path.dirname(profilePath);
+  const tmpPath = path.join(dir, `.${path.basename(profilePath)}.${randomUUID()}.tmp`);
+  try {
+    writeFileSync(tmpPath, `${JSON.stringify(value, null, 2)}\n`, { encoding: 'utf8', mode: 0o600, flag: 'wx' });
+    renameSync(tmpPath, profilePath);
+    return 'ok';
+  } catch {
+    try {
+      unlinkSync(tmpPath);
+    } catch {
+      // Best-effort cleanup; the write failure is what matters.
+    }
+    return 'env-path-invalid';
+  }
+}
+
+// ---------------------------------------------------------------------------
+// load() / save() / learn()
 // ---------------------------------------------------------------------------
 
 export function load(): LoadOutcome {
@@ -435,21 +846,125 @@ export function save(input: unknown): SaveOutcome {
     return { ok: false, error: 'env-path-invalid' };
   }
 
-  const tmpPath = path.join(dir, `.profile.json.${randomUUID()}.tmp`);
-  const serialized = `${JSON.stringify(profile, null, 2)}\n`;
+  const lock = acquireProfileLock(profilePath);
+  if (!lock.ok) return lock;
   try {
-    writeFileSync(tmpPath, serialized, { encoding: 'utf8', mode: 0o600, flag: 'wx' });
-    renameSync(tmpPath, profilePath);
-  } catch {
-    try {
-      unlinkSync(tmpPath);
-    } catch {
-      // best-effort cleanup; the write error below is what matters
-    }
-    return { ok: false, error: 'env-path-invalid' };
+    const write = atomicWriteProfile(profilePath, profile);
+    if (write !== 'ok') return { ok: false, error: write };
+    return { ok: true, profile, warnings };
+  } finally {
+    releaseProfileLock(lock);
   }
+}
 
-  return { ok: true, profile, warnings };
+function exactKeys(value: Record<string, unknown>, allowed: readonly string[]): boolean {
+  const keys = Object.keys(value);
+  return keys.length === allowed.length && keys.every((key) => allowed.includes(key));
+}
+
+function isConfidence(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1;
+}
+
+function validateLearnInput(input: unknown): input is LearnGapInput {
+  if (!isPlainObject(input) || !exactKeys(input, input.decrement === undefined
+    ? ['type', 'outcome', 'expectedConfidence']
+    : ['type', 'outcome', 'expectedConfidence', 'decrement'])) {
+    return false;
+  }
+  if (
+    typeof input.type !== 'string' ||
+    !(GAP_TYPES as readonly string[]).includes(input.type) ||
+    input.outcome !== 'success' ||
+    !(input.expectedConfidence === null || isConfidence(input.expectedConfidence))
+  ) {
+    return false;
+  }
+  if (input.decrement === undefined) return true;
+  if (
+    !isPlainObject(input.decrement) ||
+    !exactKeys(input.decrement, ['type', 'expectedConfidence', 'by']) ||
+    typeof input.decrement.type !== 'string' ||
+    !(GAP_TYPES as readonly string[]).includes(input.decrement.type) ||
+    input.decrement.type === input.type ||
+    !isConfidence(input.decrement.expectedConfidence) ||
+    input.decrement.by !== 0.25
+  ) {
+    return false;
+  }
+  return true;
+}
+
+function strictProfile(raw: unknown):
+  | { ok: true; raw: Record<string, unknown>; gaps: KnownGap[] }
+  | { ok: false; error: 'unsupported-schema-version' | 'invalid' } {
+  if (!isPlainObject(raw)) return { ok: false, error: 'invalid' };
+  const checked = validate(raw, 'save');
+  if (checked.unsupportedSchemaVersion) return { ok: false, error: 'unsupported-schema-version' };
+  if (checked.errors.length > 0 || checked.warnings.length > 0) return { ok: false, error: 'invalid' };
+
+  const gaps = raw.known_gap_types as KnownGap[];
+  const seen = new Set<string>();
+  for (const gap of gaps) {
+    if (!(GAP_TYPES as readonly string[]).includes(gap.type)) continue;
+    if (seen.has(gap.type)) return { ok: false, error: 'invalid' };
+    seen.add(gap.type);
+  }
+  return { ok: true, raw, gaps };
+}
+
+function currentConfidence(gaps: KnownGap[], type: GapType): number | null {
+  return gaps.find((gap) => gap.type === type)?.confidence ?? null;
+}
+
+export function learn(input: unknown): LearnGapOutcome {
+  if (!validateLearnInput(input)) return { ok: false, error: 'invalid' };
+
+  const { profilePath, fromEnv } = resolveProfilePath();
+  if (fromEnv && profilePath.trim() === '') return { ok: false, error: 'env-path-invalid' };
+
+  // Avoid creating ~/.im-dumb for a profile that does not exist. The read
+  // under the lock remains authoritative if the file changes after preflight.
+  const preflight = readProfileFile();
+  if (!preflight.ok && preflight.error === 'missing') return preflight;
+  if (!preflight.ok && preflight.error === 'env-path-invalid') return preflight;
+
+  const lock = acquireProfileLock(profilePath);
+  if (!lock.ok) return lock;
+  try {
+    const read = readProfileFile();
+    if (!read.ok) return read;
+    const checked = strictProfile(read.parsed);
+    if (!checked.ok) return checked;
+
+    const primaryCurrent = currentConfidence(checked.gaps, input.type);
+    if (primaryCurrent !== input.expectedConfidence) {
+      return { ok: false, error: 'conflict', currentConfidence: primaryCurrent };
+    }
+
+    if (input.decrement !== undefined) {
+      const decrementCurrent = currentConfidence(checked.gaps, input.decrement.type);
+      if (decrementCurrent !== input.decrement.expectedConfidence) {
+        return { ok: false, error: 'conflict', currentConfidence: decrementCurrent };
+      }
+    }
+
+    const nextPrimary = primaryCurrent === null ? 0.5 : Math.min(1, primaryCurrent + 0.25);
+    if (primaryCurrent === null) checked.gaps.push({ type: input.type, confidence: nextPrimary });
+    else checked.gaps.find((gap) => gap.type === input.type)!.confidence = nextPrimary;
+
+    if (input.decrement !== undefined) {
+      const gap = checked.gaps.find((entry) => entry.type === input.decrement!.type)!;
+      gap.confidence = Math.max(0, gap.confidence - input.decrement.by);
+    }
+
+    const write = atomicWriteProfile(profilePath, checked.raw);
+    if (write !== 'ok') return { ok: false, error: write };
+    const saved = validate(checked.raw, 'save');
+    return { ok: true, applied: true, profile: saved.profile };
+  } finally {
+    releaseProfileLock(lock);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -457,6 +972,7 @@ export function save(input: unknown): SaveOutcome {
 // load  -> exit 0 {profile, warnings} | exit 1 {error}
 // validate -> exit 0 {valid: true, profile, warnings} | exit 1 {valid: false, ...}
 // save  -> exit 0 {profile, warnings} | exit 1 {error, ...}
+// learn -> exit 0 {applied, profile} | exit 1 {error, ...} | malformed input exit 2
 // usage error -> exit 2
 // ---------------------------------------------------------------------------
 
@@ -526,10 +1042,41 @@ function runSave(): number {
   return 1;
 }
 
+function runLearn(): number {
+  let raw: string;
+  try {
+    raw = readFileSync(0, 'utf8');
+  } catch {
+    printJson({ error: 'usage', message: 'failed to read learn JSON from stdin' });
+    return 2;
+  }
+  let parsed: unknown;
+  try {
+    if (raw.trim() === '') throw new Error('empty');
+    parsed = JSON.parse(raw);
+  } catch {
+    printJson({ error: 'usage', message: 'stdin is not valid JSON' });
+    return 2;
+  }
+
+  // Parsed JSON with a closed-shape/schema error is a typed operational
+  // `invalid` outcome (exit 1), not a stdin parse/usage failure (exit 2).
+  const result = learn(parsed);
+  if (result.ok) {
+    printJson({ applied: true, profile: result.profile });
+    return 0;
+  }
+  printJson(result.error === 'conflict'
+    ? { error: result.error, currentConfidence: result.currentConfidence }
+    : { error: result.error });
+  process.stderr.write(`learn: ${result.error}\n`);
+  return 1;
+}
+
 function main(): void {
   const [command, ...rest] = process.argv.slice(2);
   if (command === undefined || rest.length > 0) {
-    process.stderr.write('usage: profile.js <load|validate|save>\n');
+    process.stderr.write('usage: profile.js <load|validate|save|learn>\n');
     process.exitCode = 2;
     return;
   }
@@ -543,13 +1090,24 @@ function main(): void {
     case 'save':
       process.exitCode = runSave();
       return;
+    case 'learn':
+      process.exitCode = runLearn();
+      return;
     default:
-      process.stderr.write('usage: profile.js <load|validate|save>\n');
+      process.stderr.write('usage: profile.js <load|validate|save|learn>\n');
       process.exitCode = 2;
   }
 }
 
-const isMainModule = process.argv[1] !== undefined && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href;
-if (isMainModule) {
+function isDirectExecution(argv1: string | undefined): boolean {
+  if (argv1 === undefined) return false;
+  try {
+    return import.meta.url === pathToFileURL(realpathSync(argv1)).href;
+  } catch {
+    return false;
+  }
+}
+
+if (isDirectExecution(process.argv[1])) {
   main();
 }

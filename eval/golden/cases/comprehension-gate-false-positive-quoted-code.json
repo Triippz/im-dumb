@@ -1,0 +1,76 @@
+{
+  "id": "comprehension-gate-false-positive-quoted-code",
+  "category": "comprehension-gate",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Explain what a parser does.",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "A parser turns structured text into parts a program can use."
+    },
+    {
+      "role": "user",
+      "content": "\"huh\"",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "`huh` is a quoted word here, not a request to repair the prior answer."
+    },
+    {
+      "role": "user",
+      "content": "`i don't understand`",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "The inline code contains a confusion phrase as data."
+    },
+    {
+      "role": "user",
+      "content": "```\nconfused\n```",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "The fenced block contains the word `confused` as code or quoted data."
+    }
+  ],
+  "profile": {},
+  "reference_facts": [
+    "A parser turns structured text into parts a program can use."
+  ],
+  "must_preserve": [
+    "quoted",
+    "code"
+  ],
+  "expected_checks": [
+    {
+      "checker": "sentence-cap",
+      "expect": "pass"
+    },
+    {
+      "checker": "forbidden-phrases",
+      "expect": "pass"
+    },
+    {
+      "checker": "output-shape",
+      "expect": "pass"
+    },
+    {
+      "checker": "one-term-one-concept",
+      "expect": "pass"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "id": "comprehension-gate-marker-short-boundary",
+  "category": "comprehension-gate",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Explain how a browser finds a website.",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "A browser asks DNS for the site address, then connects to that address."
+    },
+    {
+      "role": "user",
+      "content": "huh!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
+      "expected_action": "diagnose",
+      "expected_question_count": 1,
+      "expected_format": "default",
+      "expected_candidate_count": 3,
+      "expected_known_gaps": [
+        {
+          "type": "term",
+          "confidence": 0
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": "**Likely confusion points**\n- **DNS**: The name-to-address lookup may be unclear.\n- **Site address**: The numeric destination may be unclear.\n- **Connection step**: The jump from lookup to connection may be unclear.\nWhich of these should I unpack first?"
+    }
+  ],
+  "profile": {
+    "known_gap_types": [
+      {
+        "type": "term",
+        "confidence": 0
+      }
+    ]
+  },
+  "reference_facts": [
+    "DNS maps a site name to an address."
+  ],
+  "must_preserve": [
+    "DNS"
+  ],
+  "expected_checks": [
+    {
+      "checker": "sentence-cap",
+      "expect": "pass"
+    },
+    {
+      "checker": "forbidden-phrases",
+      "expect": "pass"
+    }
+  ]
+}

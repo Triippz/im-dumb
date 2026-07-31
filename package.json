@@ -1,6 +1,6 @@
 {
   "name": "im-dumb",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "private": true,
   "engines": {
@@ -9,7 +9,10 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
-    "test": "node --test 'test/**/*.test.ts'"
+    "test": "node --test 'test/**/*.test.ts'",
+    "check:skill": "node dist/check-cli.js --file skill/im-dumb/SKILL.md --skill-doc",
+    "verify:golden": "node --test test/golden-dataset.test.ts",
+    "verify:dist-sync": "diff -u dist/profile.js skill/im-dumb/scripts/profile.js"
   },
   "devDependencies": {
     "@types/node": "24.13.3",

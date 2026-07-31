@@ -1,0 +1,73 @@
+{
+  "id": "comprehension-gate-false-positive-context-resets",
+  "category": "comprehension-gate",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Explain a database transaction.",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "A transaction groups database changes so they succeed or fail together."
+    },
+    {
+      "role": "user",
+      "content": "New task: explain DNS; I don't understand recursion",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "DNS recursion means one resolver does the lookup work on the requester’s behalf."
+    },
+    {
+      "role": "user",
+      "content": "Let us change topics. Huh, how does CSS grid work?",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "CSS Grid arranges page items in rows and columns."
+    },
+    {
+      "role": "user",
+      "content": "Session reset. I don't understand; explain TLS from scratch.",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "TLS protects data moving between network peers by authenticating and encrypting the connection."
+    }
+  ],
+  "profile": {},
+  "reference_facts": [
+    "A database transaction groups changes so they succeed or fail together.",
+    "A DNS resolver can perform lookup work for a requester.",
+    "CSS Grid arranges page items in rows and columns.",
+    "TLS authenticates and encrypts a network connection."
+  ],
+  "must_preserve": [
+    "transaction",
+    "DNS",
+    "CSS Grid",
+    "TLS"
+  ],
+  "expected_checks": [
+    {
+      "checker": "sentence-cap",
+      "expect": "pass"
+    },
+    {
+      "checker": "forbidden-phrases",
+      "expect": "pass"
+    }
+  ]
+}

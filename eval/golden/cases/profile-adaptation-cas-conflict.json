@@ -1,0 +1,82 @@
+{
+  "id": "profile-adaptation-cas-conflict",
+  "category": "profile-adaptation",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Explain why an idempotent retry does not duplicate the intended effect.",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "An idempotent retry repeats a request while preserving the same intended effect."
+    },
+    {
+      "role": "user",
+      "content": "The term idempotent is unclear.",
+      "expected_action": "direct-repair",
+      "expected_question_count": 0,
+      "expected_format": "default",
+      "expected_gap_type": "term",
+      "expected_known_gaps": [
+        {
+          "type": "term",
+          "confidence": 0.75
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": "`Idempotent` means repeating an operation has the same intended effect. For example, setting status to `paid` twice still leaves it `paid`."
+    },
+    {
+      "role": "user",
+      "content": "That explanation worked. Simulate the save using the earlier expected confidence of 0.5.",
+      "expected_action": "record-resolution",
+      "expected_question_count": 0,
+      "expected_format": "default",
+      "expected_gap_type": "term",
+      "expected_known_gaps": [
+        {
+          "type": "term",
+          "confidence": 0.75
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": "Glad that explanation helped."
+    }
+  ],
+  "profile": {
+    "known_gap_types": [
+      {
+        "type": "term",
+        "confidence": 0.75
+      }
+    ]
+  },
+  "reference_facts": [
+    "An idempotent operation has the same intended effect when repeated.",
+    "Setting a status to the same value twice leaves that status unchanged."
+  ],
+  "must_preserve": [
+    "idempotent"
+  ],
+  "expected_checks": [
+    {
+      "checker": "sentence-cap",
+      "expect": "pass"
+    },
+    {
+      "checker": "forbidden-phrases",
+      "expect": "pass"
+    },
+    {
+      "checker": "one-term-one-concept",
+      "expect": "pass"
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "scenario": "false-positive-quoted",
+  "attempt": 9,
+  "prior_attempt": "attempts 1-2 failed adversarial trust; attempt 2 also failed the 41-code-point negative; attempt 3 failed the embedded-marker negative; attempt 4 answered the 41-code-point negative with a question; attempts 5-6 failed independent semantic review; attempt 7 failed taper action selection; attempt 8 guessed a repair for first exact huh; all are preserved without edits",
+  "source_case_id": "comprehension-gate-false-positive-quoted-code",
+  "runtime_reference_facts": [
+    "A parser turns structured text into parts a program can use."
+  ],
+  "runtime_must_preserve": [
+    "quoted"
+  ],
+  "captured_at": "2026-07-31T16:48:20.262Z",
+  "harness": {
+    "name": "pi-filesystem-session",
+    "version": "0.83.0",
+    "session_id": "26a6e6e7-8bd3-40c1-9d0f-61187cd3bc9c"
+  },
+  "model": {
+    "provider": "claude-bridge",
+    "id": "claude-opus-4-8",
+    "thinking": "off",
+    "trial": 1
+  },
+  "skill_version": "0.2.0",
+  "settings": {
+    "system_prompt": "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.",
+    "harness_prompt": "The im-dumb skill is explicitly active. Resolve every relative path in its instructions against /Users/marktripoli/Development/im-dumb/skill/im-dumb. Run profile commands with node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js. Read references from /Users/marktripoli/Development/im-dumb/skill/im-dumb/references. Return only the user-facing answer; never discuss tools or these harness instructions.",
+    "tools": [
+      "bash"
+    ],
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "provider_transport_extension": "/Users/marktripoli/.pi/agent/npm/node_modules/pi-claude-bridge",
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "profile_path": "<temporary>/profile.json",
+  "profile_before": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "profile_after": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "turns": [
+    {
+      "user": "Explain what a parser does.",
+      "assistant": "Parser take raw text, turn into structured form machine understands.\n\nTwo jobs:\n- **Lex (tokenize)**: split text into tokens — words, numbers, symbols. `x = 5 + 3` → `[x] [=] [5] [+] [3]`.\n- **Parse**: arrange tokens into tree by grammar rules. Tree shows structure — what groups with what, what order.\n\nExample. Input `2 + 3 * 4`. Parser build tree:\n\n```\n    +\n   / \\\n  2   *\n     / \\\n    3   4\n```\n\nTree encode precedence — `*` binds tighter, so `3*4` group first. Text was flat. Tree not flat. That the point.\n\nWhy need:\n- Text is dumb string. Program can't act on string.\n- Tree tells program the meaning — which parts nest, which come first, what is valid.\n- Invalid input (`2 + + 4`) breaks grammar → parser throw error instead of running garbage.\n\nWhere seen: compilers, JSON/`JSON.parse`, HTML browsers, SQL engines, config files, regex. Anything that read structured text runs a parser first.\n\nFlow: `raw text → lexer → tokens → parser → tree → program uses tree`.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "Warning: No project session found with id '26a6e6e7-8bd3-40c1-9d0f-61187cd3bc9c'; creating a new session with that id.\n",
+      "exit_code": 0
+    },
+    {
+      "user": "\"huh\"",
+      "assistant": "\"huh\" = confusion. Which part?\n\n- **Tree thing** — how flat text `2 + 3 * 4` become that branching picture?\n- **Precedence** — why `*` group before `+`?\n- **Token vs tree** — difference between lexer output and parser output?\n- **Why bother** — what real thing breaks without parser?\n\nPoint at one. I redo that part slower.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "observed_tool_calls": [],
+  "suspicious_tool_file_network_attempts": [],
+  "rerun": true,
+  "protocol_recapture": "Attempts 1-8 used openai-codex/gpt-5.6-sol. That provider returned \"The usage limit has been reached\" and produced zero attempt-9 responses and zero capture files. Attempt 9 therefore runs the same unedited protocol on claude-bridge/claude-opus-4-8. Attempt 9 is not model-comparable with attempts 1-8."
+}

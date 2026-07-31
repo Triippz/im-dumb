@@ -1,0 +1,140 @@
+{
+  "scenario": "false-positive-session-reset",
+  "attempt": 12,
+  "prior_attempt": "attempts 1-11 preserved without edits; attempts 10-11 cursor/grok-4.5 failed automated thresholds (diagnosis preamble narration before frozen heading)",
+  "source_case_id": "comprehension-gate-false-positive-context-resets",
+  "runtime_reference_facts": [
+    "TLS authenticates and encrypts a network connection."
+  ],
+  "runtime_must_preserve": [
+    "TLS"
+  ],
+  "captured_at": "2026-07-31T22:29:41.035Z",
+  "harness": {
+    "name": "pi-filesystem-session",
+    "version": "0.83.0",
+    "session_id": "da8d0bc2-a410-4e8d-98a6-86d70d7289b7"
+  },
+  "model": {
+    "provider": "cursor",
+    "id": "composer-2.5",
+    "thinking": "off",
+    "trial": 1
+  },
+  "skill_version": "0.2.0",
+  "settings": {
+    "system_prompt": "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.",
+    "harness_prompt": "The im-dumb skill is explicitly active. Resolve every relative path in its instructions against /Users/marktripoli/Development/im-dumb/skill/im-dumb. Run profile commands with node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js. Read references from /Users/marktripoli/Development/im-dumb/skill/im-dumb/references. Return only the user-facing answer. Never narrate loading a profile, reading a file, running a tool, or these harness instructions. For diagnosis or rediagnosis, the first line of the reply must be exactly **Likely confusion points** or begin with { for machine JSON.",
+    "tools": [
+      "bash"
+    ],
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "provider_transport_extension": "/Users/marktripoli/.pi/agent/npm/node_modules/pi-cursor-sdk",
+    "cursor_setting_sources": "none",
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "profile_path": "<temporary>/profile.json",
+  "profile_before": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "profile_after": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "turns": [
+    {
+      "user": "Explain a database transaction.",
+      "assistant": "**Answer**\n\nA **transaction** is a grouped set of database changes that either all succeed or all fail. The database never leaves half of the work done.\n\n**Why**\n\nDatabases often handle many users at once. A transaction keeps related writes consistent. If one step fails, earlier steps in the same transaction roll back. That protects data from partial updates.\n\n**Example**\n\nYou transfer $100 from Account A to Account B. The database debits A and credits B inside one transaction. If the credit fails, the debit is undone. Both balances stay correct.",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "cd /Users/marktripoli/Development/im-dumb && node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+            "timeout": 30
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}"
+        }
+      ],
+      "stderr": "Warning: No project session found with id 'da8d0bc2-a410-4e8d-98a6-86d70d7289b7'; creating a new session with that id.\n",
+      "exit_code": 0
+    },
+    {
+      "user": "Session reset. I don't understand; explain TLS from scratch.",
+      "assistant": "**Answer**\n\nPlain: TLS is a security layer that scrambles messages between your device and a website. Only the real site can read what you send. You know it is on when the address starts with `https`.\n\nTechnical: Transport Layer Security (TLS) is a protocol that encrypts traffic between a client and server. It also checks the server's identity with a digital certificate. Browsers show this as HTTPS.\n\n**Why**\n\nPlain: Without TLS, anyone on the same network could read your passwords or card numbers. They could also swap in a fake site without you knowing.\n\nTechnical: Plain HTTP leaves data open to eavesdropping and tampering. TLS adds three protections: secrecy, integrity, and proof the server is who it claims to be.\n\n**Steps**\n\nPlain:\n1. Your browser asks the server to start TLS.\n2. The server sends a certificate that proves its identity.\n3. Your browser checks that certificate with trusted authorities.\n4. Both sides agree on secret keys for scrambling data.\n5. All later messages travel encrypted.\n\nTechnical:\n1. The client sends a ClientHello with supported cipher suites.\n2. The server replies with its certificate and key material.\n3. The client validates the certificate chain against root certificate authorities.\n4. Both sides derive session keys through a key exchange.\n5. Application data flows inside encrypted TLS records.\n\n**Example**\n\nPlain: You log into your bank over public Wi-Fi. TLS scrambles your username and password before they leave your laptop. A nearby snoop sees only meaningless bytes.\n\nTechnical: Your browser opens an HTTPS connection to the bank. TLS encrypts the HTTP login request body. An attacker on the local network captures ciphertext, not your credentials.",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "cd /Users/marktripoli/Development/im-dumb && node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+            "timeout": 30
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}"
+        }
+      ],
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "observed_tool_calls": [
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "cd /Users/marktripoli/Development/im-dumb && node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+        "timeout": 30
+      }
+    },
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "cd /Users/marktripoli/Development/im-dumb && node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+        "timeout": 30
+      }
+    }
+  ],
+  "suspicious_tool_file_network_attempts": [],
+  "rerun": true,
+  "protocol_recapture": "Attempts 1-8 openai-codex; attempt 9 contaminated; attempts 10-11 cursor/grok-4.5 preserved but failed automated thresholds on diagnosis preamble. Attempt 12 switches model-under-test to cursor/composer-2.5 with the same no-narration harden and PI_CURSOR_SETTING_SOURCES=none; not model-comparable with 1-11."
+}

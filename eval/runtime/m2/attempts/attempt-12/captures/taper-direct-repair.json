@@ -1,0 +1,159 @@
+{
+  "scenario": "taper-direct-repair",
+  "attempt": 12,
+  "prior_attempt": "attempts 1-11 preserved without edits; attempts 10-11 cursor/grok-4.5 failed automated thresholds (diagnosis preamble narration before frozen heading)",
+  "source_case_id": "profile-adaptation-direct-step-known-state",
+  "runtime_reference_facts": [
+    "Traffic moves only after the new version passes its check."
+  ],
+  "runtime_must_preserve": [
+    "new app",
+    "check"
+  ],
+  "captured_at": "2026-07-31T22:30:53.965Z",
+  "harness": {
+    "name": "pi-filesystem-session",
+    "version": "0.83.0",
+    "session_id": "64e6dea8-4342-40cf-a97f-49219970fbcc"
+  },
+  "model": {
+    "provider": "cursor",
+    "id": "composer-2.5",
+    "thinking": "off",
+    "trial": 1
+  },
+  "skill_version": "0.2.0",
+  "settings": {
+    "system_prompt": "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.",
+    "harness_prompt": "The im-dumb skill is explicitly active. Resolve every relative path in its instructions against /Users/marktripoli/Development/im-dumb/skill/im-dumb. Run profile commands with node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js. Read references from /Users/marktripoli/Development/im-dumb/skill/im-dumb/references. Return only the user-facing answer. Never narrate loading a profile, reading a file, running a tool, or these harness instructions. For diagnosis or rediagnosis, the first line of the reply must be exactly **Likely confusion points** or begin with { for machine JSON.",
+    "tools": [
+      "bash"
+    ],
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "provider_transport_extension": "/Users/marktripoli/.pi/agent/npm/node_modules/pi-cursor-sdk",
+    "cursor_setting_sources": "none",
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "profile_path": "<temporary>/profile.json",
+  "profile_before": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [
+      {
+        "type": "term",
+        "confidence": 0.5
+      },
+      {
+        "type": "step",
+        "confidence": 0.75
+      }
+    ],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "profile_after": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [
+      {
+        "type": "term",
+        "confidence": 0.5
+      },
+      {
+        "type": "step",
+        "confidence": 0.75
+      }
+    ],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "turns": [
+    {
+      "user": "Explain how a deployment replaces an old app version.",
+      "assistant": "**Answer**\n\nA deployment swaps the running app for a new build. The platform stops sending users to the old build and starts serving the new one.\n\n**Why**\n\nAn app on a server is not one file you edit live. It is a packaged build with its own code, settings, and dependencies. To change what users get, you put a new build in place and point traffic to it.\n\n**Steps**\n\n1. You build and package the new version (often as a container image or deploy bundle).\n2. The deploy system places that package on servers or a cluster.\n3. It stops or scales down the old version so it no longer receives new requests.\n4. It starts the new version and routes traffic to it (load balancer, ingress, or service mesh).\n5. Old instances are removed once the new version is healthy.\n\nCommon patterns differ in how step 3–4 happen. A rolling deploy updates instances in batches. Blue-green runs two full environments and switches traffic in one step. Recreate stops the old version entirely, then starts the new one.\n\n**Example**\n\nYou ship v2 of a web API. CI builds the image tagged `api:v2`. Kubernetes updates the Deployment: new pods with `api:v2` start, old pods with `api:v1` terminate after the new pods pass health checks. Clients then hit v2 only; v1 is gone from the running fleet.",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "cd /Users/marktripoli/Development/im-dumb && node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+            "timeout": 30
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[{\"type\":\"term\",\"confidence\":0.5},{\"type\":\"step\",\"confidence\":0.75}],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}"
+        }
+      ],
+      "stderr": "Warning: No project session found with id '64e6dea8-4342-40cf-a97f-49219970fbcc'; creating a new session with that id.\n",
+      "exit_code": 0
+    },
+    {
+      "user": "im lost",
+      "assistant": "**Likely confusion points**\n- **The swap moment**: when the old version stops getting users and the new one starts\n- **Old vs new at once**: whether both versions run together during the change\n- **Build vs deploy**: the gap between making a new package and users seeing it\nWhich of these should I explain first?",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "cd /Users/marktripoli/Development/im-dumb && node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+            "timeout": 30
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[{\"type\":\"term\",\"confidence\":0.5},{\"type\":\"step\",\"confidence\":0.75}],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}"
+        }
+      ],
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "observed_tool_calls": [
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "cd /Users/marktripoli/Development/im-dumb && node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+        "timeout": 30
+      }
+    },
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "cd /Users/marktripoli/Development/im-dumb && node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+        "timeout": 30
+      }
+    }
+  ],
+  "suspicious_tool_file_network_attempts": [],
+  "rerun": true,
+  "protocol_recapture": "Attempts 1-8 openai-codex; attempt 9 contaminated; attempts 10-11 cursor/grok-4.5 preserved but failed automated thresholds on diagnosis preamble. Attempt 12 switches model-under-test to cursor/composer-2.5 with the same no-narration harden and PI_CURSOR_SETTING_SOURCES=none; not model-comparable with 1-11."
+}

@@ -18,6 +18,14 @@
     { "id": "adversarial-unsafe-oversimplification-acetaminophen-dosage", "path": "eval/golden/cases/adversarial-unsafe-oversimplification-acetaminophen-dosage.json", "sha256": "96c78febfd55ec02fcc212ef0d510135ed17d8640eeb538762a0de80ad079a4a" },
     { "id": "adversarial-unsafe-oversimplification-bleach-ammonia", "path": "eval/golden/cases/adversarial-unsafe-oversimplification-bleach-ammonia.json", "sha256": "0a9af88c5a034cbd7d54b5099d2decb7e7520afa0005802b6744a9bf74b0049e" },
     { "id": "adversarial-unsafe-oversimplification-ladder-power-lines", "path": "eval/golden/cases/adversarial-unsafe-oversimplification-ladder-power-lines.json", "sha256": "29482cbec26330e0ed2a11397e9d5b03fc2e2b49d0e03c50ab0b8721431cf5c9" },
+    { "id": "comprehension-gate-false-positive-boundary-adversarial", "path": "eval/golden/cases/comprehension-gate-false-positive-boundary-adversarial.json", "sha256": "998d035b74924772458dab928656f563ba8cec2fb6172034de85a95697598635" },
+    { "id": "comprehension-gate-false-positive-context-resets", "path": "eval/golden/cases/comprehension-gate-false-positive-context-resets.json", "sha256": "668676fddb8faad927fdfa44322a70ef4bacaab7c1eaed84a385d9ab22c84be3" },
+    { "id": "comprehension-gate-false-positive-quoted-code", "path": "eval/golden/cases/comprehension-gate-false-positive-quoted-code.json", "sha256": "b66dad2a44961e6e8d96382ec37d69d404df98c628329d3d5611ded4ce5d8620" },
+    { "id": "comprehension-gate-false-positive-specific-embedded", "path": "eval/golden/cases/comprehension-gate-false-positive-specific-embedded.json", "sha256": "7f240b8136baf8da4a580f3b92060c6c7570ba93e899045f6d3fe07c8a23d8de" },
+    { "id": "comprehension-gate-marker-continued-taper", "path": "eval/golden/cases/comprehension-gate-marker-continued-taper.json", "sha256": "c96d37ce1f8cc047e87c2c1b663524be7e3935c0a34d6d9b147d0e01c8ca331f" },
+    { "id": "comprehension-gate-marker-first-failure", "path": "eval/golden/cases/comprehension-gate-marker-first-failure.json", "sha256": "1678b59299121ec5f033891fd565cc7b299f2f62c9bd6e84f857ab8538f08f2e" },
+    { "id": "comprehension-gate-marker-framing-taper", "path": "eval/golden/cases/comprehension-gate-marker-framing-taper.json", "sha256": "ea7b846ac537f0871445c002620e7cd2541f3c4633603ba0e8d8a1a3e3ce64c5" },
+    { "id": "comprehension-gate-marker-short-boundary", "path": "eval/golden/cases/comprehension-gate-marker-short-boundary.json", "sha256": "08f7822abd6b13f9e99f70f20d830ed0bc2eeab8b9ce103d2afac048569e78ae" },
     { "id": "jargon-decomposition-bft-consensus", "path": "eval/golden/cases/jargon-decomposition-bft-consensus.json", "sha256": "7bbd73be06d7730bbdda0d8e398ca92f29026e5c917f636ef924729dab215584" },
     { "id": "jargon-decomposition-http-idempotency", "path": "eval/golden/cases/jargon-decomposition-http-idempotency.json", "sha256": "9927add8acb634cff552fa54c694fba197406b7392c0ac6c9eacba23daeed606" },
     { "id": "jargon-decomposition-k8s-oomkilled", "path": "eval/golden/cases/jargon-decomposition-k8s-oomkilled.json", "sha256": "4438e80f6ce9a7d6522b61580a78f47eb28db0ae9ba71d80d88f3fa6d7185ba5" },
@@ -26,6 +34,15 @@
     { "id": "jargon-decomposition-oauth2-client-credentials", "path": "eval/golden/cases/jargon-decomposition-oauth2-client-credentials.json", "sha256": "680585008232a331ebb59f683b1a6816e83413189f9e1752f43d085972f45bcf" },
     { "id": "persona-baseline-common-dns", "path": "eval/golden/cases/persona-baseline-common-dns.json", "sha256": "b67142858fa59a595e6603945ed8287983b0fd6e266dd51080996d4a988bda58" },
     { "id": "persona-baseline-expert-gc", "path": "eval/golden/cases/persona-baseline-expert-gc.json", "sha256": "eace28d864f251a00c3be63a86893ed020d90105c4370d0bfcf10b782c7134b3" },
-    { "id": "persona-baseline-technical-ok-tcp-handshake", "path": "eval/golden/cases/persona-baseline-technical-ok-tcp-handshake.json", "sha256": "f9c11d5e826b924b583461d408d9362e1edb8f540436d1c6ddb3559c952672fc" }
+    { "id": "persona-baseline-technical-ok-tcp-handshake", "path": "eval/golden/cases/persona-baseline-technical-ok-tcp-handshake.json", "sha256": "f9c11d5e826b924b583461d408d9362e1edb8f540436d1c6ddb3559c952672fc" },
+    { "id": "profile-adaptation-active-session-reset", "path": "eval/golden/cases/profile-adaptation-active-session-reset.json", "sha256": "2821ed88896829b6b61ada1a60191cdf4963d76561216ebbf3ce6c535e27f3b9" },
+    { "id": "profile-adaptation-active-state-reset", "path": "eval/golden/cases/profile-adaptation-active-state-reset.json", "sha256": "369a2550ab2d141db6b26a3660ab9472df0373fbbc79a924eab2c8f40493b0e4" },
+    { "id": "profile-adaptation-active-topic-reset", "path": "eval/golden/cases/profile-adaptation-active-topic-reset.json", "sha256": "1680b15dbff5716e6342bc9dcb35fea4737f3ef239592f42bb884c94da5fc15f" },
+    { "id": "profile-adaptation-cas-conflict", "path": "eval/golden/cases/profile-adaptation-cas-conflict.json", "sha256": "96db92db162fdbf4aed4ab54ba56aa8d0432948fadb4fee50e867e1d74d6c156" },
+    { "id": "profile-adaptation-direct-step-known-state", "path": "eval/golden/cases/profile-adaptation-direct-step-known-state.json", "sha256": "75659d815f5099126b74b21d4153444ed0ea3ee01de92ecc8e487cb0dc5deb58" },
+    { "id": "profile-adaptation-second-failure-after-diagnosis", "path": "eval/golden/cases/profile-adaptation-second-failure-after-diagnosis.json", "sha256": "417c7f3c3289d8f1d272d3db006ffa6c0eba20c0d9653ce52daf4c7dbe63f91a" },
+    { "id": "profile-adaptation-second-failure-after-direct", "path": "eval/golden/cases/profile-adaptation-second-failure-after-direct.json", "sha256": "2e58eee5d01bd49bcf1017ba84acb6d6cdfd0feccdea82a03c0459f29729b8b3" },
+    { "id": "profile-adaptation-selection-and-resolution", "path": "eval/golden/cases/profile-adaptation-selection-and-resolution.json", "sha256": "59103fd6f99aff3fd14e3fa35ed7f59af80901b41e2141b22cfd5536f3c8e3b3" },
+    { "id": "profile-adaptation-success-reset", "path": "eval/golden/cases/profile-adaptation-success-reset.json", "sha256": "79813f33fdae26e43d179b9dc038b6f633f2d509625cd0bb1c473afe62074960" }
   ]
 }

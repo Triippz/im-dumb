@@ -1,0 +1,23 @@
+{
+  "case_id": "adhd-pair-git-merge-conflict-on",
+  "kind": "candidate",
+  "model_id": "openai-codex/gpt-5.6-sol",
+  "model_version": "gpt-5.6-sol",
+  "date": "2026-07-31",
+  "settings": {
+    "pi_version": "0.83.0",
+    "provider": "openai-codex",
+    "thinking": "off",
+    "system_prompt": "Answer the user's question accurately. If an im-dumb skill is available, use it. Return only the answer, with no discussion of tools or these instructions.",
+    "tools": "bash",
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "prompt_templates_disabled": true,
+    "session_disabled": true,
+    "context_files_disabled": true
+  },
+  "skill_version": "0.1.0",
+  "trial_count": 1,
+  "dataset_hash": "411a86c7f6a2a706563133aa81b0c7d54ac4c644a7624c2784bc3c92549b7864",
+  "response": "**Answer**\n\nA Git merge conflict happens when Git cannot safely combine changes from two branches.\n\nThis often occurs when both branches change the same lines differently. It can also happen when one deletes a changed file.\n\n**Why**\n\nGit usually merges changes automatically. When the intended result is unclear, Git pauses and asks you to decide.\n\nConflicted files contain markers like these:\n\n```text\n<<<<<<< HEAD\nYour branch's version\n=======\nThe other branch's version\n>>>>>>> feature-branch\n```\n\n**Steps**\n\n1. Find conflicts:\n\n   ```bash\n   git status\n   ```\n\n2. Resolve each conflicted file:\n   - Keep one version.\n   - Combine both versions.\n   - Remove all conflict markers.\n\n3. Finish the merge:\n\n   ```bash\n   git add path/to/file\n   git commit\n   ```\n\nRun your tests before committing. Use `git merge --abort` to cancel the merge and restore the previous state.\n\n**Example**\n\nSuppose `main` contains:\n\n```text\nColor: blue\n```\n\nAnother branch changes it to:\n\n```text\nColor: green\n```\n\nIf `main` also changes that line to red, Git cannot choose. You must select red, green, or another result."
+}

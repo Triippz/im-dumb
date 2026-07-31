@@ -1,0 +1,23 @@
+{
+  "case_id": "adhd-pair-water-cycle-on",
+  "kind": "baseline",
+  "model_id": "openai-codex/gpt-5.6-sol",
+  "model_version": "gpt-5.6-sol",
+  "date": "2026-07-31",
+  "settings": {
+    "pi_version": "0.83.0",
+    "provider": "openai-codex",
+    "thinking": "off",
+    "system_prompt": "Answer the user's question accurately. If an im-dumb skill is available, use it. Return only the answer, with no discussion of tools or these instructions.",
+    "tools": "bash",
+    "ambient_skills_disabled": true,
+    "session_disabled": true,
+    "extensions_disabled": true,
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "skill_version": "0.1.0",
+  "trial_count": 1,
+  "dataset_hash": "411a86c7f6a2a706563133aa81b0c7d54ac4c644a7624c2784bc3c92549b7864",
+  "response": "The water cycle is Earth’s continuous movement of water:\n\n1. **Evaporation:** Sunlight heats liquid water and turns it into water vapor.\n2. **Condensation:** The vapor cools and forms tiny droplets, creating clouds.\n3. **Precipitation:** Water falls as rain, snow, sleet, or hail.\n4. **Collection:** Water gathers in rivers, lakes, oceans, soil, and underground.\n\nThen the cycle repeats.\n\nFor future explanations, which vocabulary level do you prefer: **common**, **technical-ok**, or **expert**?"
+}

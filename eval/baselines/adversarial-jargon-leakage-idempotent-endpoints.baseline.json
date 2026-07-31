@@ -1,0 +1,23 @@
+{
+  "case_id": "adversarial-jargon-leakage-idempotent-endpoints",
+  "kind": "baseline",
+  "model_id": "openai-codex/gpt-5.6-sol",
+  "model_version": "gpt-5.6-sol",
+  "date": "2026-07-31",
+  "settings": {
+    "pi_version": "0.83.0",
+    "provider": "openai-codex",
+    "thinking": "off",
+    "system_prompt": "Answer the user's question accurately. If an im-dumb skill is available, use it. Return only the answer, with no discussion of tools or these instructions.",
+    "tools": "bash",
+    "ambient_skills_disabled": true,
+    "session_disabled": true,
+    "extensions_disabled": true,
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "skill_version": "0.1.0",
+  "trial_count": 1,
+  "dataset_hash": "411a86c7f6a2a706563133aa81b0c7d54ac4c644a7624c2784bc3c92549b7864",
+  "response": "An idempotent REST endpoint can receive the same request multiple times and leave the system in the same state as if it received it once.\n\nThis makes retries safe. If a client sends a request but loses the response, it can try again without accidentally creating duplicate orders, charging twice, or applying the same update repeatedly.\n\nFor example:\n\n- “Set this order’s status to shipped” is usually safe to retry.\n- “Create a new order” may create another order each time unless the server detects duplicate requests.\n\nIdempotence does not mean every retry returns exactly the same response. It means repeated requests do not cause additional unintended changes."
+}

@@ -1,0 +1,18 @@
+[2026-07-31T20:38:59.137Z] resume: keeping 1, capturing 16
+[2026-07-31T20:41:19.927Z] trigger-dont-understand	2	456
+[2026-07-31T20:42:32.614Z] false-positive-quoted	2	279
+[2026-07-31T20:43:29.232Z] false-positive-inline-code	2	284
+[2026-07-31T20:45:09.931Z] false-positive-fenced-code	2	277
+[2026-07-31T20:45:48.880Z] false-positive-specific-question	2	403
+[2026-07-31T20:46:42.018Z] false-positive-new-task	2	1686
+[2026-07-31T20:47:24.138Z] false-positive-topic-change	2	1010
+[2026-07-31T20:48:24.250Z] false-positive-session-reset	2	847
+[2026-07-31T20:49:11.964Z] false-positive-41-code-point-boundary	2	259
+[2026-07-31T20:49:46.513Z] false-positive-embedded-marker	2	370
+[2026-07-31T20:50:22.721Z] taper-direct-repair	2	616
+[2026-07-31T20:51:34.835Z] second-failure-after-diagnosis	3	525
+[2026-07-31T20:53:24.151Z] second-failure-after-direct-repair	3	442
+[2026-07-31T20:54:16.328Z] candidate-selection-targeted-repair	3	402
+[2026-07-31T20:55:28.217Z] record-resolution-learn	4	279
+[2026-07-31T20:56:05.648Z] adversarial-data-not-instructions	2	344
+[2026-07-31T20:56:05.649Z] captured=17

@@ -5,7 +5,9 @@ import { FILLER_PHRASES, CONCEPT_SYNONYM_SETS } from './data/lexicon.ts';
 // Checker registry (FR7) — consumed by src/golden-schema.ts (D14) for the
 // `expected_checks[].checker` enum. Not every id below has an implementing
 // function in this file: `profile-schema` is src/profile.ts's validate(),
-// `golden-case-schema` is src/golden-schema.ts's validateGoldenCase().
+// `golden-case-schema` is src/golden-schema.ts's validateGoldenCase(),
+// `comprehension-gate` is src/comprehension-gate-checker.ts's
+// checkComprehensionGate().
 // ---------------------------------------------------------------------------
 
 export const CHECKER_IDS = [
@@ -17,6 +19,7 @@ export const CHECKER_IDS = [
   'frontmatter',
   'profile-schema',
   'golden-case-schema',
+  'comprehension-gate',
 ] as const;
 
 export type CheckerId = (typeof CHECKER_IDS)[number];
@@ -99,6 +102,57 @@ function splitSentences(prose: string): string[] {
   return sentences;
 }
 
+function sentenceUnits(text: string): string[] {
+  const trimmed = text.trim();
+  if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+    try {
+      const strings: string[] = [];
+      const visit = (value: unknown): void => {
+        if (typeof value === 'string') strings.push(value);
+        else if (Array.isArray(value)) value.forEach(visit);
+        else if (typeof value === 'object' && value !== null) Object.values(value).forEach(visit);
+      };
+      visit(JSON.parse(trimmed));
+      return strings.flatMap((value) => splitSentences(value.replace(/`[^`]*`/g, ' ')));
+    } catch {
+      // Not valid machine JSON; evaluate it as ordinary prose below.
+    }
+  }
+
+  const sentences: string[] = [];
+  let paragraph: string[] = [];
+  let inFence = false;
+  const flush = (): void => {
+    if (paragraph.length > 0) sentences.push(...splitSentences(paragraph.join(' ').replace(/`[^`]*`/g, ' ')));
+    paragraph = [];
+  };
+
+  for (const line of text.split('\n')) {
+    const lineTrimmed = line.trimStart();
+    if (lineTrimmed.startsWith('```')) {
+      flush();
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence || lineTrimmed.startsWith('>') || /^#{1,6}\s/.test(lineTrimmed) || /^\*\*[^*]+\*\*$/.test(lineTrimmed)) {
+      flush();
+      continue;
+    }
+    if (lineTrimmed.trim() === '') {
+      flush();
+      continue;
+    }
+    if (LIST_MARKER_PREFIX_RE.test(lineTrimmed)) {
+      flush();
+      sentences.push(...splitSentences(lineTrimmed.replace(LIST_MARKER_PREFIX_RE, '').replace(/`[^`]*`/g, ' ')));
+      continue;
+    }
+    paragraph.push(lineTrimmed);
+  }
+  flush();
+  return sentences;
+}
+
 const LIST_ITEM_RE = /^([-*+]\s|\d+[.)]\s)/;
 const HEADING_RE = /^#{1,6}\s/;
 const BOLD_LINE_RE = /^\*\*[^*]+\*\*$/;
@@ -148,7 +202,7 @@ function truncate(value: string, maxLength: number): string {
 
 export function checkSentenceCap(text: string, profile: Profile): Violation[] {
   const cap = profile.sentence_length_cap;
-  const sentences = splitSentences(extractProse(text));
+  const sentences = sentenceUnits(text);
   if (sentences.length === 0) return [];
 
   const offenders = sentences.map((sentence) => ({ sentence, words: wordCount(sentence) })).filter((s) => s.words > cap);
@@ -196,8 +250,9 @@ export function checkForbiddenPhrases(text: string, profile: Profile): Violation
 
 export function checkOneTermOneConcept(text: string): Violation[] {
   const violations: Violation[] = [];
+  const prose = extractProse(text);
   for (const set of CONCEPT_SYNONYM_SETS) {
-    const used = set.filter((term) => wordBoundaryRegex(term).test(text));
+    const used = set.filter((term) => wordBoundaryRegex(term).test(prose));
     if (used.length > 1) {
       violations.push({
         checker: 'one-term-one-concept',

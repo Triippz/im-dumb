@@ -1,0 +1,150 @@
+{
+  "scenario": "trigger-huh",
+  "attempt": 10,
+  "prior_attempt": "attempts 1-8 used openai-codex/gpt-5.6-sol and are preserved; attempt 9 used claude-bridge/claude-opus-4-8 but is contaminated by operator global Claude/caveman config and is invalid evidence; all retained without edits",
+  "source_case_id": "comprehension-gate-marker-short-boundary",
+  "runtime_reference_facts": [
+    "DNS maps a site name to an address."
+  ],
+  "runtime_must_preserve": [
+    "DNS"
+  ],
+  "captured_at": "2026-07-31T20:15:26.615Z",
+  "harness": {
+    "name": "pi-filesystem-session",
+    "version": "0.83.0",
+    "session_id": "cd2a9d4c-4b08-41d1-8f06-67a54b49f153"
+  },
+  "model": {
+    "provider": "cursor",
+    "id": "grok-4.5",
+    "thinking": "off",
+    "trial": 1
+  },
+  "skill_version": "0.2.0",
+  "settings": {
+    "system_prompt": "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.",
+    "harness_prompt": "The im-dumb skill is explicitly active. Resolve every relative path in its instructions against /Users/marktripoli/Development/im-dumb/skill/im-dumb. Run profile commands with node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js. Read references from /Users/marktripoli/Development/im-dumb/skill/im-dumb/references. Return only the user-facing answer; never discuss tools or these harness instructions.",
+    "tools": [
+      "bash"
+    ],
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "provider_transport_extension": "/Users/marktripoli/.pi/agent/npm/node_modules/pi-cursor-sdk",
+    "cursor_setting_sources": "none",
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "profile_path": "<temporary>/profile.json",
+  "profile_before": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [
+      {
+        "type": "term",
+        "confidence": 0
+      }
+    ],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "profile_after": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [
+      {
+        "type": "term",
+        "confidence": 0
+      }
+    ],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "turns": [
+    {
+      "user": "Explain how a browser finds a website.",
+      "assistant": "I'll load your communication profile, then explain how a browser finds a website in that style.**Answer**\nPlain: Your browser turns a website name into a machine address, then asks that machine for the page.\n\nTechnical: The browser reads the `URL` (the full web address), asks `DNS` (a name directory) for the site’s `IP address` (a numeric machine location), opens a connection to that server, and requests the page.\n\n**Why**\nPeople use names like example.com. Computers talk with numbers. DNS bridges that gap so the browser can reach the right machine.\n\n**Steps**\n1. You enter or click a web address.\n2. The browser asks DNS for the matching IP address.\n3. The browser connects to that server and loads the page.",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+            "timeout": 30
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[{\"type\":\"term\",\"confidence\":0}],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}"
+        }
+      ],
+      "stderr": "Warning: No project session found with id 'cd2a9d4c-4b08-41d1-8f06-67a54b49f153'; creating a new session with that id.\n",
+      "exit_code": 0
+    },
+    {
+      "user": "huh",
+      "assistant": "Loading your profile and the comprehension-repair rules for this “huh.”**Likely confusion points**\n- **DNS**: how the name directory turns a site name into a machine number\n- **IP address**: what that numeric machine location is and why it matters\n- **Ask DNS**: the lookup step before the browser can connect\n- **Connect and load**: how the browser reaches the server and gets the page\nWhich of these should I explain first?",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+            "timeout": 30
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[{\"type\":\"term\",\"confidence\":0}],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}"
+        }
+      ],
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "observed_tool_calls": [
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+        "timeout": 30
+      }
+    },
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+        "timeout": 30
+      }
+    }
+  ],
+  "suspicious_tool_file_network_attempts": [],
+  "rerun": true,
+  "protocol_recapture": "Attempts 1-8 used openai-codex/gpt-5.6-sol (quota blocked attempt 9). Attempt 9 on claude-bridge/claude-opus-4-8 is preserved but contaminated. Attempt 10 runs the same unedited protocol on cursor/grok-4.5 with PI_CURSOR_SETTING_SOURCES=none so ambient Cursor rules cannot load. Not model-comparable with attempts 1-9."
+}

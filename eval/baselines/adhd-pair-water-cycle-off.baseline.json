@@ -1,0 +1,23 @@
+{
+  "case_id": "adhd-pair-water-cycle-off",
+  "kind": "baseline",
+  "model_id": "openai-codex/gpt-5.6-sol",
+  "model_version": "gpt-5.6-sol",
+  "date": "2026-07-31",
+  "settings": {
+    "pi_version": "0.83.0",
+    "provider": "openai-codex",
+    "thinking": "off",
+    "system_prompt": "Answer the user's question accurately. If an im-dumb skill is available, use it. Return only the answer, with no discussion of tools or these instructions.",
+    "tools": "bash",
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "prompt_templates_disabled": true,
+    "session_disabled": true,
+    "context_files_disabled": true
+  },
+  "skill_version": "0.1.0",
+  "trial_count": 1,
+  "dataset_hash": "411a86c7f6a2a706563133aa81b0c7d54ac4c644a7624c2784bc3c92549b7864",
+  "response": "The **water cycle** is the continuous movement of water between Earth’s surface and the atmosphere:\n\n1. **Evaporation:** The Sun heats water in oceans, lakes, and rivers, turning it into water vapor.\n2. **Transpiration:** Plants release water vapor from their leaves.\n3. **Condensation:** Water vapor cools and forms tiny droplets, creating clouds.\n4. **Precipitation:** Water falls from clouds as rain, snow, sleet, or hail.\n5. **Collection:** Water gathers in oceans, lakes, rivers, soil, and underground. It then evaporates again, restarting the cycle.\n\nIn short: **water rises as vapor, forms clouds, falls back to Earth, and collects.**\n"
+}

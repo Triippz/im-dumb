@@ -1,0 +1,75 @@
+{
+  "id": "profile-adaptation-active-session-reset",
+  "category": "profile-adaptation",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Explain why a database index speeds up a lookup.",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "An index gives the database a shorter route to matching rows."
+    },
+    {
+      "role": "user",
+      "content": "confused",
+      "expected_action": "diagnose",
+      "expected_question_count": 1,
+      "expected_format": "default",
+      "expected_candidate_count": 3
+    },
+    {
+      "role": "assistant",
+      "content": "**Likely confusion points**\n- **Index**: The lookup shortcut may be unclear.\n- **Matching rows**: Which records qualify may be unclear.\n- **Shorter route**: Why fewer rows are checked may be unclear.\nWhich index part should I unpack?"
+    },
+    {
+      "role": "user",
+      "content": "Session reset. Explain TLS from scratch.",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "TLS authenticates peers and encrypts data sent across the connection."
+    },
+    {
+      "role": "user",
+      "content": "huh",
+      "expected_action": "diagnose",
+      "expected_question_count": 1,
+      "expected_format": "default",
+      "expected_candidate_count": 3
+    },
+    {
+      "role": "assistant",
+      "content": "**Likely confusion points**\n- **Authentication**: How peers prove identity may be unclear.\n- **Encryption**: How data is hidden may be unclear.\n- **Connection**: Where TLS protection applies may be unclear.\nWhich TLS part should I explain?"
+    }
+  ],
+  "profile": {},
+  "reference_facts": [
+    "A database index can reduce rows examined during a lookup.",
+    "TLS authenticates peers and encrypts connection data."
+  ],
+  "must_preserve": [
+    "index",
+    "TLS"
+  ],
+  "expected_checks": [
+    {
+      "checker": "sentence-cap",
+      "expect": "pass"
+    },
+    {
+      "checker": "forbidden-phrases",
+      "expect": "pass"
+    },
+    {
+      "checker": "one-term-one-concept",
+      "expect": "pass"
+    }
+  ]
+}

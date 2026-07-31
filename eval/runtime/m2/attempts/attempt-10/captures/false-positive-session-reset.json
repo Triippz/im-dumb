@@ -1,0 +1,140 @@
+{
+  "scenario": "false-positive-session-reset",
+  "attempt": 10,
+  "prior_attempt": "attempts 1-8 used openai-codex/gpt-5.6-sol and are preserved; attempt 9 used claude-bridge/claude-opus-4-8 but is contaminated by operator global Claude/caveman config and is invalid evidence; all retained without edits",
+  "source_case_id": "comprehension-gate-false-positive-context-resets",
+  "runtime_reference_facts": [
+    "TLS authenticates and encrypts a network connection."
+  ],
+  "runtime_must_preserve": [
+    "TLS"
+  ],
+  "captured_at": "2026-07-31T20:48:24.249Z",
+  "harness": {
+    "name": "pi-filesystem-session",
+    "version": "0.83.0",
+    "session_id": "e55cb1c4-70d8-4c86-b89c-8afc4ecdac33"
+  },
+  "model": {
+    "provider": "cursor",
+    "id": "grok-4.5",
+    "thinking": "off",
+    "trial": 1
+  },
+  "skill_version": "0.2.0",
+  "settings": {
+    "system_prompt": "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.",
+    "harness_prompt": "The im-dumb skill is explicitly active. Resolve every relative path in its instructions against /Users/marktripoli/Development/im-dumb/skill/im-dumb. Run profile commands with node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js. Read references from /Users/marktripoli/Development/im-dumb/skill/im-dumb/references. Return only the user-facing answer; never discuss tools or these harness instructions.",
+    "tools": [
+      "bash"
+    ],
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "provider_transport_extension": "/Users/marktripoli/.pi/agent/npm/node_modules/pi-cursor-sdk",
+    "cursor_setting_sources": "none",
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "profile_path": "<temporary>/profile.json",
+  "profile_before": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "profile_after": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "turns": [
+    {
+      "user": "Explain a database transaction.",
+      "assistant": "Loading your communication profile, then I'll explain database transactions in that style.**Answer**\nPlain:\nA database transaction is a group of related changes that all succeed or all fail together.\n\nTechnical:\nA transaction is one unit of work the database treats as all-or-nothing.\n\n**Why**\nPlain:\nIt keeps your data consistent when several updates must stay linked.\n\nTechnical:\nWithout a transaction, a crash mid-update can save only some of the changes.\n\n**Steps**\n1. Start the transaction.\n2. Make the related changes.\n3. `commit` (save all of them) or `roll back` (undo all of them).\n\n**Example**\nYou move $50 from checking to savings inside one transaction.\nIf either update fails, both changes undo.",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+            "timeout": 30
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}"
+        }
+      ],
+      "stderr": "Warning: No project session found with id 'e55cb1c4-70d8-4c86-b89c-8afc4ecdac33'; creating a new session with that id.\n",
+      "exit_code": 0
+    },
+    {
+      "user": "Session reset. I don't understand; explain TLS from scratch.",
+      "assistant": "Loading your profile, then checking how to handle the confusion signal before explaining TLS.**Answer**\nPlain:\n`TLS` (Transport Layer Security) is the system that keeps data private as it travels between your device and a server.\n\nTechnical:\n`TLS` creates an encrypted channel so outsiders cannot read or change the traffic.\n\n**Why**\nPlain:\nOpen networks let many people see the same packets.\n\nTechnical:\nWithout `TLS`, passwords and personal data travel in readable form.\n\n**Steps**\n1. Your browser asks the server for a secure connection.\n2. The server proves its identity with a `certificate` (a signed ID file).\n3. Both sides agree on shared secret keys.\n4. They send data encrypted with those keys until the session ends.\n\n**Example**\nWhen you open `https://` a site, `TLS` runs first.\nThen your login stays private on the path to the server.",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+            "timeout": 30
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}"
+        }
+      ],
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "observed_tool_calls": [
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+        "timeout": 30
+      }
+    },
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+        "timeout": 30
+      }
+    }
+  ],
+  "suspicious_tool_file_network_attempts": [],
+  "rerun": true,
+  "protocol_recapture": "Attempts 1-8 used openai-codex/gpt-5.6-sol (quota blocked attempt 9). Attempt 9 on claude-bridge/claude-opus-4-8 is preserved but contaminated. Attempt 10 runs the same unedited protocol on cursor/grok-4.5 with PI_CURSOR_SETTING_SOURCES=none so ambient Cursor rules cannot load. Not model-comparable with attempts 1-9."
+}

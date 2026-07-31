@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test, describe, before } from 'node:test';
 import { spawnSync, execFileSync } from 'node:child_process';
-import { mkdtempSync, writeFileSync, existsSync } from 'node:fs';
+import { cpSync, mkdtempSync, writeFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -13,6 +13,7 @@ import type { Violation } from '../src/checkers.ts';
 const repoRoot = path.resolve(fileURLToPath(import.meta.url), '../..');
 const cliScript = path.join(repoRoot, 'src', 'check-cli.ts');
 const distCliScript = path.join(repoRoot, 'dist', 'check-cli.js');
+let isolatedDistCliScript = '';
 
 function freshDir(): string {
   return mkdtempSync(path.join(tmpdir(), 'im-dumb-check-cli-'));
@@ -260,23 +261,30 @@ test('CLI: --profile with an unsupported future schema_version is a bad invocati
 describe('compiled dist/check-cli.js execution', () => {
   before(() => {
     execFileSync('npm', ['run', 'build'], { cwd: repoRoot, stdio: 'pipe' });
+    const sandbox = freshDir();
+    cpSync(path.join(repoRoot, 'dist'), path.join(sandbox, 'dist'), { recursive: true });
+    writeFileSync(path.join(sandbox, 'package.json'), '{"type":"module"}\n', 'utf8');
+    assert.equal(existsSync(path.join(sandbox, 'node_modules')), false);
+    isolatedDistCliScript = path.join(sandbox, 'dist', 'check-cli.js');
   });
 
-  test('dist/check-cli.js exists after build', () => {
+  test('the isolated sandbox contains the copied dist/check-cli.js and no node_modules', () => {
     assert.ok(existsSync(distCliScript));
+    assert.ok(existsSync(isolatedDistCliScript));
+    assert.equal(existsSync(path.join(path.dirname(path.dirname(isolatedDistCliScript)), 'node_modules')), false);
   });
 
   test('runs from a fresh directory with no node_modules, clean text via stdin exits 0', () => {
     const dir = freshDir();
     assert.ok(!existsSync(path.join(dir, 'node_modules')));
-    const result = runCli(distCliScript, ['--json'], { input: CLEAN_TEXT, cwd: dir });
+    const result = runCli(isolatedDistCliScript, ['--json'], { input: CLEAN_TEXT, cwd: dir });
     assert.equal(result.status, 0, `stderr: ${result.stderr}`);
     assert.deepEqual(JSON.parse(result.stdout), { violations: [], errorCount: 0, warnCount: 0 });
   });
 
   test('runs from a fresh directory with no node_modules, forbidden phrase via stdin exits 1', () => {
     const dir = freshDir();
-    const result = runCli(distCliScript, ['--json'], { input: FORBIDDEN_TEXT, cwd: dir });
+    const result = runCli(isolatedDistCliScript, ['--json'], { input: FORBIDDEN_TEXT, cwd: dir });
     assert.equal(result.status, 1, `stderr: ${result.stderr}`);
     const parsed = JSON.parse(result.stdout);
     assert.ok(parsed.violations.some((v: Violation) => v.checker === 'forbidden-phrases'));
@@ -285,7 +293,19 @@ describe('compiled dist/check-cli.js execution', () => {
   test('runs --file from a fresh directory with no node_modules', () => {
     const dir = freshDir();
     const file = writeTemp(dir, 'input.txt', CLEAN_TEXT);
-    const result = runCli(distCliScript, ['--file', file, '--json'], { cwd: dir });
+    const result = runCli(isolatedDistCliScript, ['--file', file, '--json'], { cwd: dir });
     assert.equal(result.status, 0, `stderr: ${result.stderr}`);
+  });
+
+  // Step 10 (M1 plan) — Layer 1 SKILL.md structural check, run against the
+  // real, committed skill/im-dumb/SKILL.md via the compiled CLI, from a
+  // directory with no node_modules (dependency-free + Layer 1 in one test).
+  test('runs --file --skill-doc against the real, committed SKILL.md from a directory with no node_modules, zero blocking errors', () => {
+    const dir = freshDir();
+    const skillMdPath = path.join(repoRoot, 'skill', 'im-dumb', 'SKILL.md');
+    const result = runCli(isolatedDistCliScript, ['--file', skillMdPath, '--skill-doc', '--json'], { cwd: dir });
+    assert.equal(result.status, 0, `stderr: ${result.stderr}`);
+    const parsed = JSON.parse(result.stdout);
+    assert.equal(parsed.errorCount, 0);
   });
 });

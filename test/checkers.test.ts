@@ -35,6 +35,7 @@ test('CHECKER_IDS covers the FR7 checker set', () => {
     'frontmatter',
     'profile-schema',
     'golden-case-schema',
+    'comprehension-gate',
   ]) {
     assert.ok((CHECKER_IDS as readonly string[]).includes(id), `expected CHECKER_IDS to include "${id}"`);
   }
@@ -123,6 +124,34 @@ test('checkSentenceCap: numbered list markers are not counted as their own one-w
   assert.match(violations[0]!.message, /^1\/3 sentences/);
 });
 
+test('checkSentenceCap: separate bullet fragments are measured as separate sentence units', () => {
+  const profile = withProfile({ sentence_length_cap: 5 });
+  const text = [
+    '**Likely confusion points**',
+    '- **First**: short description',
+    '- **Second**: another short description',
+    '- **Third**: this description is deliberately longer than five words',
+    'Which one?',
+  ].join('\n');
+  const violations = checkSentenceCap(text, profile);
+  assert.equal(violations.length, 1);
+  assert.match(violations[0]!.message, /^1\/4 sentences/);
+});
+
+test('checkSentenceCap: machine JSON string values are measured independently', () => {
+  const profile = withProfile({ sentence_length_cap: 5 });
+  const text = JSON.stringify({
+    candidates: [
+      { label: 'First', description: 'short description' },
+      { label: 'Second', description: 'this description deliberately exceeds five words total' },
+    ],
+    question: 'Which one?',
+  });
+  const violations = checkSentenceCap(text, profile);
+  assert.equal(violations.length, 1);
+  assert.match(violations[0]!.message, /^1\/5 sentences/);
+});
+
 test('checkSentenceCap: a link inside a compliant sentence does not cause a spurious extra sentence', () => {
   const profile = withProfile({ sentence_length_cap: 20 });
   const text = 'Read the docs at example.com/path for setup details.';
@@ -177,6 +206,13 @@ test('checkForbiddenPhrases: profile.forbidden_phrases are checked in addition t
   assert.match(violations[0]!.message, /synergy/i);
 });
 
+test('checkForbiddenPhrases: inline and fenced code do not hide a forbidden phrase', () => {
+  const profile = withProfile({ forbidden_phrases: ['synergy'] });
+  const violations = checkForbiddenPhrases('Source label: `synergy`.\n```text\nsynergy\n```', profile);
+  assert.equal(violations.length, 1);
+  assert.match(violations[0]!.message, /synergy/i);
+});
+
 test('checkForbiddenPhrases: reports one violation per distinct phrase, not per occurrence', () => {
   const profile = withProfile({});
   const phrase = FILLER_PHRASES[0]!;
@@ -204,6 +240,15 @@ test('checkOneTermOneConcept: flags mixing two synonyms from the same curated co
   assert.equal(violations[0]!.severity, 'error');
   assert.match(violations[0]!.message, new RegExp(termA!, 'i'));
   assert.match(violations[0]!.message, new RegExp(termB!, 'i'));
+});
+
+test('checkOneTermOneConcept: ignores an inline or fenced source label when prose uses one plain term', () => {
+  const [sourceTerm, plainTerm] = CONCEPT_SYNONYM_SETS[0]!;
+  assert.deepEqual(checkOneTermOneConcept(`Source term: \`${sourceTerm}\`. Continue with ${plainTerm} in prose.`), []);
+  assert.deepEqual(
+    checkOneTermOneConcept(`Source term:\n\`\`\`text\n${sourceTerm}\n\`\`\`\nContinue with ${plainTerm} in prose.`),
+    [],
+  );
 });
 
 test('checkOneTermOneConcept: flags each concept set independently', () => {

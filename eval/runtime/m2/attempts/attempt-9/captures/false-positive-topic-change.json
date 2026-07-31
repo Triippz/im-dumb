@@ -1,0 +1,96 @@
+{
+  "scenario": "false-positive-topic-change",
+  "attempt": 9,
+  "prior_attempt": "attempts 1-2 failed adversarial trust; attempt 2 also failed the 41-code-point negative; attempt 3 failed the embedded-marker negative; attempt 4 answered the 41-code-point negative with a question; attempts 5-6 failed independent semantic review; attempt 7 failed taper action selection; attempt 8 guessed a repair for first exact huh; all are preserved without edits",
+  "source_case_id": "comprehension-gate-false-positive-context-resets",
+  "runtime_reference_facts": [
+    "CSS Grid arranges page items in rows and columns."
+  ],
+  "runtime_must_preserve": [
+    "CSS Grid"
+  ],
+  "captured_at": "2026-07-31T16:49:11.279Z",
+  "harness": {
+    "name": "pi-filesystem-session",
+    "version": "0.83.0",
+    "session_id": "56212203-f37b-4f6c-8ac2-4b71417db192"
+  },
+  "model": {
+    "provider": "claude-bridge",
+    "id": "claude-opus-4-8",
+    "thinking": "off",
+    "trial": 1
+  },
+  "skill_version": "0.2.0",
+  "settings": {
+    "system_prompt": "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.",
+    "harness_prompt": "The im-dumb skill is explicitly active. Resolve every relative path in its instructions against /Users/marktripoli/Development/im-dumb/skill/im-dumb. Run profile commands with node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js. Read references from /Users/marktripoli/Development/im-dumb/skill/im-dumb/references. Return only the user-facing answer; never discuss tools or these harness instructions.",
+    "tools": [
+      "bash"
+    ],
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "provider_transport_extension": "/Users/marktripoli/.pi/agent/npm/node_modules/pi-claude-bridge",
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "profile_path": "<temporary>/profile.json",
+  "profile_before": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "profile_after": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "turns": [
+    {
+      "user": "Explain a database transaction.",
+      "assistant": "Database transaction = group of operations treated as ONE unit. All succeed, or all undo. Nothing halfway.\n\n**Core idea**\nYou move $100 from account A to B. Two steps:\n1. Subtract $100 from A\n2. Add $100 to B\n\nIf step 2 fails after step 1 → money vanish. Bad. Transaction stops this: both happen, or neither.\n\n**The guarantees (ACID)**\n- **Atomic** — all-or-nothing. Crash mid-way? Rolls back like nothing happened.\n- **Consistent** — rules stay true (no negative balance, foreign keys hold).\n- **Isolated** — concurrent transactions don't step on each other. Your half-done work invisible to others until committed.\n- **Durable** — once committed, survives power loss. On disk, stays.\n\n**How you use it (SQL)**\n```sql\nBEGIN;                                  -- start\nUPDATE accounts SET bal = bal - 100 WHERE id = 'A';\nUPDATE accounts SET bal = bal + 100 WHERE id = 'B';\nCOMMIT;                                 -- lock it in\n-- or ROLLBACK; to throw it all away\n```\n\nError between BEGIN and COMMIT → `ROLLBACK`, DB returns to pre-BEGIN state.\n\n**One gotcha**\n\"Isolated\" has levels (read committed, serializable, etc.). Weaker level = faster but allows anomalies (dirty reads, phantoms). Trade-off: speed vs strictness.\n\nThat's it. Transaction = safety wrapper so partial failure never corrupts data.\n\nWant deeper on any part — isolation levels, locking, or how rollback works under hood?",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "Warning: No project session found with id '56212203-f37b-4f6c-8ac2-4b71417db192'; creating a new session with that id.\n",
+      "exit_code": 0
+    },
+    {
+      "user": "Let us change topics. Huh, how does CSS grid work?",
+      "assistant": "CSS grid = 2D layout. Rows AND columns at once. Flexbox = 1D (one axis). Grid = both.\n\n**Turn on**\n```css\n.container {\n  display: grid;\n}\n```\nParent = grid. Direct children = grid items. Auto-placed.\n\n**Define tracks (rows/columns)**\n```css\n.container {\n  display: grid;\n  grid-template-columns: 200px 1fr 1fr;   /* 3 cols */\n  grid-template-rows: 100px auto;         /* 2 rows */\n  gap: 16px;                              /* space between */\n}\n```\n- `1fr` = 1 fraction of leftover space. Two `1fr` = split even.\n- `200px 1fr 1fr` = first col fixed 200px, rest share remainder.\n\n**Key units/functions**\n- `fr` — fraction of free space.\n- `repeat(3, 1fr)` — shorthand, = `1fr 1fr 1fr`.\n- `minmax(100px, 1fr)` — track shrinks to 100px min, grows to 1fr.\n- `auto` — track sized to content.\n\n**Responsive, no media query**\n```css\ngrid-template-columns: repeat(auto-fill, minmax(200px, 1fr));\n```\nFits as many 200px+ cols as space allows. Wraps auto. This = classic card grid.\n\n**Place items (2 ways)**\n\nLine-based — items span grid lines. Lines numbered from 1:\n```css\n.item {\n  grid-column: 1 / 3;   /* start line 1, end line 3 = span 2 cols */\n  grid-row: 1 / 2;\n}\n```\n\nNamed areas — visual, readable:\n```css\n.container {\n  grid-template-columns: 200px 1fr;\n  grid-template-areas:\n    \"sidebar header\"\n    \"sidebar main\";\n}\n.sidebar { grid-area: sidebar; }\n.header  { grid-area: header; }\n.main    { grid-area: main; }\n```\nASCII map = layout. Same name twice = spans those cells.\n\n**Align stuff**\n- `justify-items` / `justify-content` — horizontal (inline axis).\n- `align-items` / `align-content` — vertical (block axis).\n- `-items` = align items inside cells. `-content` = align whole grid inside container.\n- `place-items: center` = shorthand, both axes, dead center.\n\n**Grid vs flexbox — pick which**\n- Content-driven, one direction, unknown item count → flexbox.\n- Layout-driven, 2D, defined structure (page shell, dashboard) → grid.\n- Often both: grid for page, flex inside components.\n\nThat it. Grid = define tracks on parent, place children by line or name.\n\nWant worked example? Page layout or card gallery — say which.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "observed_tool_calls": [],
+  "suspicious_tool_file_network_attempts": [],
+  "rerun": true,
+  "protocol_recapture": "Attempts 1-8 used openai-codex/gpt-5.6-sol. That provider returned \"The usage limit has been reached\" and produced zero attempt-9 responses and zero capture files. Attempt 9 therefore runs the same unedited protocol on claude-bridge/claude-opus-4-8. Attempt 9 is not model-comparable with attempts 1-8."
+}

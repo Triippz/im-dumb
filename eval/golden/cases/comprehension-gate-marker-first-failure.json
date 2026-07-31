@@ -1,0 +1,63 @@
+{
+  "id": "comprehension-gate-marker-first-failure",
+  "category": "comprehension-gate",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Explain why a cache can speed up repeated reads.",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "A cache keeps a nearby copy, so later reads can avoid slower storage."
+    },
+    {
+      "role": "user",
+      "content": "I don't understand",
+      "expected_action": "diagnose",
+      "expected_question_count": 1,
+      "expected_format": "default",
+      "expected_candidate_count": 3,
+      "expected_known_gaps": [
+        {
+          "type": "step",
+          "confidence": 0.5
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": "**Likely confusion points**\n- **Nearby copy**: Where the cached value lives may be unclear.\n- **Repeated read**: Why the second request differs may be unclear.\n- **Slower storage**: Which work is avoided may be unclear.\nWhich point blocked the explanation?"
+    }
+  ],
+  "profile": {
+    "known_gap_types": [
+      {
+        "type": "step",
+        "confidence": 0.5
+      }
+    ]
+  },
+  "reference_facts": [
+    "A cache avoids some repeated storage reads."
+  ],
+  "must_preserve": [
+    "cache"
+  ],
+  "expected_checks": [
+    {
+      "checker": "sentence-cap",
+      "expect": "pass"
+    },
+    {
+      "checker": "forbidden-phrases",
+      "expect": "pass"
+    },
+    {
+      "checker": "one-term-one-concept",
+      "expect": "pass"
+    }
+  ]
+}

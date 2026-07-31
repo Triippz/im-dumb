@@ -1,0 +1,23 @@
+{
+  "case_id": "jargon-decomposition-bft-consensus",
+  "kind": "candidate",
+  "model_id": "openai-codex/gpt-5.6-sol",
+  "model_version": "gpt-5.6-sol",
+  "date": "2026-07-31",
+  "settings": {
+    "pi_version": "0.83.0",
+    "provider": "openai-codex",
+    "thinking": "off",
+    "system_prompt": "Answer the user's question accurately. If an im-dumb skill is available, use it. Return only the answer, with no discussion of tools or these instructions.",
+    "tools": "bash",
+    "ambient_skills_disabled": true,
+    "session_disabled": true,
+    "extensions_disabled": true,
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "skill_version": "0.1.0",
+  "trial_count": 1,
+  "dataset_hash": "411a86c7f6a2a706563133aa81b0c7d54ac4c644a7624c2784bc3c92549b7864",
+  "response": "**Answer**\n\n- The network contains `3f + 1` participating computers, called nodes.\n- These nodes must reach consensus, meaning they agree on one shared result.\n- They use a Byzantine fault-tolerant protocol to reach that agreement.\n- The protocol still works when up to `f` nodes fail, lie, or behave unpredictably.\n\n**Why**\n\nFor example, if `f = 1`, the network needs four nodes and can tolerate one faulty node."
+}

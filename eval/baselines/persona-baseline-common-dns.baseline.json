@@ -1,0 +1,23 @@
+{
+  "case_id": "persona-baseline-common-dns",
+  "kind": "baseline",
+  "model_id": "openai-codex/gpt-5.6-sol",
+  "model_version": "gpt-5.6-sol",
+  "date": "2026-07-31",
+  "settings": {
+    "pi_version": "0.83.0",
+    "provider": "openai-codex",
+    "thinking": "off",
+    "system_prompt": "Answer the user's question accurately. If an im-dumb skill is available, use it. Return only the answer, with no discussion of tools or these instructions.",
+    "tools": "bash",
+    "ambient_skills_disabled": true,
+    "session_disabled": true,
+    "extensions_disabled": true,
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "skill_version": "0.1.0",
+  "trial_count": 1,
+  "dataset_hash": "411a86c7f6a2a706563133aa81b0c7d54ac4c644a7624c2784bc3c92549b7864",
+  "response": "DNS works like the internet’s phone book:\n\n1. You enter **example.com** in a browser.\n2. Your computer checks whether it already knows the site’s IP address from a cache.\n3. If not, it asks a **DNS resolver**, usually operated by your internet provider or a service such as Google or Cloudflare.\n4. The resolver finds the answer by asking:\n   - A **root DNS server** where to find `.com`\n   - A **`.com` server** where to find DNS records for `example.com`\n   - The site’s **authoritative DNS server** for its IP address\n5. The resolver returns an address such as `93.184.216.34` and caches it temporarily.\n6. Your browser connects to that IP address and requests the website.\n\nThe DNS record containing an IPv4 address is called an **A record**; one containing an IPv6 address is an **AAAA record**."
+}

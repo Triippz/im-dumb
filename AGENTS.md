@@ -14,21 +14,22 @@ Cross-harness agent skill (Claude Code, Cursor, OpenAI Codex, Pi) plus an npx in
 
 The product-requirements §9.10 pre-code checklist is satisfied **per-milestone**: each item lands before the behavior it gates ships, not all-before-any-code. Gate-specific eval scaffolds and dataset categories 4–5 (§9.4) land at M2 start; the human comprehension-quiz protocol lands by M3. The "Layer 2 offline eval smoke suite" required PR check is aspirational until M3 delivers the runner — deferral deliberate, not drift.
 
-## Repo layout (target)
+## Repo layout (actual)
 
 ```
 docs/plans/         # public milestone requirements and implementation plans
-eval/               # golden dataset, judge rubric, baselines
+eval/               # golden dataset, judge rubric, captured baselines/candidates + M1 reports
 src/                # profile module, deterministic checkers, CLIs
 test/               # node:test suites + fixtures
-skill/im-dumb/      # the skill package: SKILL.md + scripts/ + references/
-installer/          # npx im-dumb installer (TypeScript)
+skill/im-dumb/      # the skill package: SKILL.md + scripts/profile.js + references/
 AGENTS.md           # this file
 CLAUDE.md           # @AGENTS.md import — do not add content there
 README.md           # human-facing overview
 ```
 
-## Installer contract (v1)
+`installer/` does not exist yet — it is planned for **M4** (multi-harness packaging + `npx` installer); see Milestones below.
+
+## Installer contract (v1 - planned for M4)
 
 - Runnable via `npx im-dumb`, zero global install.
 - Auto-detects harnesses: `~/.claude/`/`.claude/` (Claude Code), `~/.cursor/`/`.cursor/` (Cursor), `~/.pi/agent/`/`~/.agents/`/`.pi/`/`.agents/` (Pi), `.codex/` (flagged manual/local-shell only).

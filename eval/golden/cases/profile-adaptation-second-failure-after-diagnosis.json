@@ -1,0 +1,61 @@
+{
+  "id": "profile-adaptation-second-failure-after-diagnosis",
+  "category": "profile-adaptation",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Explain how a queue handles work. If I later say `I still don't understand`, reply as exact JSON with only `candidates` and `question`.",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "A producer puts jobs into a queue. Jobs wait there in order until a worker picks them up, and completion means the work finished."
+    },
+    {
+      "role": "user",
+      "content": "confused",
+      "expected_action": "diagnose",
+      "expected_question_count": 1,
+      "expected_format": "default",
+      "expected_candidate_count": 3
+    },
+    {
+      "role": "assistant",
+      "content": "**Likely confusion points**\n- **Queue**: The holding area may be unclear.\n- **Worker**: Who takes a job may be unclear.\n- **Order**: Why jobs wait may be unclear.\nWhich part should I explain differently?"
+    },
+    {
+      "role": "user",
+      "content": "I still don't understand",
+      "expected_action": "rediagnose",
+      "expected_question_count": 1,
+      "expected_format": "machine",
+      "expected_candidate_count": 3
+    },
+    {
+      "role": "assistant",
+      "content": "{\"candidates\":[{\"label\":\"Producer\",\"description\":\"Adds jobs.\"},{\"label\":\"Waiting\",\"description\":\"Jobs wait.\"},{\"label\":\"Completion\",\"description\":\"Work finishes.\"}],\"question\":\"Which stage needs an example?\"}"
+    }
+  ],
+  "profile": {},
+  "reference_facts": [
+    "A producer adds jobs to a queue.",
+    "Jobs wait in order until a worker picks them up.",
+    "Completion means the work finished."
+  ],
+  "must_preserve": [
+    "queue",
+    "worker"
+  ],
+  "expected_checks": [
+    {
+      "checker": "forbidden-phrases",
+      "expect": "pass"
+    },
+    {
+      "checker": "sentence-cap",
+      "expect": "pass"
+    }
+  ]
+}
