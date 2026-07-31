@@ -1,6 +1,6 @@
 # m1 implementation plan — profile + language rules
 
-Revision 3 — post round-3 interrogation (reports: `docs/plans/reviews/round3-fable.md`, `round3-sol.md`).
+Revision 3 — post round-3 interrogation (private review notes, not tracked in git).
 
 ## 1. Overview
 
