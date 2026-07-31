@@ -6,3 +6,7 @@ dist/
 .conductor/runs/
 .conductor/artifacts/
 .conductor/*.log
+
+# Private planning artifacts kept locally, not published.
+prd.md
+docs/plans/reviews/

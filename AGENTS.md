@@ -1,8 +1,8 @@
 # im-dumb — agent instructions
 
-Cross-harness agent skill (Claude Code, Cursor, OpenAI Codex, Pi) plus an npx installer. The skill shapes LLM responses at generation time to match how an individual user understands language — a personalized communication profile (vocabulary, jargon policy, sentence caps, ADHD mode) plus a comprehension gate that diagnoses confusion with named candidates instead of vague re-asks. Full requirements live in `prd.md` — read it before non-trivial changes. This file is the operating contract for agents working in this repo.
+Cross-harness agent skill (Claude Code, Cursor, OpenAI Codex, Pi) plus an npx installer. The skill shapes LLM responses at generation time to match how an individual user understands language — a personalized communication profile (vocabulary, jargon policy, sentence caps, ADHD mode) plus a comprehension gate that diagnoses confusion with named candidates instead of vague re-asks. This file is the public operating contract; milestone requirements live in `docs/plans/`. A private, gitignored `prd.md` may also be available locally.
 
-## Non-negotiable invariants (from prd.md)
+## Non-negotiable invariants
 
 1. **Name sync**: the skill directory name and the `name:` field in its `SKILL.md` frontmatter MUST be identical (`im-dumb`, lowercase-hyphenated). Cursor enforces this strictly. If you rename one, rename both.
 2. **No network at invocation time**: bundled `scripts/` must never make outbound network calls when the skill runs. Claude API / OpenAI hosted modes disallow network access.
@@ -10,14 +10,17 @@ Cross-harness agent skill (Claude Code, Cursor, OpenAI Codex, Pi) plus an npx in
 4. **Description limit**: `SKILL.md` frontmatter `description` stays under 1024 characters and states both *what* the skill does and *when* to trigger it.
 5. **Strict SemVer**: package version and skill `metadata.version` follow MAJOR (breaking schema/contract/harness removal), MINOR (new backward-compatible capability), PATCH (fixes/tuning).
 6. **Comprehension-gate hard constraints**: at most one clarifying question per turn; never a bare, unscoped "I don't understand" prompt back to the user; second consecutive failure always triggers full re-diagnosis (overrides confidence-based skips).
-7. **Evals before implementation**: eval design (golden dataset, deterministic checkers, judge rubric) is defined before the behavior it gates ships (prd.md §9). Readability scores (Flesch-Kincaid) are supporting signals only, never standalone success measures. No ELO/ranking aggregation in judge scoring.
+7. **Evals before implementation**: eval design (golden dataset, deterministic checkers, judge rubric) is defined before the behavior it gates ships (product-requirements §9). Readability scores (Flesch-Kincaid) are supporting signals only, never standalone success measures. No ELO/ranking aggregation in judge scoring.
 
-The prd.md §9.10 pre-code checklist is satisfied **per-milestone**: each item lands before the behavior it gates ships, not all-before-any-code. Gate-specific eval scaffolds and dataset categories 4–5 (§9.4) land at M2 start; the human comprehension-quiz protocol lands by M3. The "Layer 2 offline eval smoke suite" required PR check is aspirational until M3 delivers the runner — deferral deliberate, not drift.
+The product-requirements §9.10 pre-code checklist is satisfied **per-milestone**: each item lands before the behavior it gates ships, not all-before-any-code. Gate-specific eval scaffolds and dataset categories 4–5 (§9.4) land at M2 start; the human comprehension-quiz protocol lands by M3. The "Layer 2 offline eval smoke suite" required PR check is aspirational until M3 delivers the runner — deferral deliberate, not drift.
 
 ## Repo layout (target)
 
 ```
-prd.md              # source of truth for requirements
+docs/plans/         # public milestone requirements and implementation plans
+eval/               # golden dataset, judge rubric, baselines
+src/                # profile module, deterministic checkers, CLIs
+test/               # node:test suites + fixtures
 skill/im-dumb/      # the skill package: SKILL.md + scripts/ + references/
 installer/          # npx im-dumb installer (TypeScript)
 AGENTS.md           # this file
@@ -48,4 +51,4 @@ M1 profile + language rules → M2 comprehension gate → M3 eval infrastructure
 
 ## Doc sync rule
 
-`CLAUDE.md` contains only `@AGENTS.md`. All agent-facing instruction changes go here, never there. Keep `README.md` consistent with this file and `prd.md` when contracts change.
+`CLAUDE.md` contains only `@AGENTS.md`. All agent-facing instruction changes go here, never there. Keep `README.md`, this file, and the public milestone plans consistent when contracts change; update the private `prd.md` too when it is available locally.
