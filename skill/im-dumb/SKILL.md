@@ -39,10 +39,15 @@ Apply these to every response once a profile is loaded:
   `technical-ok` permits standard technical words with plain context;
   `expert` permits established expert shorthand. Prefer common words when
   they are equally precise.
-- Follow `jargon_policy`: `avoid` replaces jargon with plain alternatives;
-  `define-on-first-use` defines each needed term once, in line; `allow`
-  permits jargon without automatic definitions.
-- One term per concept. Do not switch synonyms for the same idea.
+- Follow `jargon_policy`: with `avoid`, put a user-supplied technical term
+  once in inline code as the source label, give one plain alternative, then use
+  only that plain alternative. The inline source label is not prose terminology
+  switching. `define-on-first-use` keeps the technical term and defines it
+  once, in line. `allow` permits jargon without automatic definitions.
+- One term per concept. Do not switch synonyms for the same idea after choosing
+  the term required by the jargon policy.
+- Preserve user-supplied technical terms under the rule above. Never simplify
+  away quantities, conditions, warnings, or safety-critical facts.
 - Use active voice.
 - Keep prose sentences at or under `sentence_length_cap` words (default 20).
 - Keep each paragraph within `paragraph_topic_limit` topics (default 1: one

@@ -187,6 +187,21 @@ test('language rules encode FR4 and apply configurable profile fields', () => {
   assertOrder(language, ['`avoid`', '`define-on-first-use`', '`allow`'], 'jargon choices');
 });
 
+test('jargon avoidance preserves a user term once as an inline source label, then uses one plain alternative', () => {
+  const language = section(body, 'Language rules');
+  assert.match(
+    language,
+    /with `avoid`[\s\S]{0,100}user-supplied technical term[\s\S]{0,80}once in inline code as the source label/i,
+  );
+  assert.match(language, /give one plain alternative[\s\S]{0,80}then\s+use\s+only that[\s\S]{0,40}plain alternative/i);
+  assert.match(language, /inline source label is not prose terminology[\s\S]{0,30}switching/i);
+  assert.match(language, /`define-on-first-use` keeps the technical term and defines it[\s\S]{0,30}once/i);
+  assert.match(language, /`allow` permits jargon without automatic definitions/i);
+  assert.match(language, /One term per concept[\s\S]{0,120}jargon policy/i);
+  assert.match(language, /Preserve user-supplied technical terms under the rule above/i);
+  assert.match(language, /Never simplify[\s\S]{0,30}away quantities, conditions, warnings, or safety-critical facts/i);
+});
+
 test('ADHD mode restructures with the D10 simple-answer exemption', () => {
   const adhd = section(body, 'ADHD mode');
   assert.match(adhd, /do not merely shorten/i);

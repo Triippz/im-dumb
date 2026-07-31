@@ -177,6 +177,13 @@ test('checkForbiddenPhrases: profile.forbidden_phrases are checked in addition t
   assert.match(violations[0]!.message, /synergy/i);
 });
 
+test('checkForbiddenPhrases: inline and fenced code do not hide a forbidden phrase', () => {
+  const profile = withProfile({ forbidden_phrases: ['synergy'] });
+  const violations = checkForbiddenPhrases('Source label: `synergy`.\n```text\nsynergy\n```', profile);
+  assert.equal(violations.length, 1);
+  assert.match(violations[0]!.message, /synergy/i);
+});
+
 test('checkForbiddenPhrases: reports one violation per distinct phrase, not per occurrence', () => {
   const profile = withProfile({});
   const phrase = FILLER_PHRASES[0]!;
@@ -204,6 +211,15 @@ test('checkOneTermOneConcept: flags mixing two synonyms from the same curated co
   assert.equal(violations[0]!.severity, 'error');
   assert.match(violations[0]!.message, new RegExp(termA!, 'i'));
   assert.match(violations[0]!.message, new RegExp(termB!, 'i'));
+});
+
+test('checkOneTermOneConcept: ignores an inline or fenced source label when prose uses one plain term', () => {
+  const [sourceTerm, plainTerm] = CONCEPT_SYNONYM_SETS[0]!;
+  assert.deepEqual(checkOneTermOneConcept(`Source term: \`${sourceTerm}\`. Continue with ${plainTerm} in prose.`), []);
+  assert.deepEqual(
+    checkOneTermOneConcept(`Source term:\n\`\`\`text\n${sourceTerm}\n\`\`\`\nContinue with ${plainTerm} in prose.`),
+    [],
+  );
 });
 
 test('checkOneTermOneConcept: flags each concept set independently', () => {

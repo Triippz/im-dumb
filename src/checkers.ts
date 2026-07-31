@@ -196,8 +196,9 @@ export function checkForbiddenPhrases(text: string, profile: Profile): Violation
 
 export function checkOneTermOneConcept(text: string): Violation[] {
   const violations: Violation[] = [];
+  const prose = extractProse(text);
   for (const set of CONCEPT_SYNONYM_SETS) {
-    const used = set.filter((term) => wordBoundaryRegex(term).test(text));
+    const used = set.filter((term) => wordBoundaryRegex(term).test(prose));
     if (used.length > 1) {
       violations.push({
         checker: 'one-term-one-concept',
