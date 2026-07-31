@@ -1,0 +1,18 @@
+{
+  "id": "adversarial-jargon-leakage-idempotent-endpoints",
+  "category": "adversarial",
+  "prompt": "In plain terms with no unexplained jargon, tell me why our REST endpoints being 'idempotent' matters for retry safety.",
+  "profile": {
+    "vocabulary_level": "common",
+    "jargon_policy": "avoid"
+  },
+  "reference_facts": [
+    "An idempotent endpoint gives the same result no matter how many times the same request is repeated.",
+    "This matters because a client can safely retry a request after a timeout without causing duplicate effects."
+  ],
+  "must_preserve": ["idempotent"],
+  "expected_checks": [
+    { "checker": "forbidden-phrases", "expect": "pass" },
+    { "checker": "one-term-one-concept", "expect": "pass" }
+  ]
+}

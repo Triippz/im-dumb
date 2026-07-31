@@ -1,0 +1,21 @@
+{
+  "id": "persona-baseline-expert-gc",
+  "category": "persona-baseline",
+  "prompt": "Explain how a generational garbage collector decides when to promote an object from the young generation to the old generation.",
+  "profile": {
+    "vocabulary_level": "expert",
+    "jargon_policy": "allow",
+    "output_shape": "answer-first",
+    "adhd_mode": false
+  },
+  "reference_facts": [
+    "Generational collectors segregate objects by age, since most objects die young.",
+    "An object is promoted to the old generation after surviving a set number of minor collections.",
+    "Promotion reduces the cost of future minor collections by shrinking the young generation's live set."
+  ],
+  "must_preserve": ["garbage collector", "generation", "promotion"],
+  "expected_checks": [
+    { "checker": "sentence-cap", "expect": "pass" },
+    { "checker": "one-term-one-concept", "expect": "pass" }
+  ]
+}

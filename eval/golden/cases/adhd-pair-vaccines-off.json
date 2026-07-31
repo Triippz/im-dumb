@@ -1,0 +1,21 @@
+{
+  "id": "adhd-pair-vaccines-off",
+  "category": "adhd-pair",
+  "prompt": "Explain how vaccines train the immune system.",
+  "profile": {
+    "vocabulary_level": "common",
+    "output_shape": "answer-first",
+    "adhd_mode": false
+  },
+  "reference_facts": [
+    "A vaccine introduces a harmless piece or weakened form of a pathogen to the immune system.",
+    "The immune system produces antibodies and memory cells in response.",
+    "If the real pathogen appears later, memory cells let the body respond faster and more effectively."
+  ],
+  "must_preserve": ["antibodies", "immune system", "pathogen"],
+  "expected_checks": [
+    { "checker": "sentence-cap", "expect": "pass" },
+    { "checker": "output-shape", "expect": "pass" }
+  ],
+  "pair_id": "adhd-pair-vaccines"
+}
