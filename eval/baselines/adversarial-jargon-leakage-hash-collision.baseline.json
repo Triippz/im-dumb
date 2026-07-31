@@ -1,0 +1,23 @@
+{
+  "case_id": "adversarial-jargon-leakage-hash-collision",
+  "kind": "baseline",
+  "model_id": "openai-codex/gpt-5.6-sol",
+  "model_version": "gpt-5.6-sol",
+  "date": "2026-07-31",
+  "settings": {
+    "pi_version": "0.83.0",
+    "provider": "openai-codex",
+    "thinking": "off",
+    "system_prompt": "Answer the user's question accurately. If an im-dumb skill is available, use it. Return only the answer, with no discussion of tools or these instructions.",
+    "tools": "bash",
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "prompt_templates_disabled": true,
+    "session_disabled": true,
+    "context_files_disabled": true
+  },
+  "skill_version": "0.1.0",
+  "trial_count": 1,
+  "dataset_hash": "411a86c7f6a2a706563133aa81b0c7d54ac4c644a7624c2784bc3c92549b7864",
+  "response": "A cryptographic hash turns a file of any size into a fixed-length digital fingerprint.\n\nBecause there are infinitely many possible files but only a limited number of fingerprints, some different files must share the same hash. This is called a **collision**. A well-designed hash makes collisions extraordinarily hard to find, but it cannot make them mathematically impossible.\n\nCollisions are a problem because hashes are often used to check identity or integrity. If an attacker can create a harmful file with the same hash as a trusted file, a system might:\n\n- accept the harmful file as genuine,\n- fail to detect that data was altered,\n- validate a forged digital signature or certificate,\n- mistake one stored object for another.\n\nThat is why old hash methods with practical collision attacks, such as MD5 and SHA-1, should not be used where security matters. Modern methods such as SHA-256 are designed to make finding a collision far beyond practical computing power.\n"
+}

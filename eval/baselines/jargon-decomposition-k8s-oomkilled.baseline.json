@@ -1,0 +1,23 @@
+{
+  "case_id": "jargon-decomposition-k8s-oomkilled",
+  "kind": "baseline",
+  "model_id": "openai-codex/gpt-5.6-sol",
+  "model_version": "gpt-5.6-sol",
+  "date": "2026-07-31",
+  "settings": {
+    "pi_version": "0.83.0",
+    "provider": "openai-codex",
+    "thinking": "off",
+    "system_prompt": "Answer the user's question accurately. If an im-dumb skill is available, use it. Return only the answer, with no discussion of tools or these instructions.",
+    "tools": "bash",
+    "ambient_skills_disabled": true,
+    "session_disabled": true,
+    "extensions_disabled": true,
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "skill_version": "0.1.0",
+  "trial_count": 1,
+  "dataset_hash": "411a86c7f6a2a706563133aa81b0c7d54ac4c644a7624c2784bc3c92549b7864",
+  "response": "- A container in the pod used more memory than its configured **memory limit**.\n- Linux then terminated its process. Kubernetes reports this result as **OOMKilled**.\n- The **kubelet** is the Kubernetes agent running on each node.\n- Its **eviction manager** can remove pods when node resources run low.\n\nCorrection: Exceeding a container’s memory limit causes an OOM kill. It does not directly trigger the kubelet’s eviction manager."
+}

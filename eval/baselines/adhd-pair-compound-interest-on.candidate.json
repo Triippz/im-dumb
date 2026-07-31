@@ -1,0 +1,23 @@
+{
+  "case_id": "adhd-pair-compound-interest-on",
+  "kind": "candidate",
+  "model_id": "openai-codex/gpt-5.6-sol",
+  "model_version": "gpt-5.6-sol",
+  "date": "2026-07-31",
+  "settings": {
+    "pi_version": "0.83.0",
+    "provider": "openai-codex",
+    "thinking": "off",
+    "system_prompt": "Answer the user's question accurately. If an im-dumb skill is available, use it. Return only the answer, with no discussion of tools or these instructions.",
+    "tools": "bash",
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "prompt_templates_disabled": true,
+    "session_disabled": true,
+    "context_files_disabled": true
+  },
+  "skill_version": "0.1.0",
+  "trial_count": 1,
+  "dataset_hash": "411a86c7f6a2a706563133aa81b0c7d54ac4c644a7624c2784bc3c92549b7864",
+  "response": "**Answer**\n\nCompound interest means earning interest on your savings and on earlier interest. This makes growth speed up over time.\n\n**Why**\n\nEach interest payment increases your balance. The next payment uses that larger balance, creating a snowball effect.\n\n**Example**\n\nSave $1,000 at 5% yearly interest:\n\n- After 1 year: $1,050\n- After 10 years: about $1,629\n- After 20 years: about $2,653\n\nAdding regular deposits makes the effect much stronger."
+}

@@ -16,14 +16,27 @@ with `im-dumb` loaded. A useful naming convention is
    Use the same model, model version, and settings for both members of each
    pair.
 2. Run the golden case prompt without the skill and record the baseline.
-3. Manually copy `skill/im-dumb/` to `~/.claude/skills/im-dumb/` (or the
-   equivalent local skill directory for the recorded harness).
-4. Write the case's `profile` object to a temporary JSON file. Start the
-   candidate session with `IM_DUMB_PROFILE=/absolute/path/to/temp-profile.json`
-   so the candidate uses that case profile rather than the user's real global
-   profile.
-5. Run the identical prompt with the skill loaded and record the candidate.
-   Remove the temporary profile after capture.
+3. Make the local skill available to the recorded harness and explicitly load
+   its full instructions. Do not rely on description-based auto-discovery for a
+   measured candidate. With Pi 0.83.0, the M1 capture used both
+   `--skill skill/im-dumb` and
+   `--append-system-prompt skill/im-dumb/SKILL.md`, followed by this exact
+   second skill-context prompt:
+
+   ```text
+   The im-dumb skill is explicitly invoked for this response. Resolve its scripts/profile.js path from the loaded skill directory. Follow it before answering.
+   ```
+
+   `--skill` alone did not activate reliably in every isolated session.
+4. Write the case's `profile` object, merged over the complete default profile,
+   to a unique temporary JSON file. Start the candidate session with
+   `IM_DUMB_PROFILE=/absolute/path/to/temp-profile.json` so it never reads or
+   changes the user's real global profile.
+5. Run the identical case prompt with the skill explicitly invoked and record
+   stdout as the candidate. Remove the temporary profile after capture. The
+   baseline and candidate keep the same base system prompt and model/generation
+   settings. The extra text above is skill context, not a changed base model
+   setting; `kind` and `skill_version` record that intentional difference.
 
 M1 records one trial per response (`trial_count: 1`). A single generation is
 noisy and is not M3 ground truth. Do not infer model-quality changes from a

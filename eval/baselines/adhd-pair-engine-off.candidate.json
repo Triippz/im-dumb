@@ -1,0 +1,23 @@
+{
+  "case_id": "adhd-pair-engine-off",
+  "kind": "candidate",
+  "model_id": "openai-codex/gpt-5.6-sol",
+  "model_version": "gpt-5.6-sol",
+  "date": "2026-07-31",
+  "settings": {
+    "pi_version": "0.83.0",
+    "provider": "openai-codex",
+    "thinking": "off",
+    "system_prompt": "Answer the user's question accurately. If an im-dumb skill is available, use it. Return only the answer, with no discussion of tools or these instructions.",
+    "tools": "bash",
+    "ambient_skills_disabled": true,
+    "session_disabled": true,
+    "extensions_disabled": true,
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "skill_version": "0.1.0",
+  "trial_count": 1,
+  "dataset_hash": "411a86c7f6a2a706563133aa81b0c7d54ac4c644a7624c2784bc3c92549b7864",
+  "response": "**Answer**\n\nPlain:\n\nA car engine burns fuel to create expanding hot gases. Those gases push engine parts that ultimately turn the wheels.\n\nTechnical:\n\nMost cars use an internal combustion engine, which burns fuel inside sealed cylinders.\n\n**Why**\n\nBurning fuel releases heat. The heated gases expand, creating pressure that pushes pistons downward.\n\n**Steps**\n\n1. The cylinder draws in fuel and air.\n2. A piston squeezes the mixture.\n3. A spark ignites it, forcing the piston downward.\n4. The crankshaft converts the piston’s movement into rotation.\n5. The transmission sends that rotation to the wheels.\n6. Exhaust gases leave, and the cycle repeats."
+}

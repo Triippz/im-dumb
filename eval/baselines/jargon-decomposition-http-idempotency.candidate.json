@@ -1,0 +1,23 @@
+{
+  "case_id": "jargon-decomposition-http-idempotency",
+  "kind": "candidate",
+  "model_id": "openai-codex/gpt-5.6-sol",
+  "model_version": "gpt-5.6-sol",
+  "date": "2026-07-31",
+  "settings": {
+    "pi_version": "0.83.0",
+    "provider": "openai-codex",
+    "thinking": "off",
+    "system_prompt": "Answer the user's question accurately. If an im-dumb skill is available, use it. Return only the answer, with no discussion of tools or these instructions.",
+    "tools": "bash",
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "prompt_templates_disabled": true,
+    "session_disabled": true,
+    "context_files_disabled": true
+  },
+  "skill_version": "0.1.0",
+  "trial_count": 1,
+  "dataset_hash": "411a86c7f6a2a706563133aa81b0c7d54ac4c644a7624c2784bc3c92549b7864",
+  "response": "**Answer**\n\n- A timeout means the client did not receive a response. The server may still have completed the request.\n- Idempotent means repeating the same request has the same intended server effect as sending it once.\n- `PUT` replaces or creates a resource at a known address. Repeating it should leave the same final state.\n- `DELETE` removes a resource. Repeating it should still leave that resource deleted.\n- Therefore, retrying identical `PUT` or `DELETE` requests is usually safe from duplicate changes.\n- `POST` is not defined as idempotent. Retrying it might create another item or repeat an action.\n\n**Why**\n\n“Safe” only covers the intended server effect. Responses, logs, billing, or other secondary effects may still differ.\n\nA `POST` retry can be safe when the application uses an idempotency key to prevent duplicate processing."
+}

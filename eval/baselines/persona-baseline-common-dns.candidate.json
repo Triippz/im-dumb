@@ -1,0 +1,23 @@
+{
+  "case_id": "persona-baseline-common-dns",
+  "kind": "candidate",
+  "model_id": "openai-codex/gpt-5.6-sol",
+  "model_version": "gpt-5.6-sol",
+  "date": "2026-07-31",
+  "settings": {
+    "pi_version": "0.83.0",
+    "provider": "openai-codex",
+    "thinking": "off",
+    "system_prompt": "Answer the user's question accurately. If an im-dumb skill is available, use it. Return only the answer, with no discussion of tools or these instructions.",
+    "tools": "bash",
+    "ambient_skills_disabled": true,
+    "session_disabled": true,
+    "extensions_disabled": true,
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "skill_version": "0.1.0",
+  "trial_count": 1,
+  "dataset_hash": "411a86c7f6a2a706563133aa81b0c7d54ac4c644a7624c2784bc3c92549b7864",
+  "response": "**Answer**\n\nDNS (Domain Name System) acts like the internet’s phone book. It changes `example.com` into an IP address, such as `93.184.216.34`.\n\n**Why**\n\nComputers connect using IP addresses, while people remember website names more easily.\n\n**Steps**\n\n1. Your browser checks its cache, a short-term store of earlier answers.\n2. If needed, it asks a DNS resolver, a service that finds addresses.\n3. The resolver follows DNS directories until it finds `example.com`’s IP address.\n4. Your browser connects to that IP address and requests the webpage.\n\n**Example**\n\n`example.com` → DNS lookup → `93.184.216.34` → website server"
+}

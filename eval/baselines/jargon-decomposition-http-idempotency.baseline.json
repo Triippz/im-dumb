@@ -1,0 +1,23 @@
+{
+  "case_id": "jargon-decomposition-http-idempotency",
+  "kind": "baseline",
+  "model_id": "openai-codex/gpt-5.6-sol",
+  "model_version": "gpt-5.6-sol",
+  "date": "2026-07-31",
+  "settings": {
+    "pi_version": "0.83.0",
+    "provider": "openai-codex",
+    "thinking": "off",
+    "system_prompt": "Answer the user's question accurately. If an im-dumb skill is available, use it. Return only the answer, with no discussion of tools or these instructions.",
+    "tools": "bash",
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "prompt_templates_disabled": true,
+    "session_disabled": true,
+    "context_files_disabled": true
+  },
+  "skill_version": "0.1.0",
+  "trial_count": 1,
+  "dataset_hash": "411a86c7f6a2a706563133aa81b0c7d54ac4c644a7624c2784bc3c92549b7864",
+  "response": "- **Idempotent** means repeating the same request has the same intended server-state effect as sending it once.\n- **PUT** is idempotent: retrying the same update should leave the resource in the same final state.\n- **DELETE** is idempotent: retrying should still leave the resource deleted, even if later responses differ, such as `404`.\n- Therefore, after a timeout leaves the result unknown, retrying PUT or DELETE is generally safe.\n- **POST** is usually not idempotent: retrying may create duplicate resources or repeat an action.\n- To retry POST safely, the API typically needs an **idempotency key** or another deduplication mechanism.\n\n“Safe” assumes the server implements these HTTP semantics correctly; retries can still repeat secondary effects such as logging or notifications.\n"
+}

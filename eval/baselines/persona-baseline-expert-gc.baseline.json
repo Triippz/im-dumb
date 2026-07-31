@@ -1,0 +1,23 @@
+{
+  "case_id": "persona-baseline-expert-gc",
+  "kind": "baseline",
+  "model_id": "openai-codex/gpt-5.6-sol",
+  "model_version": "gpt-5.6-sol",
+  "date": "2026-07-31",
+  "settings": {
+    "pi_version": "0.83.0",
+    "provider": "openai-codex",
+    "thinking": "off",
+    "system_prompt": "Answer the user's question accurately. If an im-dumb skill is available, use it. Return only the answer, with no discussion of tools or these instructions.",
+    "tools": "bash",
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "prompt_templates_disabled": true,
+    "session_disabled": true,
+    "context_files_disabled": true
+  },
+  "skill_version": "0.1.0",
+  "trial_count": 1,
+  "dataset_hash": "411a86c7f6a2a706563133aa81b0c7d54ac4c644a7624c2784bc3c92549b7864",
+  "response": "A generational garbage collector usually promotes an object after it survives several young-generation collections.\n\nEach surviving object has an **age**, often measured by how many collections it has survived. When its age reaches a **promotion threshold**, the collector moves it into the old generation.\n\nPromotion may happen earlier when:\n\n- The young generation lacks space for surviving objects.\n- The object is too large for the young generation.\n- The collector adjusts the threshold based on memory pressure.\n\nThe exact threshold depends on the runtime and may change while the program runs. Reachability comes first: unreachable objects are removed rather than promoted.\n"
+}
