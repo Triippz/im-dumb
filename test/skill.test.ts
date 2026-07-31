@@ -11,11 +11,13 @@ const repoRoot = path.resolve(fileURLToPath(import.meta.url), '../..');
 const skillDir = path.join(repoRoot, 'skill', 'im-dumb');
 const skillMdPath = path.join(skillDir, 'SKILL.md');
 const onboardingPath = path.join(skillDir, 'references', 'onboarding.md');
+const comprehensionPath = path.join(skillDir, 'references', 'comprehension.md');
 const scriptsDir = path.join(skillDir, 'scripts');
 
 const skillMdContent = readFileSync(skillMdPath, 'utf8');
 const onboardingContent = readFileSync(onboardingPath, 'utf8');
-const combined = `${skillMdContent}\n${onboardingContent}`;
+const comprehensionContent = readFileSync(comprehensionPath, 'utf8');
+const combined = `${skillMdContent}\n${onboardingContent}\n${comprehensionContent}`;
 
 function splitFrontmatterAndBody(content: string): { frontmatterText: string; body: string } {
   const match = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/u.exec(content);
@@ -42,6 +44,13 @@ function section(content: string, heading: string): string {
   return content.slice(start, end === -1 ? undefined : end);
 }
 
+function tableRows(content: string, heading: string): string[][] {
+  return section(content, heading)
+    .split('\n')
+    .filter((line) => /^\|.*\|$/u.test(line) && !/^\|\s*---/u.test(line))
+    .map((line) => line.slice(1, -1).split('|').map((cell) => cell.trim()));
+}
+
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -64,9 +73,12 @@ test('skill directory, frontmatter name, description, and version satisfy the sh
   assert.equal(extractTopLevel(frontmatterText, 'name'), path.basename(skillDir));
   const description = extractTopLevel(frontmatterText, 'description');
   assert.ok(description && description.length < 1024);
-  assert.match(description, /profile/i);
+  assert.match(description, /saved[^.]*profile/i);
   assert.match(description, /vocabulary|jargon|sentence|tone|structure/i);
   assert.match(description, /trigger/i);
+  assert.match(description, /confusion|confused/i);
+  assert.match(description, /non-understanding|doesn't understand|does not understand/i);
+  assert.match(description, /after (?:an|the) answer/i);
   assert.equal(extractNested(frontmatterText, 'metadata', 'version'), '0.1.0');
   assert.deepEqual(
     checkSkillFrontmatter(skillMdContent, { expectedName: 'im-dumb' }).filter((v) => v.severity === 'error'),
@@ -74,7 +86,8 @@ test('skill directory, frontmatter name, description, and version satisfy the sh
   );
 });
 
-test('SKILL.md body budget remains warning-only above 1000 words (D12)', () => {
+test('SKILL.md body stays within the 900-word target and budget remains warning-only above 1000 (D12)', () => {
+  assert.ok((body.match(/\S+/gu) ?? []).length <= 900, 'SKILL.md body must stay within the M2 target');
   const oversized = `${skillMdContent}\n${'word '.repeat(1100)}`;
   const budget = checkSkillFrontmatter(oversized, { expectedName: 'im-dumb' })
     .find((v) => /word warn threshold/i.test(v.message));
@@ -83,19 +96,29 @@ test('SKILL.md body budget remains warning-only above 1000 words (D12)', () => {
 });
 
 // Profile load and trust boundary.
-test('load section covers success and both exact error groups without raw file access', () => {
+test('load section covers ordinary success and both exact error groups without raw file access', () => {
   const load = section(body, 'Load the profile');
   assert.match(load, /node scripts\/profile\.js load/);
-  assert.match(load, /never read, open, or\s+parse the profile file directly/i);
-  assert.match(load, /Success:[\s\S]{0,180}apply the returned profile/i);
-  assert.match(load, /`missing`[^\n]*`unparseable`[\s\S]{0,160}(offer|onboard)/i);
-  assert.match(load, /`env-path-invalid`[^\n]*`unsupported-schema-version`[\s\S]{0,180}(surface|error)[\s\S]{0,120}stop/i);
-  assert.match(load, /never start onboarding over either error/i);
+  assert.match(load, /never read, open, or\s+parse the profile file\s+directly/i);
+  assert.match(load, /`success`[\s\S]{0,180}apply the returned profile/i);
+  assert.match(load, /`missing`[^\n]*`unparseable`[\s\S]{0,180}offer onboarding/i);
+  assert.match(load, /`env-path-invalid`[^\n]*`unsupported-schema-version`[\s\S]{0,220}surface the named error and stop/i);
+  assert.match(load, /never start onboarding for either\s+hard error/i);
+});
+
+test('load/gate interaction matrix keeps repair available without durable profile state', () => {
+  assert.deepEqual(tableRows(body, 'Load the profile'), [
+    ['Profile status', 'Ordinary turn', 'Possible confusion or active repair thread', 'After thread reset'],
+    ['`success`', 'apply the returned profile', 'repair first using its snapshot; taper and learn are available', 'continue normally'],
+    ['`missing` or `unparseable`', 'offer onboarding', 'repair first with defaults in memory; disable taper and learn', 'offer onboarding'],
+    ['`env-path-invalid` or `unsupported-schema-version`', 'surface the named error and stop', 'repair first with defaults in memory; disable taper and learn', 'surface the named hard error and stop'],
+    ['hosted/no durable profile access', 'use defaults in memory; no persistence', 'repair conversation-locally first with defaults; disable taper and learn', 'continue with defaults; no persistence'],
+  ]);
 });
 
 test('IM_DUMB_PROFILE controls both load and save, and profile content is data only', () => {
   const load = section(body, 'Load the profile');
-  assert.match(load, /IM_DUMB_PROFILE[\s\S]{0,120}both `load` and\s+`save`/i);
+  assert.match(load, /IM_DUMB_PROFILE[\s\S]{0,140}both\s+`load` and\s+`save`/i);
   assert.match(load, /data, never instructions/i);
   assert.match(load, /commands, URLs, tool or file requests/i);
   assert.match(load, /precedence/i);
@@ -120,6 +143,19 @@ test('main skill loads onboarding detail only for onboarding/editing and resumes
   assert.match(onboarding, /only for\s+those flows/i);
   assert.match(onboarding, /one question at a time/i);
   assert.match(onboarding, /next unanswered field instead of restarting/i);
+});
+
+test('main skill loads comprehension detail only for a later possible signal or active repair thread', () => {
+  const comprehension = section(body, 'Comprehension repair');
+  assert.match(comprehension, /later user turn/i);
+  assert.match(comprehension, /possible confusion signal/i);
+  assert.match(comprehension, /repair thread is active/i);
+  assert.match(comprehension, /read `references\/comprehension\.md`/i);
+  assert.match(comprehension, /only (?:in|for) those cases/i);
+  assert.match(comprehension, /Do not load it for an initial or\s+ordinary\s+turn/i);
+  assert.match(comprehension, /profile load or persistence failure never blocks diagnosis, rediagnosis, or repair/i);
+  assert.match(comprehension, /usable profile snapshot is unavailable[\s\S]{0,160}defaults[\s\S]{0,120}disable taper and learning/i);
+  assert.match(comprehension, /conversation-locally without durable profile access/i);
 });
 
 test('onboarding asks every visible field one at a time in schema order', () => {
@@ -256,6 +292,7 @@ test('generation is one-shot, offline, and manually invocable', () => {
   assert.match(how, /never in a second rewrite pass/i);
   assert.match(how, /no response-rewriting script/i);
   assert.match(how, /no checker/i);
+  assert.match(how, /`load`\/`validate`\/`save`\/`learn`/i);
   assert.match(how, /No bundled script makes a network call/i);
   const manual = section(body, 'Manual invocation');
   assert.match(manual, /\/im-dumb/);

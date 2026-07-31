@@ -86,7 +86,7 @@ export interface ConversationTransitionErrorResult {
 export type ConversationTransitionResult = ConversationTransitionOk | ConversationTransitionErrorResult;
 
 // §4.1 — diagnosis may be skipped only at confidence >=0.75.
-const TAPER_CONFIDENCE_THRESHOLD = 0.75;
+export const TAPER_CONFIDENCE_THRESHOLD = 0.75;
 
 const RECOGNIZED_GAP_TYPES = new Set<string>(GAP_TYPES);
 

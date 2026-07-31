@@ -6,6 +6,7 @@ import path from 'node:path';
 
 import {
   INITIAL_CONVERSATION_STATE,
+  TAPER_CONFIDENCE_THRESHOLD,
   transitionConversationState,
   type ConversationEvent,
   type ConversationState,
@@ -43,6 +44,10 @@ function gap(type: string, confidence: number): KnownGapSnapshot {
 }
 
 const RESET_SOURCES: ResetSource[] = ['new-task', 'topic-change', 'session-reset'];
+
+test('taper threshold is exported as the frozen prompt/runtime value', () => {
+  assert.equal(TAPER_CONFIDENCE_THRESHOLD, 0.75);
+});
 
 // ---------------------------------------------------------------------------
 // §5 row 1 — normal + first confusion, no clear >=0.75 type -> diagnose/diagnosed
