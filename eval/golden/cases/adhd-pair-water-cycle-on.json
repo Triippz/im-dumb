@@ -1,0 +1,21 @@
+{
+  "id": "adhd-pair-water-cycle-on",
+  "category": "adhd-pair",
+  "prompt": "Explain the water cycle.",
+  "profile": {
+    "vocabulary_level": "common",
+    "output_shape": "answer-first",
+    "adhd_mode": true
+  },
+  "reference_facts": [
+    "The sun's heat evaporates water from oceans, lakes, and rivers into vapor.",
+    "Water vapor rises, cools, and condenses into clouds.",
+    "Water falls back to earth as precipitation and flows back toward bodies of water, completing the cycle."
+  ],
+  "must_preserve": ["evaporation", "condensation", "precipitation"],
+  "expected_checks": [
+    { "checker": "sentence-cap", "expect": "pass" },
+    { "checker": "adhd-structure", "expect": "pass" }
+  ],
+  "pair_id": "adhd-pair-water-cycle"
+}

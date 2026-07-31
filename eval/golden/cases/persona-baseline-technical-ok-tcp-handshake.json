@@ -1,0 +1,21 @@
+{
+  "id": "persona-baseline-technical-ok-tcp-handshake",
+  "category": "persona-baseline",
+  "prompt": "Explain the TCP three-way handshake that establishes a connection between a client and a server.",
+  "profile": {
+    "vocabulary_level": "technical-ok",
+    "jargon_policy": "allow",
+    "output_shape": "answer-first",
+    "adhd_mode": false
+  },
+  "reference_facts": [
+    "The client sends a SYN packet to request a connection.",
+    "The server replies with a SYN-ACK packet acknowledging the request.",
+    "The client sends an ACK packet, completing the handshake before data transfer begins."
+  ],
+  "must_preserve": ["SYN", "ACK", "TCP"],
+  "expected_checks": [
+    { "checker": "sentence-cap", "expect": "pass" },
+    { "checker": "output-shape", "expect": "pass" }
+  ]
+}

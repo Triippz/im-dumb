@@ -1,0 +1,21 @@
+{
+  "id": "adhd-pair-engine-on",
+  "category": "adhd-pair",
+  "prompt": "Explain how a car engine converts fuel into motion.",
+  "profile": {
+    "vocabulary_level": "common",
+    "output_shape": "answer-first",
+    "adhd_mode": true
+  },
+  "reference_facts": [
+    "The engine burns a fuel-air mixture in cylinders to create small controlled explosions.",
+    "Each explosion pushes a piston, which turns the crankshaft.",
+    "The crankshaft's rotation is transmitted through the drivetrain to turn the wheels."
+  ],
+  "must_preserve": ["fuel-air mixture", "piston", "crankshaft"],
+  "expected_checks": [
+    { "checker": "sentence-cap", "expect": "pass" },
+    { "checker": "adhd-structure", "expect": "pass" }
+  ],
+  "pair_id": "adhd-pair-engine"
+}

@@ -1,0 +1,31 @@
+{
+  "cases": [
+    { "id": "adhd-pair-compound-interest-off", "path": "eval/golden/cases/adhd-pair-compound-interest-off.json", "sha256": "a8d318273c240519ece4bd92cd2a82e760760ebc4c54e29001dc70e4a5028544" },
+    { "id": "adhd-pair-compound-interest-on", "path": "eval/golden/cases/adhd-pair-compound-interest-on.json", "sha256": "bc556f9fc52c80164f01a11c38ade697f9e0a1fa4e3daa8ae2fcc1687f626312" },
+    { "id": "adhd-pair-engine-off", "path": "eval/golden/cases/adhd-pair-engine-off.json", "sha256": "8c3caeb413ab1866ffda96454fceb715cec9033e556c7c8cdad6ac7da88e82fb" },
+    { "id": "adhd-pair-engine-on", "path": "eval/golden/cases/adhd-pair-engine-on.json", "sha256": "836294ec18e40a4fb8d1d336eae08bb6feeefd0ab009278c04adbcab4b5390ee" },
+    { "id": "adhd-pair-firewall-off", "path": "eval/golden/cases/adhd-pair-firewall-off.json", "sha256": "433b48ce10ed1d9a0bf12d1d5832e0cf29794ac92b5f01a4ea54fc888b8ca7d8" },
+    { "id": "adhd-pair-firewall-on", "path": "eval/golden/cases/adhd-pair-firewall-on.json", "sha256": "c685199a24ee5e156a16ee92fe5bcbb46f6560bd9d6f2627018c6e15c57c9992" },
+    { "id": "adhd-pair-git-merge-conflict-off", "path": "eval/golden/cases/adhd-pair-git-merge-conflict-off.json", "sha256": "50ba198a1fda710ef76212a9ed907ae0dfa7d14567dd0f29713c163a6051fa36" },
+    { "id": "adhd-pair-git-merge-conflict-on", "path": "eval/golden/cases/adhd-pair-git-merge-conflict-on.json", "sha256": "72281564a68601c7e7919ce9bf40e07676e68128b7a9bd383b57196cfbf8963d" },
+    { "id": "adhd-pair-vaccines-off", "path": "eval/golden/cases/adhd-pair-vaccines-off.json", "sha256": "a6875db2c9650f6a3928ff7df04837e8c479532a096e9f26e639594e4dd4641e" },
+    { "id": "adhd-pair-vaccines-on", "path": "eval/golden/cases/adhd-pair-vaccines-on.json", "sha256": "fb2c35a43e165cabc41f1fe151c28bed3f3b151ef065e7f0a02a08fbe4396394" },
+    { "id": "adhd-pair-water-cycle-off", "path": "eval/golden/cases/adhd-pair-water-cycle-off.json", "sha256": "674a711b80b6db62e88598fff2ae744446455146e0235d5fe7e9206cc50b9512" },
+    { "id": "adhd-pair-water-cycle-on", "path": "eval/golden/cases/adhd-pair-water-cycle-on.json", "sha256": "c19d5a8a7025f86e28d6a9d1cfcaf2af37f8278d8226e01f3e562afc5b418686" },
+    { "id": "adversarial-jargon-leakage-eventual-consistency", "path": "eval/golden/cases/adversarial-jargon-leakage-eventual-consistency.json", "sha256": "c3c8afa436e1e3b7780b2bbbde45cb741eaa5ea52f737b80254651d1b97bb6d4" },
+    { "id": "adversarial-jargon-leakage-hash-collision", "path": "eval/golden/cases/adversarial-jargon-leakage-hash-collision.json", "sha256": "d9af3690a839783f91afda903bf9b5734b239411a3acd3cde66e53e96e6ed158" },
+    { "id": "adversarial-jargon-leakage-idempotent-endpoints", "path": "eval/golden/cases/adversarial-jargon-leakage-idempotent-endpoints.json", "sha256": "803ff7d3a066f1aa6b79bd1695c57bc3389764ef211a7be95079c87e52baf628" },
+    { "id": "adversarial-unsafe-oversimplification-acetaminophen-dosage", "path": "eval/golden/cases/adversarial-unsafe-oversimplification-acetaminophen-dosage.json", "sha256": "96c78febfd55ec02fcc212ef0d510135ed17d8640eeb538762a0de80ad079a4a" },
+    { "id": "adversarial-unsafe-oversimplification-bleach-ammonia", "path": "eval/golden/cases/adversarial-unsafe-oversimplification-bleach-ammonia.json", "sha256": "0a9af88c5a034cbd7d54b5099d2decb7e7520afa0005802b6744a9bf74b0049e" },
+    { "id": "adversarial-unsafe-oversimplification-ladder-power-lines", "path": "eval/golden/cases/adversarial-unsafe-oversimplification-ladder-power-lines.json", "sha256": "29482cbec26330e0ed2a11397e9d5b03fc2e2b49d0e03c50ab0b8721431cf5c9" },
+    { "id": "jargon-decomposition-bft-consensus", "path": "eval/golden/cases/jargon-decomposition-bft-consensus.json", "sha256": "7bbd73be06d7730bbdda0d8e398ca92f29026e5c917f636ef924729dab215584" },
+    { "id": "jargon-decomposition-http-idempotency", "path": "eval/golden/cases/jargon-decomposition-http-idempotency.json", "sha256": "9927add8acb634cff552fa54c694fba197406b7392c0ac6c9eacba23daeed606" },
+    { "id": "jargon-decomposition-k8s-oomkilled", "path": "eval/golden/cases/jargon-decomposition-k8s-oomkilled.json", "sha256": "4438e80f6ce9a7d6522b61580a78f47eb28db0ae9ba71d80d88f3fa6d7185ba5" },
+    { "id": "jargon-decomposition-mortgage-apr-apy", "path": "eval/golden/cases/jargon-decomposition-mortgage-apr-apy.json", "sha256": "c7cb95101a554ea588d9adcae9ff9f458bdf2ee17ba6bf0437b55471e0a87c1d" },
+    { "id": "jargon-decomposition-myocardial-infarction", "path": "eval/golden/cases/jargon-decomposition-myocardial-infarction.json", "sha256": "22b591410c351d996fde566a01123868176f51e4882798ca8d2018c6fbe939b6" },
+    { "id": "jargon-decomposition-oauth2-client-credentials", "path": "eval/golden/cases/jargon-decomposition-oauth2-client-credentials.json", "sha256": "680585008232a331ebb59f683b1a6816e83413189f9e1752f43d085972f45bcf" },
+    { "id": "persona-baseline-common-dns", "path": "eval/golden/cases/persona-baseline-common-dns.json", "sha256": "b67142858fa59a595e6603945ed8287983b0fd6e266dd51080996d4a988bda58" },
+    { "id": "persona-baseline-expert-gc", "path": "eval/golden/cases/persona-baseline-expert-gc.json", "sha256": "eace28d864f251a00c3be63a86893ed020d90105c4370d0bfcf10b782c7134b3" },
+    { "id": "persona-baseline-technical-ok-tcp-handshake", "path": "eval/golden/cases/persona-baseline-technical-ok-tcp-handshake.json", "sha256": "f9c11d5e826b924b583461d408d9362e1edb8f540436d1c6ddb3559c952672fc" }
+  ]
+}

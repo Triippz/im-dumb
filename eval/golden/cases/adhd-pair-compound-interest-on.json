@@ -1,0 +1,21 @@
+{
+  "id": "adhd-pair-compound-interest-on",
+  "category": "adhd-pair",
+  "prompt": "Explain how compound interest grows savings over time.",
+  "profile": {
+    "vocabulary_level": "common",
+    "output_shape": "answer-first",
+    "adhd_mode": true
+  },
+  "reference_facts": [
+    "Compound interest is calculated on both the original principal and the interest already earned.",
+    "The more often interest compounds (daily vs. yearly), the faster a balance grows.",
+    "Over long time periods, compounding causes growth to accelerate rather than stay linear."
+  ],
+  "must_preserve": ["principal", "compound interest"],
+  "expected_checks": [
+    { "checker": "sentence-cap", "expect": "pass" },
+    { "checker": "adhd-structure", "expect": "pass" }
+  ],
+  "pair_id": "adhd-pair-compound-interest"
+}

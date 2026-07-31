@@ -1,0 +1,21 @@
+{
+  "id": "adhd-pair-git-merge-conflict-on",
+  "category": "adhd-pair",
+  "prompt": "Explain how git merge conflicts happen and how to resolve them.",
+  "profile": {
+    "vocabulary_level": "common",
+    "output_shape": "answer-first",
+    "adhd_mode": true
+  },
+  "reference_facts": [
+    "A merge conflict happens when git can't automatically combine changes because both branches edited the same lines.",
+    "Git marks the conflicting section in the file with conflict markers for the user to resolve.",
+    "Resolving a conflict means editing the file to the desired final content, then staging and committing it."
+  ],
+  "must_preserve": ["merge conflict", "conflict markers"],
+  "expected_checks": [
+    { "checker": "sentence-cap", "expect": "pass" },
+    { "checker": "adhd-structure", "expect": "pass" }
+  ],
+  "pair_id": "adhd-pair-git-merge-conflict"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "jargon-decomposition-bft-consensus",
+  "category": "jargon-decomposition",
+  "prompt": "Decompose for a non-specialist reader, without losing any facts: 'The network reaches consensus via a Byzantine fault-tolerant protocol that tolerates up to f faulty nodes out of 3f+1.'",
+  "profile": {
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20
+  },
+  "reference_facts": [
+    "Byzantine fault tolerance means the system keeps working correctly even if some nodes send conflicting or malicious messages.",
+    "Consensus means all honest nodes agree on the same result.",
+    "The protocol tolerates up to f faulty nodes as long as the total node count is at least 3f+1."
+  ],
+  "must_preserve": ["Byzantine fault-tolerant", "consensus", "3f+1"],
+  "expected_checks": [
+    { "checker": "one-term-one-concept", "expect": "pass" },
+    { "checker": "forbidden-phrases", "expect": "pass" },
+    { "checker": "sentence-cap", "expect": "pass" }
+  ]
+}

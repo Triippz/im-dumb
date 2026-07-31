@@ -1,0 +1,21 @@
+{
+  "id": "adhd-pair-firewall-off",
+  "category": "adhd-pair",
+  "prompt": "Explain how a firewall filters network traffic.",
+  "profile": {
+    "vocabulary_level": "common",
+    "output_shape": "answer-first",
+    "adhd_mode": false
+  },
+  "reference_facts": [
+    "A firewall inspects incoming and outgoing network traffic against a set of rules.",
+    "Traffic that matches an allow rule passes through; traffic that matches a deny rule is blocked.",
+    "Firewalls can filter by attributes like IP address, port number, and protocol."
+  ],
+  "must_preserve": ["firewall", "rules", "port"],
+  "expected_checks": [
+    { "checker": "sentence-cap", "expect": "pass" },
+    { "checker": "output-shape", "expect": "pass" }
+  ],
+  "pair_id": "adhd-pair-firewall"
+}

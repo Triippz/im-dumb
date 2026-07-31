@@ -1,0 +1,19 @@
+{
+  "id": "adversarial-jargon-leakage-eventual-consistency",
+  "category": "adversarial",
+  "prompt": "In plain terms, explain why a distributed database might show a stale value right after a write, and why that's called 'eventual consistency.'",
+  "profile": {
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use"
+  },
+  "reference_facts": [
+    "In an eventually consistent system, a write to one node takes time to propagate to all other nodes.",
+    "During that propagation window, a read from a different node can return the old, stale value.",
+    "The system is called 'eventually consistent' because all nodes converge to the same value once propagation finishes."
+  ],
+  "must_preserve": ["eventual consistency", "stale"],
+  "expected_checks": [
+    { "checker": "forbidden-phrases", "expect": "pass" },
+    { "checker": "one-term-one-concept", "expect": "pass" }
+  ]
+}

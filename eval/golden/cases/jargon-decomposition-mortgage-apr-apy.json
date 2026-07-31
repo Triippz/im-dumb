@@ -1,0 +1,22 @@
+{
+  "id": "jargon-decomposition-mortgage-apr-apy",
+  "category": "jargon-decomposition",
+  "prompt": "Decompose for someone shopping for a mortgage, without losing any facts: 'This loan's APR includes origination fees, while the APY on the linked savings account compounds monthly.'",
+  "profile": {
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20
+  },
+  "reference_facts": [
+    "APR (annual percentage rate) is the yearly cost of a loan including certain fees, not just interest.",
+    "Origination fees are charges the lender adds for processing the loan.",
+    "APY (annual percentage yield) reflects how much a savings balance grows in a year including compounding.",
+    "Monthly compounding means interest is calculated and added to the balance every month."
+  ],
+  "must_preserve": ["APR", "APY", "origination fee", "compounding"],
+  "expected_checks": [
+    { "checker": "one-term-one-concept", "expect": "pass" },
+    { "checker": "forbidden-phrases", "expect": "pass" },
+    { "checker": "sentence-cap", "expect": "pass" }
+  ]
+}

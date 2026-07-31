@@ -1,0 +1,21 @@
+{
+  "id": "jargon-decomposition-http-idempotency",
+  "category": "jargon-decomposition",
+  "prompt": "Decompose for a new engineer, keeping all facts: 'PUT and DELETE are idempotent, so retrying them after a timeout is safe, but POST is not.'",
+  "profile": {
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20
+  },
+  "reference_facts": [
+    "An idempotent request produces the same result no matter how many times it is repeated.",
+    "PUT and DELETE are defined as idempotent HTTP methods.",
+    "POST is not idempotent, so retrying it after a timeout can create duplicate records."
+  ],
+  "must_preserve": ["idempotent", "PUT", "DELETE", "POST"],
+  "expected_checks": [
+    { "checker": "one-term-one-concept", "expect": "pass" },
+    { "checker": "forbidden-phrases", "expect": "pass" },
+    { "checker": "sentence-cap", "expect": "pass" }
+  ]
+}

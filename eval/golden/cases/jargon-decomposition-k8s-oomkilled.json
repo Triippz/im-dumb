@@ -1,0 +1,21 @@
+{
+  "id": "jargon-decomposition-k8s-oomkilled",
+  "category": "jargon-decomposition",
+  "prompt": "Decompose for a junior engineer, keeping every fact: 'The pod was OOMKilled after exceeding its memory limit, triggering the kubelet's eviction manager.'",
+  "profile": {
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20
+  },
+  "reference_facts": [
+    "OOMKilled means the Linux out-of-memory killer terminated the process for using too much memory.",
+    "The pod exceeded the memory limit configured for its container.",
+    "The kubelet is the Kubernetes node agent, and its eviction manager can remove pods to protect node stability."
+  ],
+  "must_preserve": ["OOMKilled", "memory limit", "kubelet", "eviction"],
+  "expected_checks": [
+    { "checker": "one-term-one-concept", "expect": "pass" },
+    { "checker": "forbidden-phrases", "expect": "pass" },
+    { "checker": "sentence-cap", "expect": "pass" }
+  ]
+}

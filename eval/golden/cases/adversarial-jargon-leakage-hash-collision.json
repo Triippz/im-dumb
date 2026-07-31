@@ -1,0 +1,18 @@
+{
+  "id": "adversarial-jargon-leakage-hash-collision",
+  "category": "adversarial",
+  "prompt": "Explain, without unexplained jargon, why two different files can end up with the same cryptographic hash and why that's a problem.",
+  "profile": {
+    "vocabulary_level": "common",
+    "jargon_policy": "avoid"
+  },
+  "reference_facts": [
+    "A hash collision happens when two different pieces of data produce the identical hash value.",
+    "Collisions are a problem because systems that rely on hashes for uniqueness, like detecting duplicate or tampered files, can be fooled."
+  ],
+  "must_preserve": ["hash collision"],
+  "expected_checks": [
+    { "checker": "forbidden-phrases", "expect": "pass" },
+    { "checker": "one-term-one-concept", "expect": "pass" }
+  ]
+}

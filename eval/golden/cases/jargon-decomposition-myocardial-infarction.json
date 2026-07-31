@@ -1,0 +1,21 @@
+{
+  "id": "jargon-decomposition-myocardial-infarction",
+  "category": "jargon-decomposition",
+  "prompt": "Decompose for a patient's family member, without losing any facts: 'The patient suffered a myocardial infarction caused by an occluded coronary artery, and was treated with a percutaneous coronary intervention.'",
+  "profile": {
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20
+  },
+  "reference_facts": [
+    "A myocardial infarction is a heart attack: heart muscle is damaged from lack of blood flow.",
+    "An occluded coronary artery means a blood vessel feeding the heart is blocked.",
+    "A percutaneous coronary intervention (PCI) is a procedure, often involving a stent, that reopens the blocked artery through a small incision rather than open surgery."
+  ],
+  "must_preserve": ["myocardial infarction", "coronary artery", "percutaneous coronary intervention"],
+  "expected_checks": [
+    { "checker": "one-term-one-concept", "expect": "pass" },
+    { "checker": "forbidden-phrases", "expect": "pass" },
+    { "checker": "sentence-cap", "expect": "pass" }
+  ]
+}
