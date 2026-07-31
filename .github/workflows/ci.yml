@@ -47,3 +47,17 @@ jobs:
       - run: npm run build
       - run: npm run typecheck
       - run: npm test
+      - run: npm run verify:golden
+      - run: npm run verify:dist-sync
+      - name: Layer 1 skill check from dependency-free sandbox
+        run: |
+          sandbox="$(mktemp -d)"
+          run_dir="$(mktemp -d)"
+          trap 'rm -rf "$sandbox" "$run_dir"' EXIT
+          mkdir "$sandbox/dist"
+          cp -R "${{ github.workspace }}/dist/." "$sandbox/dist/"
+          printf '{"type":"module"}\n' > "$sandbox/package.json"
+          test ! -e "$sandbox/node_modules"
+          cd "$run_dir"
+          test ! -e node_modules
+          node "$sandbox/dist/check-cli.js" --file "${{ github.workspace }}/skill/im-dumb/SKILL.md" --skill-doc
