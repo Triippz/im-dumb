@@ -41,7 +41,7 @@ The model applies the profile while generating the answer. There is no second re
 
 ## What it changes
 
-- **Your vocabulary** — common words, technical words when useful, or expert shorthand.
+- **Vocabulary level** (`vocabulary_level`) — `common` everyday words, `technical-ok` standard technical words with plain context, or `expert` established shorthand.
 - **Your structure** — answer first, short sections, controlled sentence length, and examples when they help.
 - **Your jargon policy** — avoid it, define it once, or allow it.
 - **ADHD mode** — restructures long answers into headed chunks with no more than three sibling items. It is a communication preference, not a medical feature.
@@ -49,7 +49,7 @@ The model applies the profile while generating the answer. There is no second re
 
 ## How it works
 
-1. A short onboarding flow creates `~/.im-dumb/profile.json`.
+1. A short onboarding flow creates `~/.im-dumb/profile.json` (override the path with `IM_DUMB_PROFILE`).
 2. The skill loads that profile when invoked.
 3. The agent generates one profile-compliant response.
 4. Deterministic offline checks catch structural regressions during development.
@@ -59,7 +59,7 @@ The same profile is designed to travel across Claude Code, Cursor, OpenAI Codex/
 ## Install
 
 > [!IMPORTANT]
-> **Pre-release:** the skill and installer are not published yet. M1 is building the profile, language rules, and evaluation gates first.
+> **Pre-release:** the skill and installer are not published yet. Packaging and the `npx` installer are planned for **M4**; M1 is building the profile, language rules, and evaluation gates first.
 
 The planned install command is:
 
@@ -87,8 +87,18 @@ Hosted upload automation is intentionally out of scope for v1 because it would r
 
 - Bundled skill scripts make **no outbound network calls** at invocation time.
 - Compiled JavaScript has **zero runtime dependencies**.
+- Running `npx im-dumb` (planned, M4) will need network access once, to download the package; after install, the skill's bundled scripts still make no outbound network calls when invoked.
 - The installer will only write local files that you can inspect.
 - Profile paths can be overridden with `IM_DUMB_PROFILE`; profile validation rejects unknown fields on save.
+
+## M1 evaluation status
+
+M1's implementation and evidence-gathering are complete: the profile module and CLI, deterministic checkers, the golden dataset, the judge rubric, 54 manually captured baseline/candidate responses, and two evidence reports:
+
+- [Token-overhead report](eval/baselines/m1-token-overhead-report.md) — single-trial; corpus aggregate is **-12.56%** against the M1 report-only ceilings, but three individual cases exceed the +60% per-case ceiling.
+- [Live spot-check report](eval/baselines/m1-live-spot-check.md) — **0 of 5** golden cases passed the full judge rubric in a single-trial, manual run.
+
+Both reports are single-trial and report-only in M1: they are recorded risk, not blocking gates, and not M3 ground truth. This evidence is not a production-readiness signal — M3 adds a multi-trial, variance-aware, blocking evaluation runner before model-scored behavior gates a release.
 
 ## Development
 
@@ -105,7 +115,7 @@ The project uses strict TypeScript, Node’s built-in test runner, Conventional 
 
 ## Roadmap
 
-- **M1 — in progress:** profile, language rules, deterministic checkers, golden dataset
+- **M1 — implementation and evidence complete, gates report-only:** profile, language rules, deterministic checkers, golden dataset, and captured evidence (see [M1 evaluation status](#m1-evaluation-status))
 - **M2:** comprehension gate and learned gaps
 - **M3:** full evaluation runner and human comprehension protocol
 - **M4:** multi-harness packaging and `npx` installer
