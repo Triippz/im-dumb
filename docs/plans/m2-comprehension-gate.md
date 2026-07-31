@@ -445,8 +445,11 @@ scores these raw dimensions independently:
    assumption, or framing from the prior answer.
 2. **Candidate relevance/coverage** — options are plausible and materially
    distinct, not generic labels or paraphrases of one guess.
-3. **Repair correctness** — the selected/direct repair is factually correct,
-   preserves required details, and addresses the confirmed gap.
+3. **Targeted repair correctness** — the selected/direct repair correctly
+   addresses the confirmed or selected gap rather than using a strategy for a
+   different gap. M1 factual fidelity and safety remain scored once under
+   `eval/rubric.md`; that independent result is a prerequisite and is not
+   superseded or re-scored here.
 4. **Widened rediagnosis** — after a second failure, the search changes or
    broadens rather than leading with the failed guess again.
 5. **Hard-constraint compliance** — 2–4 candidates where required, question
