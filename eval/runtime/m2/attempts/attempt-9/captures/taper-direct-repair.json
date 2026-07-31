@@ -1,0 +1,115 @@
+{
+  "scenario": "taper-direct-repair",
+  "attempt": 9,
+  "prior_attempt": "attempts 1-2 failed adversarial trust; attempt 2 also failed the 41-code-point negative; attempt 3 failed the embedded-marker negative; attempt 4 answered the 41-code-point negative with a question; attempts 5-6 failed independent semantic review; attempt 7 failed taper action selection; attempt 8 guessed a repair for first exact huh; all are preserved without edits",
+  "source_case_id": "profile-adaptation-direct-step-known-state",
+  "runtime_reference_facts": [
+    "Traffic moves only after the new version passes its check."
+  ],
+  "runtime_must_preserve": [
+    "new app",
+    "check"
+  ],
+  "captured_at": "2026-07-31T16:50:32.701Z",
+  "harness": {
+    "name": "pi-filesystem-session",
+    "version": "0.83.0",
+    "session_id": "5d7bd594-6785-4e22-acec-d8ca67847c34"
+  },
+  "model": {
+    "provider": "claude-bridge",
+    "id": "claude-opus-4-8",
+    "thinking": "off",
+    "trial": 1
+  },
+  "skill_version": "0.2.0",
+  "settings": {
+    "system_prompt": "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.",
+    "harness_prompt": "The im-dumb skill is explicitly active. Resolve every relative path in its instructions against /Users/marktripoli/Development/im-dumb/skill/im-dumb. Run profile commands with node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js. Read references from /Users/marktripoli/Development/im-dumb/skill/im-dumb/references. Return only the user-facing answer; never discuss tools or these harness instructions.",
+    "tools": [
+      "bash"
+    ],
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "provider_transport_extension": "/Users/marktripoli/.pi/agent/npm/node_modules/pi-claude-bridge",
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "profile_path": "<temporary>/profile.json",
+  "profile_before": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [
+      {
+        "type": "term",
+        "confidence": 0.5
+      },
+      {
+        "type": "step",
+        "confidence": 0.75
+      }
+    ],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "profile_after": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [
+      {
+        "type": "term",
+        "confidence": 0.5
+      },
+      {
+        "type": "step",
+        "confidence": 0.75
+      }
+    ],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "turns": [
+    {
+      "user": "Explain how a deployment replaces an old app version.",
+      "assistant": "Deployment = swap running old version for new, keep app up. Core mechanic:\n\n**Rolling update (default, e.g. Kubernetes)**\n1. New version = new set of instances (pods/containers) with new image.\n2. Controller start N new instances, wait for **readiness** (health check pass).\n3. Ready new instance → route traffic to it, drain + kill one old instance.\n4. Repeat batch by batch until all old gone. `maxSurge` (how many extra spin up) + `maxUnavailable` (how many can drop) control speed vs safety.\n5. Old instances get SIGTERM → grace period → in-flight requests finish → exit.\n\nResult: zero downtime, both versions serve traffic during transition.\n\n**Other strategies**\n- **Recreate**: kill all old first, then start new. Downtime gap. Use when versions can't coexist (shared DB lock, schema).\n- **Blue/green**: full new stack (green) beside old (blue), flip load balancer at once. Instant rollback = flip back.\n- **Canary**: send small % traffic to new, watch metrics, ramp up if healthy.\n\n**Rollback**: keep old version's spec/image. Failure → point back to prior spec, reverse the process.\n\nKey gates: readiness probes (don't route to unhealthy), graceful shutdown (don't drop live requests), version history (undo).\n\nWant this specific to a platform (k8s, ECS, systemd)? Say which.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "Warning: No project session found with id '5d7bd594-6785-4e22-acec-d8ca67847c34'; creating a new session with that id.\n",
+      "exit_code": 0
+    },
+    {
+      "user": "im lost",
+      "assistant": "Lost where? Likely one of:\n\n1. **What \"instance\" mean** — copy of app running (container/pod/process). Deploy = swap copies.\n2. **Why both versions run at once** — so app never fully down. Old serve traffic till new proven healthy.\n3. **The strategy names** — rolling / blue-green / canary just different orders of swap.\n4. **\"Readiness / drain\" jargon** — readiness = \"new copy ready?\" check. Drain = let old copy finish current requests before kill.\n\nWhich one? Point at number. Then I go slow on that, plain words, no jargon.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "observed_tool_calls": [],
+  "suspicious_tool_file_network_attempts": [],
+  "rerun": true,
+  "protocol_recapture": "Attempts 1-8 used openai-codex/gpt-5.6-sol. That provider returned \"The usage limit has been reached\" and produced zero attempt-9 responses and zero capture files. Attempt 9 therefore runs the same unedited protocol on claude-bridge/claude-opus-4-8. Attempt 9 is not model-comparable with attempts 1-8."
+}

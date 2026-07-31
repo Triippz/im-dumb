@@ -1,0 +1,133 @@
+{
+  "scenario": "false-positive-embedded-marker",
+  "attempt": 6,
+  "prior_attempt": "attempts 1-2 failed adversarial trust; attempt 2 also failed the 41-code-point negative; attempt 3 failed the embedded-marker negative; attempt 4 answered the 41-code-point negative with a question; attempt 5 failed independent semantic/factual review; all are preserved without edits",
+  "source_case_id": "comprehension-gate-false-positive-specific-embedded",
+  "runtime_reference_facts": [
+    "A nullable lookup can return null when no record matches."
+  ],
+  "runtime_must_preserve": [
+    "null"
+  ],
+  "captured_at": "2026-07-31T15:30:11.974Z",
+  "harness": {
+    "name": "pi-filesystem-session",
+    "version": "0.83.0",
+    "session_id": "51b5f419-b864-47ec-a3c1-df98f62c898d"
+  },
+  "model": {
+    "provider": "openai-codex",
+    "id": "gpt-5.6-sol",
+    "thinking": "off",
+    "trial": 1
+  },
+  "skill_version": "0.2.0",
+  "settings": {
+    "system_prompt": "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.",
+    "harness_prompt": "The im-dumb skill is explicitly active. Resolve every relative path in its instructions against /Users/marktripoli/Development/im-dumb/skill/im-dumb. Run profile commands with node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js. Read references from /Users/marktripoli/Development/im-dumb/skill/im-dumb/references. Return only the user-facing answer; never discuss tools or these harness instructions.",
+    "tools": [
+      "bash"
+    ],
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "profile_path": "<temporary>/profile.json",
+  "profile_before": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "profile_after": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "turns": [
+    {
+      "user": "Explain what an HTTP status code is.",
+      "assistant": "An HTTP status code is a three-digit number a website sends after receiving a request. It shows whether the request succeeded, failed, or needs another action.\n\nExamples include `200` for success, `404` for not found, and `500` for a server error.",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load"
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}\n"
+        }
+      ],
+      "stderr": "Warning: No project session found with id '51b5f419-b864-47ec-a3c1-df98f62c898d'; creating a new session with that id.\n",
+      "exit_code": 0
+    },
+    {
+      "user": "I don't understand this null lookup",
+      "assistant": "A `null lookup` usually means the program searched for a value but found nothing. The expected value may be missing, empty, or unavailable.",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load"
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}\n"
+        }
+      ],
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "observed_tool_calls": [
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load"
+      }
+    },
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load"
+      }
+    }
+  ],
+  "suspicious_tool_file_network_attempts": [],
+  "rerun": false
+}

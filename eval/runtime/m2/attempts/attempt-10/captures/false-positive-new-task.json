@@ -1,0 +1,140 @@
+{
+  "scenario": "false-positive-new-task",
+  "attempt": 10,
+  "prior_attempt": "attempts 1-8 used openai-codex/gpt-5.6-sol and are preserved; attempt 9 used claude-bridge/claude-opus-4-8 but is contaminated by operator global Claude/caveman config and is invalid evidence; all retained without edits",
+  "source_case_id": "comprehension-gate-false-positive-context-resets",
+  "runtime_reference_facts": [
+    "A DNS resolver can perform lookup work for a requester."
+  ],
+  "runtime_must_preserve": [
+    "DNS"
+  ],
+  "captured_at": "2026-07-31T20:46:42.017Z",
+  "harness": {
+    "name": "pi-filesystem-session",
+    "version": "0.83.0",
+    "session_id": "9f502b78-290b-4715-9e84-d75c27608eaa"
+  },
+  "model": {
+    "provider": "cursor",
+    "id": "grok-4.5",
+    "thinking": "off",
+    "trial": 1
+  },
+  "skill_version": "0.2.0",
+  "settings": {
+    "system_prompt": "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.",
+    "harness_prompt": "The im-dumb skill is explicitly active. Resolve every relative path in its instructions against /Users/marktripoli/Development/im-dumb/skill/im-dumb. Run profile commands with node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js. Read references from /Users/marktripoli/Development/im-dumb/skill/im-dumb/references. Return only the user-facing answer; never discuss tools or these harness instructions.",
+    "tools": [
+      "bash"
+    ],
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "provider_transport_extension": "/Users/marktripoli/.pi/agent/npm/node_modules/pi-cursor-sdk",
+    "cursor_setting_sources": "none",
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "profile_path": "<temporary>/profile.json",
+  "profile_before": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "profile_after": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "turns": [
+    {
+      "user": "Explain a database transaction.",
+      "assistant": "I'll load your communication profile, then explain database transactions in that style.**Answer**\nA database `transaction` is a group of related changes that succeed together or fail together.\n\n**Why**\nIt keeps data consistent when several updates must stay in sync.\nIf any step fails, the database can undo the whole group.\nThat undo is called a `rollback`.\nWhen every step succeeds, the database saves the group with a `commit`.\n\n**Example**\nMoving $50 from checking to savings needs two updates: subtract from one account, add to the other.\nA transaction runs both updates as one unit.\nIf the second update fails, a rollback restores the first change too.",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+            "timeout": 30
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}"
+        }
+      ],
+      "stderr": "Warning: No project session found with id '9f502b78-290b-4715-9e84-d75c27608eaa'; creating a new session with that id.\n",
+      "exit_code": 0
+    },
+    {
+      "user": "New task: explain DNS; I don't understand recursion",
+      "assistant": "I'll load your profile and the comprehension-repair rules, then handle the recursion confusion and DNS explanation.**Answer**\nPlain:\n`DNS` (Domain Name System) finds the number address for a website name.\nA `recursive` lookup means one helper keeps asking others until it gets the final answer.\nYou ask once; that helper does the rest of the hunt for you.\n\nTechnical:\nYour computer sends a recursive query to a resolver.\nThe resolver contacts other DNS servers as needed, then returns one final address.\n\n**Why**\nPlain:\nPeople use names like `example.com`. Computers need number addresses to connect.\nDNS is the lookup service that matches names to those addresses.\nWithout it, you would type long number addresses by hand.\n\nTechnical:\nDNS maps a domain name to an `IP` address, the machine’s network location.\nA recursive resolver hides the multi-server chase behind one request.\n\n**Steps**\nPlain:\n1. You type a site name.\n2. Your computer asks its DNS helper.\n3. That helper asks other DNS servers if it does not already know.\n4. The helper returns the address, or reports that none was found.\n5. Your computer uses that address to open the site.\n\nTechnical:\n1. The stub resolver queries a recursive resolver.\n2. The recursive resolver may ask root, TLD, then authoritative servers.\n3. It caches usable answers, then returns the final record to your computer.\n\n**Example**\nPlain:\nOpening `example.com` is like asking a desk clerk for a room number.\nThe clerk checks notes and asks other clerks if needed.\nYou wait once; they bring back the final number.\n\nTechnical:\nA recursive resolver is that clerk: one client question, then internal follow-up queries until the answer is complete.",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+            "timeout": 30
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}"
+        }
+      ],
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "observed_tool_calls": [
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+        "timeout": 30
+      }
+    },
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+        "timeout": 30
+      }
+    }
+  ],
+  "suspicious_tool_file_network_attempts": [],
+  "rerun": true,
+  "protocol_recapture": "Attempts 1-8 used openai-codex/gpt-5.6-sol (quota blocked attempt 9). Attempt 9 on claude-bridge/claude-opus-4-8 is preserved but contaminated. Attempt 10 runs the same unedited protocol on cursor/grok-4.5 with PI_CURSOR_SETTING_SOURCES=none so ambient Cursor rules cannot load. Not model-comparable with attempts 1-9."
+}

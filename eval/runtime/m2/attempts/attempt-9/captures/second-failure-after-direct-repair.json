@@ -1,0 +1,123 @@
+{
+  "scenario": "second-failure-after-direct-repair",
+  "attempt": 9,
+  "prior_attempt": "attempts 1-2 failed adversarial trust; attempt 2 also failed the 41-code-point negative; attempt 3 failed the embedded-marker negative; attempt 4 answered the 41-code-point negative with a question; attempts 5-6 failed independent semantic review; attempt 7 failed taper action selection; attempt 8 guessed a repair for first exact huh; all are preserved without edits",
+  "source_case_id": "profile-adaptation-second-failure-after-direct",
+  "runtime_reference_facts": [
+    "A load balancer can choose a server for each request."
+  ],
+  "runtime_must_preserve": [
+    "load balancer",
+    "server"
+  ],
+  "captured_at": "2026-07-31T16:51:04.965Z",
+  "harness": {
+    "name": "pi-filesystem-session",
+    "version": "0.83.0",
+    "session_id": "a9754f0f-f6a0-4bb8-b4ba-8ba20be45c88"
+  },
+  "model": {
+    "provider": "claude-bridge",
+    "id": "claude-opus-4-8",
+    "thinking": "off",
+    "trial": 1
+  },
+  "skill_version": "0.2.0",
+  "settings": {
+    "system_prompt": "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.",
+    "harness_prompt": "The im-dumb skill is explicitly active. Resolve every relative path in its instructions against /Users/marktripoli/Development/im-dumb/skill/im-dumb. Run profile commands with node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js. Read references from /Users/marktripoli/Development/im-dumb/skill/im-dumb/references. Return only the user-facing answer; never discuss tools or these harness instructions.",
+    "tools": [
+      "bash"
+    ],
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "provider_transport_extension": "/Users/marktripoli/.pi/agent/npm/node_modules/pi-claude-bridge",
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "profile_path": "<temporary>/profile.json",
+  "profile_before": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [
+      {
+        "type": "framing",
+        "confidence": 1
+      },
+      {
+        "type": "sequence",
+        "confidence": 0.6
+      }
+    ],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "profile_after": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [
+      {
+        "type": "framing",
+        "confidence": 1
+      },
+      {
+        "type": "sequence",
+        "confidence": 0.6
+      }
+    ],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "turns": [
+    {
+      "user": "Explain why a load balancer sends requests to several servers.",
+      "assistant": "Load balancer spread requests many servers. Reasons:\n\n**No single server melt.** One server handle limited traffic. Too many requests at once = slow or crash. Split load = each server handle small share.\n\n**Speed.** Requests wait in line. More servers = more lines = shorter wait each user.\n\n**Survive failure.** One server die, balancer stop sending it work, route to healthy ones. Users notice nothing.\n\n**Grow easy.** Traffic grow? Add more servers behind balancer. No rebuild.\n\nAnalogy: one grocery checkout = long line. Ten checkouts + person directing shoppers to open lane = fast, and one register break, rest keep going.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "Warning: No project session found with id 'a9754f0f-f6a0-4bb8-b4ba-8ba20be45c88'; creating a new session with that id.\n",
+      "exit_code": 0
+    },
+    {
+      "user": "lost",
+      "assistant": "Which part lost you?\n\n- **What \"requests\" are** — messages users send to app (click, load page).\n- **What \"server\" is** — computer running app, answers requests.\n- **Why split at all** — one computer not enough.\n- **The checkout analogy** — didn't land.\n\nPoint one. I redo that part only.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "",
+      "exit_code": 0
+    },
+    {
+      "user": "still don't get it",
+      "assistant": "Restart. No jargon.\n\nPicture pizza shop. Phone rings = customer wants pizza. One cook = one phone. Busy night, 100 calls come fast. One cook can't answer all. Calls wait. Customers mad. Some hang up.\n\nFix: hire 5 cooks. Add front-desk person. Front-desk answer every call, hand each to whichever cook free right now.\n\nNow map to computers:\n\n- call = someone open your website\n- cook = server (computer that build page)\n- front-desk = **load balancer**\n\nLoad balancer sit in front. Every visitor hit it first. It pass each visitor to a free server. Many servers share crowd. Nobody wait long. One cook sick, front-desk skip him, others cover.\n\nThat land? Or still fog — tell me which word fog: **server**, **request**, or **balancer**.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "observed_tool_calls": [],
+  "suspicious_tool_file_network_attempts": [],
+  "rerun": true,
+  "protocol_recapture": "Attempts 1-8 used openai-codex/gpt-5.6-sol. That provider returned \"The usage limit has been reached\" and produced zero attempt-9 responses and zero capture files. Attempt 9 therefore runs the same unedited protocol on claude-bridge/claude-opus-4-8. Attempt 9 is not model-comparable with attempts 1-8."
+}

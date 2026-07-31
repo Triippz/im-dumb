@@ -77,8 +77,9 @@ function assertIncludesAll(actual: string, expected: string[]): void {
   }
 }
 
-test('rubric v0.1 freezes the five planned dimensions without trigger/taper judge dimensions', () => {
-  assert.match(rubric, /Version: \*\*comprehension-rubric v0\.1\*\*/);
+test('rubric v0.2 freezes the five planned dimensions and records the v0.1 attempt boundary', () => {
+  assert.match(rubric, /Version: \*\*comprehension-rubric v0\.2\*\*/);
+  assert.match(rubric, /Attempts 1–6 were reviewed under v0\.1/i);
   const ids = section(rubric, 'Dimensions and evidence')
     .split('\n')
     .flatMap((line) => /^### \d+\..*\(`([^`]+)`\)$/.exec(line)?.slice(1) ?? []);
@@ -98,9 +99,9 @@ test('every dimension defines separate positive and negative evidence and pass/f
 
 test('dimension evidence is transcript-grounded and bounded by its declared inputs', () => {
   assertIncludesAll(section(rubric, 'candidate-specificity'), ['term', 'step', 'assumption', 'framing', 'prior-answer excerpt', 'type mapping']);
-  assertIncludesAll(section(rubric, 'candidate-relevance-coverage'), ['transcript', 'pairwise', 'omitted option', 'different repair']);
+  assertIncludesAll(section(rubric, 'candidate-relevance-coverage'), ['2–4 cap', 'not an exhaustive inventory', 'at most four materially distinct paths, include all of them', 'four most directly signaled', 'candidate slot was unused', 'outranks an included path']);
   assertIncludesAll(section(rubric, 'targeted-repair-correctness'), ['selected/confirmed gap', 'resolving response passage', 'different gap', 'neither supersedes nor re-scores']);
-  assertIncludesAll(section(rubric, 'widened-rediagnosis'), ['failed diagnosis or repair attempt', 'change or broaden', 'old-set → new-set']);
+  assertIncludesAll(section(rubric, 'widened-rediagnosis'), ['failed diagnosis or repair attempt', 'change or broaden', 'failed `direct-repair`', 'concrete targeted', 'evaluator-provided gap type', 'must not re-offer that concrete element', 'absent from every new candidate', 'any candidate after `direct-repair` re-offers', 'old-set → new-set']);
   assertIncludesAll(section(rubric, 'hard-constraint-compliance'), ['raw deterministic Layer 1 result', 'exact checker id/version']);
 });
 

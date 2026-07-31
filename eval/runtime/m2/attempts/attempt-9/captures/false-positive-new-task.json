@@ -1,0 +1,96 @@
+{
+  "scenario": "false-positive-new-task",
+  "attempt": 9,
+  "prior_attempt": "attempts 1-2 failed adversarial trust; attempt 2 also failed the 41-code-point negative; attempt 3 failed the embedded-marker negative; attempt 4 answered the 41-code-point negative with a question; attempts 5-6 failed independent semantic review; attempt 7 failed taper action selection; attempt 8 guessed a repair for first exact huh; all are preserved without edits",
+  "source_case_id": "comprehension-gate-false-positive-context-resets",
+  "runtime_reference_facts": [
+    "A DNS resolver can perform lookup work for a requester."
+  ],
+  "runtime_must_preserve": [
+    "DNS"
+  ],
+  "captured_at": "2026-07-31T16:49:14.440Z",
+  "harness": {
+    "name": "pi-filesystem-session",
+    "version": "0.83.0",
+    "session_id": "9ea95fb4-0f8c-4fb0-bc13-f72ea7e221a2"
+  },
+  "model": {
+    "provider": "claude-bridge",
+    "id": "claude-opus-4-8",
+    "thinking": "off",
+    "trial": 1
+  },
+  "skill_version": "0.2.0",
+  "settings": {
+    "system_prompt": "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.",
+    "harness_prompt": "The im-dumb skill is explicitly active. Resolve every relative path in its instructions against /Users/marktripoli/Development/im-dumb/skill/im-dumb. Run profile commands with node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js. Read references from /Users/marktripoli/Development/im-dumb/skill/im-dumb/references. Return only the user-facing answer; never discuss tools or these harness instructions.",
+    "tools": [
+      "bash"
+    ],
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "provider_transport_extension": "/Users/marktripoli/.pi/agent/npm/node_modules/pi-claude-bridge",
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "profile_path": "<temporary>/profile.json",
+  "profile_before": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "profile_after": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "turns": [
+    {
+      "user": "Explain a database transaction.",
+      "assistant": "Database transaction = group of operations treated as one unit. All succeed, or none do.\n\n**Core idea:** you move $100 from account A to B. Two steps:\n1. subtract $100 from A\n2. add $100 to B\n\nIf step 1 works but crash before step 2 → money vanish. Transaction stop this. Wrap both steps. Either both commit, or both roll back. No half-state.\n\n**ACID** — four guarantees:\n\n- **Atomicity** — all-or-nothing. Partial fail = undo everything.\n- **Consistency** — DB rules (constraints, foreign keys) hold before and after. Never leave DB broken.\n- **Isolation** — concurrent transactions no step on each other. Looks like they run one at a time.\n- **Durability** — once commit, survives crash/power loss. Written to disk.\n\n**Lifecycle:**\n\n```sql\nBEGIN;                              -- start\nUPDATE accounts SET bal = bal-100 WHERE id='A';\nUPDATE accounts SET bal = bal+100 WHERE id='B';\nCOMMIT;                            -- make permanent\n-- or ROLLBACK; to undo all\n```\n\n**Isolation levels** — trade safety for speed:\n\n| level | stops |\n|-------|-------|\n| Read Uncommitted | nothing (dirty reads OK) |\n| Read Committed | dirty reads |\n| Repeatable Read | dirty + non-repeatable reads |\n| Serializable | all anomalies (slowest) |\n\nHigher level = safer but more locking = slower. Most DBs default Read Committed.\n\nWant deeper on any part — isolation anomalies, locking vs MVCC, distributed transactions? Say which.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "Warning: No project session found with id '9ea95fb4-0f8c-4fb0-bc13-f72ea7e221a2'; creating a new session with that id.\n",
+      "exit_code": 0
+    },
+    {
+      "user": "New task: explain DNS; I don't understand recursion",
+      "assistant": "DNS = phone book for internet. Turn name (`google.com`) into IP (`142.250.72.14`). Computers route by IP, humans remember names. DNS bridge.\n\n## The confusion: two meanings of \"recursion\"\n\n\"Recursion\" in DNS ≠ recursion in programming (function calls itself). Different thing. Same word, trips people up. Here it means: **one server does all the legwork for you**.\n\n## Recursive vs iterative — the real split\n\nYou (your laptop) ask **one** question, want **one** answer. Don't want to chase it yourself. So you hand job to a **recursive resolver** (usually your ISP, or `8.8.8.8`). It does the chasing. That chasing is \"recursion\" — resolver keeps going until it has final answer, then hands back.\n\nThe chasing itself is **iterative** under the hood — resolver asks a chain of servers, one at a time:\n\n```\nYou → Resolver: \"IP of www.google.com?\"\n\nResolver → Root server:    \"who handles .com?\"\nRoot      → Resolver:      \"ask the .com TLD server, here\"\nResolver → .com server:    \"who handles google.com?\"\n.com      → Resolver:      \"ask google's nameserver, here\"\nResolver → google NS:      \"IP of www.google.com?\"\ngoogle NS → Resolver:      \"142.250.72.14\"\n\nResolver → You: \"142.250.72.14\"\n```\n\n**Key insight:** \"recursive\" describes the *service* the resolver gives YOU (does everything, one answer back). \"Iterative\" describes how the resolver *talks to* the other servers (step by step, each says \"not me, ask that guy\").\n\n## Why call it recursion at all\n\nSame shape as code recursion: \"solve big problem by handing smaller version to someone else, wait for their answer.\" You delegate whole problem → resolver. Resolver could (in theory) delegate to another resolver. Each layer says \"not my job, deeper\" until base case = the authoritative server that actually knows. Then answer bubbles back up. That bubble-up-through-delegation = why the name.\n\n## The 4 server types (the \"deeper\" chain)\n\n1. **Recursive resolver** — your gopher. Does the chasing.\n2. **Root server** — top. Knows who runs `.com`, `.org`, etc.\n3. **TLD server** — knows who runs names under `.com`.\n4. **Authoritative server** — final truth. Actually holds `google.com` → IP.\n\n## Caching — why it's fast\n\nResolver remembers answers for a while (TTL = time to live). Second person asking `google.com` → instant, skip whole chain. Most lookups never hit root.\n\n---\n\nWhich part still fuzzy — the recursive/iterative split, the server chain, or why \"recursion\" name fits? Point at one, go deeper.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "observed_tool_calls": [],
+  "suspicious_tool_file_network_attempts": [],
+  "rerun": true,
+  "protocol_recapture": "Attempts 1-8 used openai-codex/gpt-5.6-sol. That provider returned \"The usage limit has been reached\" and produced zero attempt-9 responses and zero capture files. Attempt 9 therefore runs the same unedited protocol on claude-bridge/claude-opus-4-8. Attempt 9 is not model-comparable with attempts 1-8."
+}

@@ -8,6 +8,8 @@ import { normalizeReply } from './reference-classifier.ts';
 // (eval/comprehension-rubric.md dimensions 1-4).
 // ---------------------------------------------------------------------------
 
+export const COMPREHENSION_GATE_CHECKER_VERSION = 'm2-v1';
+
 export type GateAction = 'diagnose' | 'rediagnose' | 'repair' | 'direct-repair';
 export type GateFormat = 'default' | 'machine';
 

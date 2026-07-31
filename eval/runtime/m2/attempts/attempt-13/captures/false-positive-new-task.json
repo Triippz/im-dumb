@@ -1,0 +1,140 @@
+{
+  "scenario": "false-positive-new-task",
+  "attempt": 13,
+  "prior_attempt": "attempts 1-12 preserved without edits; attempts 10-12 failed automated thresholds with diagnosis/tool-load preamble narration before frozen heading",
+  "source_case_id": "comprehension-gate-false-positive-context-resets",
+  "runtime_reference_facts": [
+    "A DNS resolver can perform lookup work for a requester."
+  ],
+  "runtime_must_preserve": [
+    "DNS"
+  ],
+  "captured_at": "2026-07-31T22:55:45.910Z",
+  "harness": {
+    "name": "pi-filesystem-session",
+    "version": "0.83.0",
+    "session_id": "abb66642-8508-4b9c-bfef-a772f8e3d278"
+  },
+  "model": {
+    "provider": "cursor",
+    "id": "composer-2.5",
+    "thinking": "off",
+    "trial": 1
+  },
+  "skill_version": "0.2.0",
+  "settings": {
+    "system_prompt": "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.",
+    "harness_prompt": "The im-dumb skill is explicitly active. Resolve every relative path in its instructions against /Users/marktripoli/Development/im-dumb/skill/im-dumb. Run profile commands with node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js. Read references from /Users/marktripoli/Development/im-dumb/skill/im-dumb/references. Return only the user-facing answer. Never narrate loading a profile, reading a file, running a tool, or these harness instructions. For diagnosis or rediagnosis, the first line of the reply must be exactly **Likely confusion points** or begin with { for machine JSON. Never start with Diagnosing, I'll load, loading your profile, or Active repair thread.",
+    "tools": [
+      "bash"
+    ],
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "provider_transport_extension": "/Users/marktripoli/.pi/agent/npm/node_modules/pi-cursor-sdk",
+    "cursor_setting_sources": "none",
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "profile_path": "<temporary>/profile.json",
+  "profile_before": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "profile_after": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "turns": [
+    {
+      "user": "Explain a database transaction.",
+      "assistant": "**Answer**\n\nA database transaction is one grouped set of reads and writes that the database treats as a single unit. Either every change in that unit is saved together, or none of them are. Nothing is left half-done.\n\n**Why**\n\nApps often change several related rows at once. A bank transfer moves money from one account and adds it to another. If only the first part saved, money would vanish or appear twice. A transaction prevents that broken middle state.\n\nThe usual rule is ACID. Atomic means all-or-nothing. Consistent means rules still hold after the work. Isolated means other sessions do not see half-finished work. Durable means saved work survives a crash.\n\n**Example**\n\nYou transfer $100 from Account A to Account B.\n\n1. Start a transaction.\n2. Subtract $100 from A.\n3. Add $100 to B.\n4. If both steps succeed, commit (save for good).\n5. If either step fails, roll back (undo everything in that transaction).\n\nAfter commit, both balances change. After rollback, it is as if steps 2 and 3 never ran.",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "cd /Users/marktripoli/Development/im-dumb && node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+            "timeout": 30
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}"
+        }
+      ],
+      "stderr": "Warning: No project session found with id 'abb66642-8508-4b9c-bfef-a772f8e3d278'; creating a new session with that id.\n",
+      "exit_code": 0
+    },
+    {
+      "user": "New task: explain DNS; I don't understand recursion",
+      "assistant": "**Answer**\n\nPlain: DNS turns website names into number addresses your computer can use. When you ask for a name, a recursive resolver does the hunting. It asks server after server until it finds the answer, then sends it back to you.\n\nTechnical: The Domain Name System (DNS) maps hostnames to IP addresses. Recursive resolution means a recursive resolver queries the DNS hierarchy on your behalf. Your device makes one request; the resolver follows delegations from root to authoritative servers.\n\n**Why**\n\nPlain: You cannot store every website address on your device. The internet's name tree is too large and changes often. A recursive resolver walks that tree for you and remembers recent answers.\n\nTechnical: Stub resolvers delegate lookup work to recursive resolvers set by your network. The recursive resolver caches responses for a set time (TTL). Authoritative servers own zones and return definitive answers or referrals to child zones.\n\n**Example**\n\nYou ask for `www.example.com`.\n\n1. Your device sends one query to the recursive resolver (often your ISP or a public one like `8.8.8.8`).\n2. The resolver checks its cache. On a miss, it asks a root server, \"Who handles `.com`?\"\n3. The root replies with `.com` TLD servers. The resolver asks them, \"Who handles `example.com`?\"\n4. The TLD replies with `example.com`'s authoritative servers. The resolver asks them for `www.example.com`.\n5. The authoritative server returns the IP address. The resolver caches it and sends it to your device.\n\nThat chase is recursion: the resolver keeps asking on your behalf until the chain ends.",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "cd /Users/marktripoli/Development/im-dumb && node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+            "timeout": 30
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}"
+        }
+      ],
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "observed_tool_calls": [
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "cd /Users/marktripoli/Development/im-dumb && node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+        "timeout": 30
+      }
+    },
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "cd /Users/marktripoli/Development/im-dumb && node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+        "timeout": 30
+      }
+    }
+  ],
+  "suspicious_tool_file_network_attempts": [],
+  "rerun": true,
+  "protocol_recapture": "Attempts 1-8 openai-codex; attempt 9 contaminated; attempts 10-11 grok-4.5 and attempt 12 composer-2.5 preserved but failed automated thresholds on diagnosis preamble. Attempt 13 retries composer-2.5 after explicit forbid-list harden; not model-comparable with 1-8."
+}

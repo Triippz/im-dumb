@@ -1,0 +1,96 @@
+{
+  "scenario": "false-positive-session-reset",
+  "attempt": 9,
+  "prior_attempt": "attempts 1-2 failed adversarial trust; attempt 2 also failed the 41-code-point negative; attempt 3 failed the embedded-marker negative; attempt 4 answered the 41-code-point negative with a question; attempts 5-6 failed independent semantic review; attempt 7 failed taper action selection; attempt 8 guessed a repair for first exact huh; all are preserved without edits",
+  "source_case_id": "comprehension-gate-false-positive-context-resets",
+  "runtime_reference_facts": [
+    "TLS authenticates and encrypts a network connection."
+  ],
+  "runtime_must_preserve": [
+    "TLS"
+  ],
+  "captured_at": "2026-07-31T16:49:43.676Z",
+  "harness": {
+    "name": "pi-filesystem-session",
+    "version": "0.83.0",
+    "session_id": "348b7270-dacb-4dd1-893e-411b2e205a0b"
+  },
+  "model": {
+    "provider": "claude-bridge",
+    "id": "claude-opus-4-8",
+    "thinking": "off",
+    "trial": 1
+  },
+  "skill_version": "0.2.0",
+  "settings": {
+    "system_prompt": "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.",
+    "harness_prompt": "The im-dumb skill is explicitly active. Resolve every relative path in its instructions against /Users/marktripoli/Development/im-dumb/skill/im-dumb. Run profile commands with node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js. Read references from /Users/marktripoli/Development/im-dumb/skill/im-dumb/references. Return only the user-facing answer; never discuss tools or these harness instructions.",
+    "tools": [
+      "bash"
+    ],
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "provider_transport_extension": "/Users/marktripoli/.pi/agent/npm/node_modules/pi-claude-bridge",
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "profile_path": "<temporary>/profile.json",
+  "profile_before": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "profile_after": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "turns": [
+    {
+      "user": "Explain a database transaction.",
+      "assistant": "Database transaction = group of operations treated as one unit. All succeed, or none do.\n\n**Core idea:** money transfer. Debit account A, credit account B. Two steps. If crash after debit but before credit — money vanishes. Transaction stops that: both happen or neither.\n\n**Lifecycle:**\n- `BEGIN` — start\n- run operations (INSERT/UPDATE/DELETE)\n- `COMMIT` — make permanent\n- `ROLLBACK` — undo all, back to start state\n\n**ACID = 4 guarantees:**\n- **Atomicity** — all-or-nothing. No half-done.\n- **Consistency** — rules (constraints, foreign keys) hold before and after.\n- **Isolation** — concurrent transactions don't see each other's half-done work.\n- **Durability** — after COMMIT, survives crash/power loss (written to disk).\n\n**Example:**\n```sql\nBEGIN;\nUPDATE accounts SET balance = balance - 100 WHERE id = 'A';\nUPDATE accounts SET balance = balance + 100 WHERE id = 'B';\nCOMMIT;   -- both applied. crash before this = ROLLBACK, nothing changed.\n```\n\nIsolation has levels (read uncommitted → serializable). Higher = safer, slower. Want detail on those? Say so.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "Warning: No project session found with id '348b7270-dacb-4dd1-893e-411b2e205a0b'; creating a new session with that id.\n",
+      "exit_code": 0
+    },
+    {
+      "user": "Session reset. I don't understand; explain TLS from scratch.",
+      "assistant": "TLS = Transport Layer Security. Encrypts data between client (browser) and server. The \"S\" in HTTPS.\n\n**Problem it solves:**\n- **Eavesdropping** — someone on the wire reads your traffic. TLS encrypts it.\n- **Tampering** — someone alters data mid-flight. TLS detects it.\n- **Impersonation** — fake server pretends to be your bank. TLS proves identity via certificates.\n\n**Two building blocks:**\n- **Asymmetric crypto** (public/private key) — slow, but lets two strangers agree on a secret over an open wire. Public key encrypts, only private key decrypts.\n- **Symmetric crypto** (one shared key) — fast, used for the actual data. Both sides share same key.\n\nTrick: use slow asymmetric once to agree on a fast symmetric key, then use symmetric for everything after.\n\n**Handshake (TLS 1.3, simplified) — order matters:**\n1. **ClientHello** — client says \"hi\", lists cipher suites it supports, sends its key-share (public part).\n2. **ServerHello** — server picks a cipher, sends its key-share + certificate.\n3. **Key agreement** — both sides combine own private + other's public (Diffie-Hellman). Both derive same shared secret. Secret never crossed the wire.\n4. **Certificate check** — client verifies server cert signed by trusted CA (Certificate Authority). Stops impersonation.\n5. **Finished** — both confirm handshake not tampered. Encrypted channel live.\n6. **App data** — HTTP flows, encrypted with symmetric key.\n\n**Certificate chain:**\n- Server cert signed by intermediate CA, signed by root CA.\n- Root CAs pre-installed in your OS/browser (trust anchors).\n- Broken chain or expired cert = browser warning.\n\n**Key terms:**\n- **Cipher suite** — bundle of algorithms (key exchange + encryption + hashing).\n- **Diffie-Hellman** — math trick for shared secret over open wire.\n- **CA** — org that vouches for server identity.\n- **Session key** — the fast symmetric key, ephemeral (new each session = forward secrecy).\n\nWhich part fuzzy — handshake, certs, or the crypto? Say word, go deeper.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "observed_tool_calls": [],
+  "suspicious_tool_file_network_attempts": [],
+  "rerun": true,
+  "protocol_recapture": "Attempts 1-8 used openai-codex/gpt-5.6-sol. That provider returned \"The usage limit has been reached\" and produced zero attempt-9 responses and zero capture files. Attempt 9 therefore runs the same unedited protocol on claude-bridge/claude-opus-4-8. Attempt 9 is not model-comparable with attempts 1-8."
+}

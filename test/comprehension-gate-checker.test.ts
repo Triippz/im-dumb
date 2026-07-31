@@ -3,6 +3,7 @@ import { test } from 'node:test';
 
 import {
   checkComprehensionGate,
+  COMPREHENSION_GATE_CHECKER_VERSION,
   GENERIC_LABEL_DENY_SET,
   BARE_REASK_DENY_SET,
   DIAGNOSIS_HEADING,
@@ -39,8 +40,9 @@ function goodMachineDiagnosis(): string {
 // checker registry (task: add comprehension-gate to CHECKER_IDS)
 // ---------------------------------------------------------------------------
 
-test('CHECKER_IDS includes comprehension-gate', () => {
+test('CHECKER_IDS includes versioned comprehension-gate', () => {
   assert.ok((CHECKER_IDS as readonly string[]).includes('comprehension-gate'));
+  assert.equal(COMPREHENSION_GATE_CHECKER_VERSION, 'm2-v1');
 });
 
 // ---------------------------------------------------------------------------

@@ -1,0 +1,105 @@
+{
+  "scenario": "candidate-selection-targeted-repair",
+  "attempt": 9,
+  "prior_attempt": "attempts 1-2 failed adversarial trust; attempt 2 also failed the 41-code-point negative; attempt 3 failed the embedded-marker negative; attempt 4 answered the 41-code-point negative with a question; attempts 5-6 failed independent semantic review; attempt 7 failed taper action selection; attempt 8 guessed a repair for first exact huh; all are preserved without edits",
+  "source_case_id": "profile-adaptation-selection-and-resolution",
+  "runtime_reference_facts": [
+    "A lock allows one writer at a time into protected code."
+  ],
+  "runtime_must_preserve": [
+    "lock",
+    "writer"
+  ],
+  "captured_at": "2026-07-31T16:51:17.541Z",
+  "harness": {
+    "name": "pi-filesystem-session",
+    "version": "0.83.0",
+    "session_id": "e40b8e1b-5c76-48be-8a1a-70c1d131ea22"
+  },
+  "model": {
+    "provider": "claude-bridge",
+    "id": "claude-opus-4-8",
+    "thinking": "off",
+    "trial": 1
+  },
+  "skill_version": "0.2.0",
+  "settings": {
+    "system_prompt": "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.",
+    "harness_prompt": "The im-dumb skill is explicitly active. Resolve every relative path in its instructions against /Users/marktripoli/Development/im-dumb/skill/im-dumb. Run profile commands with node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js. Read references from /Users/marktripoli/Development/im-dumb/skill/im-dumb/references. Return only the user-facing answer; never discuss tools or these harness instructions.",
+    "tools": [
+      "bash"
+    ],
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "provider_transport_extension": "/Users/marktripoli/.pi/agent/npm/node_modules/pi-claude-bridge",
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "profile_path": "<temporary>/profile.json",
+  "profile_before": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "profile_after": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "turns": [
+    {
+      "user": "Explain why a lock prevents two writers from colliding.",
+      "assistant": "Lock = one writer at a time. Mechanism:\n\n1. **Mutual exclusion**. Lock hold by one writer. Others block until release.\n2. **Critical section**. Writer grabs lock before touch shared data, drops after. Only lock-holder inside.\n3. **Serialize writes**. Two writers can't overlap. Order forced: A finishes, releases, then B enters. No interleave.\n\nWhy collision without lock: writes not atomic. Read-modify-write races.\n\n```\ncounter = 5\nWriter A: read 5 → +1 → write 6\nWriter B: read 5 → +1 → write 6   # lost update, should be 7\n```\n\nBoth read stale 5, both write 6. One increment vanish.\n\nWith lock: B waits till A done. B reads 6 → writes 7. Correct.\n\nLock give **atomicity** to the whole section, not per-instruction. That's the guarantee.\n\nCaveat: lock only work if all writers use *same* lock. Rogue writer skip lock = collision back.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "Warning: No project session found with id 'e40b8e1b-5c76-48be-8a1a-70c1d131ea22'; creating a new session with that id.\n",
+      "exit_code": 0
+    },
+    {
+      "user": "what",
+      "assistant": "Answered your last question — locks preventing writer collision (mutual exclusion, atomic critical section, serialized writes).\n\n\"what\" = confused by which part? Point at it:\n\n- **race** — how two writers overlap\n- **lock mechanism** — acquire/release\n- **critical section** — why whole block atomic, not per-line\n- something else\n\nWhich?",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "",
+      "exit_code": 0
+    },
+    {
+      "user": "The term lock is the part I did not know.",
+      "assistant": "Lock = flag guard shared thing. One worker grab it, others wait.\n\nThink bathroom door:\n\n- Door unlocked → you go in, slide bolt. Now locked.\n- Next person try door → locked. They wait outside.\n- You finish, unlock. Next person enter.\n\nBathroom = shared data. Bolt = lock. Only one inside at a time.\n\nIn code:\n\n```\nlock.acquire()   # grab bolt, block if someone holds it\ncounter += 1     # safe, you alone inside\nlock.release()   # slide bolt open, next waiter enter\n```\n\n`acquire` = take lock (wait if taken). `release` = give back. Between them = only you.\n\nThat's whole trick. Lock not magic — just agreed flag every worker check before touch shared thing.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "observed_tool_calls": [],
+  "suspicious_tool_file_network_attempts": [],
+  "rerun": true,
+  "protocol_recapture": "Attempts 1-8 used openai-codex/gpt-5.6-sol. That provider returned \"The usage limit has been reached\" and produced zero attempt-9 responses and zero capture files. Attempt 9 therefore runs the same unedited protocol on claude-bridge/claude-opus-4-8. Attempt 9 is not model-comparable with attempts 1-8."
+}

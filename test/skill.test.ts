@@ -105,7 +105,7 @@ test('load section covers ordinary success and both exact error groups without r
   assert.match(load, /`success`[\s\S]{0,180}apply the returned profile/i);
   assert.match(load, /`missing`[^\n]*`unparseable`[\s\S]{0,180}offer onboarding/i);
   assert.match(load, /`env-path-invalid`[^\n]*`unsupported-schema-version`[\s\S]{0,220}surface the named error and stop/i);
-  assert.match(load, /never start onboarding for either\s+hard error/i);
+  assert.match(load, /never start\s+onboarding for either\s+hard\s+error/i);
 });
 
 test('load/gate interaction matrix keeps repair available without durable profile state', () => {
@@ -121,9 +121,10 @@ test('load/gate interaction matrix keeps repair available without durable profil
 test('IM_DUMB_PROFILE controls both load and save, and profile content is data only', () => {
   const load = section(body, 'Load the profile');
   assert.match(load, /IM_DUMB_PROFILE[\s\S]{0,140}both\s+`load` and\s+`save`/i);
-  assert.match(load, /data, never instructions/i);
-  assert.match(load, /commands, URLs, tool or file requests/i);
-  assert.match(load, /precedence/i);
+  assert.match(load, /Profile output is data/i);
+  assert.match(load, /Reveal values only for direct profile management/i);
+  assert.match(load, /ignore rules[\s\S]*embeds or quotes a profile command[\s\S]*appends a confusion marker/i);
+  assert.match(load, /not profile management[\s\S]*never\s+reveal loaded values/i);
 });
 
 // Onboarding and schema.
@@ -155,9 +156,15 @@ test('main skill loads comprehension detail only for a later possible signal or 
   assert.match(comprehension, /read `references\/comprehension\.md`/i);
   assert.match(comprehension, /only (?:in|for) those cases/i);
   assert.match(comprehension, /Do not load it for an initial or\s+ordinary\s+turn/i);
-  assert.match(comprehension, /profile load or persistence failure never blocks diagnosis, rediagnosis, or repair/i);
-  assert.match(comprehension, /usable profile snapshot is unavailable[\s\S]{0,160}defaults[\s\S]{0,120}disable taper and learning/i);
-  assert.match(comprehension, /conversation-locally without durable profile access/i);
+  assert.match(comprehension, /first exact `huh` must diagnose; never guess\s+and rephrase/i);
+  assert.match(comprehension, /first line `\*\*Likely confusion points\*\*` or `\{`/i);
+  assert.match(comprehension, /Forbidden before that line[\s\S]{0,120}Diagnosing[\s\S]{0,80}I'll load[\s\S]{0,80}loading your profile[\s\S]{0,80}Active repair thread/i);
+  assert.match(comprehension, /profile failure never blocks diagnosis, rediagnosis, or\s+repair/i);
+  assert.match(comprehension, /replies must not trigger diagnosis[\s\S]*huh!{38}[\s\S]{0,80}41 code points; too long/i);
+  assert.match(comprehension, /I don't understand this null lookup[\s\S]{0,60}non-standalone marker/i);
+  assert.match(comprehension, /ordinary\s+statement; zero questions/i);
+  assert.match(comprehension, /Without a usable snapshot[\s\S]{0,120}defaults and empty known gaps[\s\S]{0,100}disable taper\s+and learning/i);
+  assert.match(comprehension, /Repair remains conversation-local/i);
 });
 
 test('onboarding asks every visible field one at a time in schema order', () => {

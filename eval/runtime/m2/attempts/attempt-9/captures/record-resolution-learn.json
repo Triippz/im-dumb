@@ -1,0 +1,113 @@
+{
+  "scenario": "record-resolution-learn",
+  "attempt": 9,
+  "prior_attempt": "attempts 1-2 failed adversarial trust; attempt 2 also failed the 41-code-point negative; attempt 3 failed the embedded-marker negative; attempt 4 answered the 41-code-point negative with a question; attempts 5-6 failed independent semantic review; attempt 7 failed taper action selection; attempt 8 guessed a repair for first exact huh; all are preserved without edits",
+  "source_case_id": "profile-adaptation-selection-and-resolution",
+  "runtime_reference_facts": [
+    "A lock allows one writer at a time into protected code."
+  ],
+  "runtime_must_preserve": [
+    "lock",
+    "writer"
+  ],
+  "captured_at": "2026-07-31T16:51:35.331Z",
+  "harness": {
+    "name": "pi-filesystem-session",
+    "version": "0.83.0",
+    "session_id": "a1ee2197-b0f8-4fa9-a025-aba80b200b6f"
+  },
+  "model": {
+    "provider": "claude-bridge",
+    "id": "claude-opus-4-8",
+    "thinking": "off",
+    "trial": 1
+  },
+  "skill_version": "0.2.0",
+  "settings": {
+    "system_prompt": "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.",
+    "harness_prompt": "The im-dumb skill is explicitly active. Resolve every relative path in its instructions against /Users/marktripoli/Development/im-dumb/skill/im-dumb. Run profile commands with node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js. Read references from /Users/marktripoli/Development/im-dumb/skill/im-dumb/references. Return only the user-facing answer; never discuss tools or these harness instructions.",
+    "tools": [
+      "bash"
+    ],
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "provider_transport_extension": "/Users/marktripoli/.pi/agent/npm/node_modules/pi-claude-bridge",
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "profile_path": "<temporary>/profile.json",
+  "profile_before": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "profile_after": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "turns": [
+    {
+      "user": "Explain why a lock prevents two writers from colliding.",
+      "assistant": "Lock = one key. Only key-holder writes. No key, wait.\n\nWhy collision happen without lock:\n- Writer A reads value. Writer B reads same value. Both compute. Both write back. One overwrites other. Lost update.\n- Or interleave mid-write. Half A data, half B data. Corrupt state.\n\nLock fixes:\n1. Writer A grabs lock (acquire). Others blocked.\n2. A does read-modify-write. Whole thing atomic — no one peek mid-flight.\n3. A releases lock. Next writer grabs.\n\nKey idea: **serialize** the critical section. Concurrent access becomes one-at-a-time. Only one writer touch shared data at once, so no interleave, no lost update.\n\nLock give **mutual exclusion** — \"mutex\". Turns racy region into safe queue.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "Warning: No project session found with id 'a1ee2197-b0f8-4fa9-a025-aba80b200b6f'; creating a new session with that id.\n",
+      "exit_code": 0
+    },
+    {
+      "user": "what",
+      "assistant": "Question vague. Guess what you stuck on. Pick:\n\n1. **\"collision\" mean what?** — two writers stomp same data, one overwrites other. Lost update.\n2. **why lock needed?** — without it, writes interleave. Half A, half B. Garbage.\n3. **how lock works?** — one key. Grab (acquire) → write → release. Others wait in line.\n4. **\"critical section\"?** — code region touching shared data. Lock wraps it so one-at-a-time.\n5. **just want simpler?** — Lock = bathroom door. Locked = you inside, others wait. Done = unlock, next person.\n\nWhich one?",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "",
+      "exit_code": 0
+    },
+    {
+      "user": "The term lock is the part I did not know.",
+      "assistant": "**Lock** = flag saying \"busy, wait your turn.\"\n\nReal-world: bathroom door lock. One person in, door locks, others wait outside. Person leaves, unlocks, next goes.\n\nIn code: shared data = bathroom. Lock = door bolt.\n- Writer wants change data → grab lock (bolt door).\n- Others try → blocked, wait in line.\n- Writer done → release lock (unbolt).\n- Next writer grabs.\n\nNot physical thing. Just marker in memory: \"taken\" or \"free.\" Everyone agree rule: check flag first, only touch data if you hold it.\n\nAlso called **mutex** = \"mutual exclusion.\" Fancy word, same idea: one at a time.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "",
+      "exit_code": 0
+    },
+    {
+      "user": "That fixed it.",
+      "assistant": "Good. Lock click for you now.",
+      "tool_calls": [],
+      "tool_results": [],
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "observed_tool_calls": [],
+  "suspicious_tool_file_network_attempts": [],
+  "rerun": true,
+  "protocol_recapture": "Attempts 1-8 used openai-codex/gpt-5.6-sol. That provider returned \"The usage limit has been reached\" and produced zero attempt-9 responses and zero capture files. Attempt 9 therefore runs the same unedited protocol on claude-bridge/claude-opus-4-8. Attempt 9 is not model-comparable with attempts 1-8."
+}

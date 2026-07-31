@@ -102,6 +102,57 @@ function splitSentences(prose: string): string[] {
   return sentences;
 }
 
+function sentenceUnits(text: string): string[] {
+  const trimmed = text.trim();
+  if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+    try {
+      const strings: string[] = [];
+      const visit = (value: unknown): void => {
+        if (typeof value === 'string') strings.push(value);
+        else if (Array.isArray(value)) value.forEach(visit);
+        else if (typeof value === 'object' && value !== null) Object.values(value).forEach(visit);
+      };
+      visit(JSON.parse(trimmed));
+      return strings.flatMap((value) => splitSentences(value.replace(/`[^`]*`/g, ' ')));
+    } catch {
+      // Not valid machine JSON; evaluate it as ordinary prose below.
+    }
+  }
+
+  const sentences: string[] = [];
+  let paragraph: string[] = [];
+  let inFence = false;
+  const flush = (): void => {
+    if (paragraph.length > 0) sentences.push(...splitSentences(paragraph.join(' ').replace(/`[^`]*`/g, ' ')));
+    paragraph = [];
+  };
+
+  for (const line of text.split('\n')) {
+    const lineTrimmed = line.trimStart();
+    if (lineTrimmed.startsWith('```')) {
+      flush();
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence || lineTrimmed.startsWith('>') || /^#{1,6}\s/.test(lineTrimmed) || /^\*\*[^*]+\*\*$/.test(lineTrimmed)) {
+      flush();
+      continue;
+    }
+    if (lineTrimmed.trim() === '') {
+      flush();
+      continue;
+    }
+    if (LIST_MARKER_PREFIX_RE.test(lineTrimmed)) {
+      flush();
+      sentences.push(...splitSentences(lineTrimmed.replace(LIST_MARKER_PREFIX_RE, '').replace(/`[^`]*`/g, ' ')));
+      continue;
+    }
+    paragraph.push(lineTrimmed);
+  }
+  flush();
+  return sentences;
+}
+
 const LIST_ITEM_RE = /^([-*+]\s|\d+[.)]\s)/;
 const HEADING_RE = /^#{1,6}\s/;
 const BOLD_LINE_RE = /^\*\*[^*]+\*\*$/;
@@ -151,7 +202,7 @@ function truncate(value: string, maxLength: number): string {
 
 export function checkSentenceCap(text: string, profile: Profile): Violation[] {
   const cap = profile.sentence_length_cap;
-  const sentences = splitSentences(extractProse(text));
+  const sentences = sentenceUnits(text);
   if (sentences.length === 0) return [];
 
   const offenders = sentences.map((sentence) => ({ sentence, words: wordCount(sentence) })).filter((s) => s.words > cap);

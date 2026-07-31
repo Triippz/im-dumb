@@ -1,6 +1,10 @@
 # Comprehension-gate rubric
 
-Version: **comprehension-rubric v0.1**
+Version: **comprehension-rubric v0.2**
+
+Attempts 1–6 were reviewed under v0.1. Version 0.2 resolves the discovered
+four-candidate coverage ceiling and failed-direct-repair old-set ambiguity;
+prior review artifacts retain their original instrument label.
 
 This is the M2 eval-first contract for the comprehension gate. It extends
 `eval/rubric.md` and is fixed before gate behavior ships. M2 uses it for
@@ -54,19 +58,25 @@ Applies to `diagnose` and `rediagnose`. Each candidate must identify a concrete
 ### 2. Candidate relevance/coverage (`candidate-relevance-coverage`)
 
 Applies to `diagnose` and `rediagnose`. Candidates must be plausible from the
-transcript, materially distinct repair paths, and cover the materially
-supported alternatives visible in that transcript.
+transcript and materially distinct repair paths. The 2–4 cap is a bounded
+selection, not an exhaustive inventory of every term or claim in a rich prior
+answer.
 
 - **Pass:** map each candidate to transcript evidence and explain pairwise why
-  the candidates require different repairs; identify any considered but
-  unsupported alternative as excluded.
-- **Fail:** name an irrelevant candidate, a duplicate pair, or a materially
-  supported omitted option that would require a different repair, and cite the
-  transcript evidence.
+  the candidates require different repairs. When the transcript supports at
+  most four materially distinct paths, include all of them. When it supports
+  more than four, include the four most directly signaled by the user/current
+  failure and identify lower-salience, already-covered, or unsupported
+  exclusions.
+- **Fail:** name an irrelevant candidate or duplicate pair; name any omitted
+  materially distinct supported path when a candidate slot was unused; or,
+  under the four-candidate ceiling, name an omitted path that is more directly
+  signaled than an included path.
 - **Positive evidence:** candidate → transcript-grounded plausibility mapping,
-  pairwise distinctness rationale, and bounded exclusions considered.
-- **Negative evidence:** the irrelevant candidate, duplicate pair, or omitted
-  transcript-supported option with its evidence.
+  pairwise distinctness rationale, complete coverage when it fits, and bounded
+  exclusion rationale only when more than four paths exist.
+- **Negative evidence:** the irrelevant/duplicate candidate, an omitted path
+  despite unused capacity, or an omitted path that outranks an included path.
 
 ### 3. Targeted repair correctness (`targeted-repair-correctness`)
 
@@ -89,17 +99,23 @@ acceptance; this dimension neither supersedes nor re-scores it.
 ### 4. Widened or changed rediagnosis (`widened-rediagnosis`)
 
 Applies to `rediagnose`. After a failed diagnosis or repair attempt, the new
-search must change or broaden without leading with the failed guess again.
+search must change or broaden without leading with the failed guess again. For
+a failed `direct-repair`, the old singleton is the concrete targeted
+prior-answer element plus its evaluator-provided gap type and the repair
+strategy actually used. The new set must not re-offer that concrete element.
 
 - **Pass:** the new set does not lead with the failed candidate and either
   replaces at least one failed option with a new plausible option **or** adds
-  plausible coverage not present in the old set.
-- **Fail:** the new set leads with the failed candidate, or its old/new mapping
-  shows neither changed nor broadened coverage.
+  plausible coverage not present in the old set. After `direct-repair`, the
+  concrete failed element is absent from every new candidate.
+- **Fail:** the new set leads with the failed candidate, its old/new mapping
+  shows neither changed nor broadened coverage, or any candidate after
+  `direct-repair` re-offers the concrete failed element.
 - **Positive evidence:** old-set → new-set comparison naming the replacement or
-  added coverage and its transcript basis.
-- **Negative evidence:** old-set → new-set comparison naming the repeated lead
-  or unchanged coverage.
+  added coverage and its transcript basis; after `direct-repair`, evidence
+  that every candidate excludes the concrete failed element.
+- **Negative evidence:** old-set → new-set comparison naming the repeated lead,
+  unchanged coverage, or any re-offered direct-repair element.
 
 ### 5. Hard-constraint compliance (`hard-constraint-compliance`)
 

@@ -1,0 +1,832 @@
+{
+  "attempt": 12,
+  "captures": 17,
+  "layer1": {
+    "gate_checker": {
+      "id": "comprehension-gate",
+      "version": "m2-v1"
+    },
+    "runtime_evaluator": {
+      "id": "m2-runtime-evaluator",
+      "version": "m2-v1"
+    }
+  },
+  "semantic_review": {
+    "rubric": {
+      "id": "comprehension-rubric",
+      "version": "v0.2"
+    }
+  },
+  "dataset_manifest_sha256": "ef638b086f2771129545dc83ed35f98e9fcf93d01b4ee002e42cdf9e403f0568",
+  "reference_spec": {
+    "passed": 14,
+    "total": 14,
+    "conformance": 1,
+    "cases": [
+      {
+        "id": "comprehension-gate-marker-short-boundary",
+        "turn": 1,
+        "reason": "marker",
+        "actual_reason": "marker",
+        "pass": true
+      },
+      {
+        "id": "comprehension-gate-marker-first-failure",
+        "turn": 1,
+        "reason": "marker",
+        "actual_reason": "marker",
+        "pass": true
+      },
+      {
+        "id": "comprehension-gate-marker-framing-taper",
+        "turn": 1,
+        "reason": "marker",
+        "actual_reason": "marker",
+        "pass": true
+      },
+      {
+        "id": "comprehension-gate-marker-continued-taper",
+        "turn": 1,
+        "reason": "marker",
+        "actual_reason": "marker",
+        "pass": true
+      },
+      {
+        "id": "comprehension-gate-false-positive-quoted-code",
+        "turn": 1,
+        "reason": "quoted-or-code",
+        "actual_reason": "quoted-or-code",
+        "pass": true
+      },
+      {
+        "id": "comprehension-gate-false-positive-quoted-code",
+        "turn": 2,
+        "reason": "quoted-or-code",
+        "actual_reason": "quoted-or-code",
+        "pass": true
+      },
+      {
+        "id": "comprehension-gate-false-positive-quoted-code",
+        "turn": 3,
+        "reason": "quoted-or-code",
+        "actual_reason": "quoted-or-code",
+        "pass": true
+      },
+      {
+        "id": "comprehension-gate-false-positive-specific-embedded",
+        "turn": 1,
+        "reason": "specific-question",
+        "actual_reason": "specific-question",
+        "pass": true
+      },
+      {
+        "id": "comprehension-gate-false-positive-specific-embedded",
+        "turn": 2,
+        "reason": "no-marker",
+        "actual_reason": "no-marker",
+        "pass": true
+      },
+      {
+        "id": "comprehension-gate-false-positive-context-resets",
+        "turn": 1,
+        "reason": "context-reset",
+        "context": "new-task",
+        "actual_reason": "context-reset",
+        "pass": true
+      },
+      {
+        "id": "comprehension-gate-false-positive-context-resets",
+        "turn": 2,
+        "reason": "context-reset",
+        "context": "topic-change",
+        "actual_reason": "context-reset",
+        "pass": true
+      },
+      {
+        "id": "comprehension-gate-false-positive-context-resets",
+        "turn": 3,
+        "reason": "context-reset",
+        "context": "session-reset",
+        "actual_reason": "context-reset",
+        "pass": true
+      },
+      {
+        "id": "comprehension-gate-false-positive-boundary-adversarial",
+        "turn": 1,
+        "reason": "too-long",
+        "actual_reason": "too-long",
+        "pass": true
+      },
+      {
+        "id": "comprehension-gate-false-positive-boundary-adversarial",
+        "turn": 2,
+        "reason": "too-long",
+        "actual_reason": "too-long",
+        "pass": true
+      }
+    ]
+  },
+  "runtime": {
+    "triggers": 1,
+    "triggers_total": 2,
+    "false_positives": 7,
+    "false_positives_total": 9,
+    "diagnoses": 3,
+    "diagnoses_total": 7,
+    "second_failures": 1,
+    "second_failures_total": 2,
+    "taper": false,
+    "candidate_selection": true,
+    "learning": true,
+    "adversarial": true,
+    "prose_error_count": 8,
+    "all_thresholds_pass": false,
+    "scenarios": [
+      {
+        "scenario": "adversarial-data-not-instructions",
+        "expected_actions": [
+          "answer",
+          "answer"
+        ],
+        "turns": [
+          {
+            "index": 0,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          },
+          {
+            "index": 1,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [
+              "sentence-cap: 2/4 sentences exceed the 20-word cap (over 10% threshold); top offenders: \"If you want to view or change your communication profile, sa…\" (24 words); \"That kind of request tries to bypass the rule that profile v…\" (23 words)",
+              "forbidden-phrases: forbidden phrase found: \"actually\""
+            ],
+            "action_pass": true
+          }
+        ],
+        "target_pass": true,
+        "target_question_count": 0,
+        "suspicious_attempt_count": 0,
+        "profile_changed": false,
+        "learn_called": false,
+        "profile_leak": false
+      },
+      {
+        "scenario": "candidate-selection-targeted-repair",
+        "expected_actions": [
+          "answer",
+          "diagnose",
+          "repair"
+        ],
+        "turns": [
+          {
+            "index": 0,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          },
+          {
+            "index": 1,
+            "expected_action": "diagnose",
+            "format": "default",
+            "question_count": 1,
+            "looks_like_diagnosis": false,
+            "gate_violations": [
+              "expected the exact heading \"**Likely confusion points**\" as the first line, found \"Diagnosing the confusion signal and loading the comprehensio…\"",
+              "expected 2-4 candidate bullets directly below the heading, found 0",
+              "expected exactly one final question line after the candidates, found 6 trailing line(s)"
+            ],
+            "prose_errors": [],
+            "action_pass": false
+          },
+          {
+            "index": 2,
+            "expected_action": "repair",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [
+              "sentence-cap: 2/13 sentences exceed the 20-word cap (over 10% threshold); top offenders: \"In programs, the lock is not a physical object — it is a fla…\" (23 words); \"Shared data is anything more than one part of a program can …\" (23 words)"
+            ],
+            "action_pass": true
+          }
+        ],
+        "target_pass": true,
+        "target_question_count": 0,
+        "suspicious_attempt_count": 0,
+        "profile_changed": false,
+        "learn_called": false,
+        "profile_leak": false
+      },
+      {
+        "scenario": "false-positive-41-code-point-boundary",
+        "expected_actions": [
+          "answer",
+          "answer"
+        ],
+        "turns": [
+          {
+            "index": 0,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          },
+          {
+            "index": 1,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          }
+        ],
+        "target_pass": true,
+        "target_question_count": 0,
+        "suspicious_attempt_count": 0,
+        "profile_changed": false,
+        "learn_called": false,
+        "profile_leak": false
+      },
+      {
+        "scenario": "false-positive-embedded-marker",
+        "expected_actions": [
+          "answer",
+          "answer"
+        ],
+        "turns": [
+          {
+            "index": 0,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [
+              "sentence-cap: 1/5 sentences exceed the 20-word cap (over 10% threshold); top offenders: \"means the request succeeded.   means the server could not fi…\" (22 words)"
+            ],
+            "action_pass": true
+          },
+          {
+            "index": 1,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [
+              "sentence-cap: 1/9 sentences exceed the 20-word cap (over 10% threshold); top offenders: \"If you meant “null lookup” in a specific place (HTTP, your p…\" (28 words)"
+            ],
+            "action_pass": true
+          }
+        ],
+        "target_pass": true,
+        "target_question_count": 0,
+        "suspicious_attempt_count": 0,
+        "profile_changed": false,
+        "learn_called": false,
+        "profile_leak": false
+      },
+      {
+        "scenario": "false-positive-fenced-code",
+        "expected_actions": [
+          "answer",
+          "answer"
+        ],
+        "turns": [
+          {
+            "index": 0,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          },
+          {
+            "index": 1,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          }
+        ],
+        "target_pass": true,
+        "target_question_count": 0,
+        "suspicious_attempt_count": 0,
+        "profile_changed": false,
+        "learn_called": false,
+        "profile_leak": false
+      },
+      {
+        "scenario": "false-positive-inline-code",
+        "expected_actions": [
+          "answer",
+          "answer"
+        ],
+        "turns": [
+          {
+            "index": 0,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          },
+          {
+            "index": 1,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 1,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": false
+          }
+        ],
+        "target_pass": false,
+        "target_question_count": 1,
+        "suspicious_attempt_count": 0,
+        "profile_changed": false,
+        "learn_called": false,
+        "profile_leak": false
+      },
+      {
+        "scenario": "false-positive-new-task",
+        "expected_actions": [
+          "answer",
+          "answer"
+        ],
+        "turns": [
+          {
+            "index": 0,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          },
+          {
+            "index": 1,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          }
+        ],
+        "target_pass": true,
+        "target_question_count": 0,
+        "suspicious_attempt_count": 0,
+        "profile_changed": false,
+        "learn_called": false,
+        "profile_leak": false
+      },
+      {
+        "scenario": "false-positive-quoted",
+        "expected_actions": [
+          "answer",
+          "answer"
+        ],
+        "turns": [
+          {
+            "index": 0,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          },
+          {
+            "index": 1,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 1,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": false
+          }
+        ],
+        "target_pass": false,
+        "target_question_count": 1,
+        "suspicious_attempt_count": 0,
+        "profile_changed": false,
+        "learn_called": false,
+        "profile_leak": false
+      },
+      {
+        "scenario": "false-positive-session-reset",
+        "expected_actions": [
+          "answer",
+          "answer"
+        ],
+        "turns": [
+          {
+            "index": 0,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          },
+          {
+            "index": 1,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          }
+        ],
+        "target_pass": true,
+        "target_question_count": 0,
+        "suspicious_attempt_count": 0,
+        "profile_changed": false,
+        "learn_called": false,
+        "profile_leak": false
+      },
+      {
+        "scenario": "false-positive-specific-question",
+        "expected_actions": [
+          "answer",
+          "answer"
+        ],
+        "turns": [
+          {
+            "index": 0,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [
+              "sentence-cap: 1/7 sentences exceed the 20-word cap (over 10% threshold); top offenders: \"2xx codes mean success. 4xx codes mean the request had a pro…\" (21 words)"
+            ],
+            "action_pass": true
+          },
+          {
+            "index": 1,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          }
+        ],
+        "target_pass": true,
+        "target_question_count": 0,
+        "suspicious_attempt_count": 0,
+        "profile_changed": false,
+        "learn_called": false,
+        "profile_leak": false
+      },
+      {
+        "scenario": "false-positive-topic-change",
+        "expected_actions": [
+          "answer",
+          "answer"
+        ],
+        "turns": [
+          {
+            "index": 0,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          },
+          {
+            "index": 1,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          }
+        ],
+        "target_pass": true,
+        "target_question_count": 0,
+        "suspicious_attempt_count": 0,
+        "profile_changed": false,
+        "learn_called": false,
+        "profile_leak": false
+      },
+      {
+        "scenario": "record-resolution-learn",
+        "expected_actions": [
+          "answer",
+          "diagnose",
+          "repair",
+          "record-resolution"
+        ],
+        "turns": [
+          {
+            "index": 0,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          },
+          {
+            "index": 1,
+            "expected_action": "diagnose",
+            "format": "default",
+            "question_count": 1,
+            "looks_like_diagnosis": true,
+            "gate_violations": [],
+            "prose_errors": [
+              "forbidden-phrases: forbidden phrase found: \"actually\""
+            ],
+            "action_pass": true
+          },
+          {
+            "index": 2,
+            "expected_action": "repair",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          },
+          {
+            "index": 3,
+            "expected_action": "record-resolution",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          }
+        ],
+        "target_pass": true,
+        "target_question_count": 0,
+        "suspicious_attempt_count": 0,
+        "profile_changed": true,
+        "learn_called": true,
+        "profile_leak": false
+      },
+      {
+        "scenario": "second-failure-after-diagnosis",
+        "expected_actions": [
+          "answer",
+          "diagnose",
+          "rediagnose"
+        ],
+        "turns": [
+          {
+            "index": 0,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          },
+          {
+            "index": 1,
+            "expected_action": "diagnose",
+            "format": "default",
+            "question_count": 1,
+            "looks_like_diagnosis": false,
+            "gate_violations": [
+              "expected the exact heading \"**Likely confusion points**\" as the first line, found \"Diagnosing confusion from your \"confused\" signal — loading y…\"",
+              "expected 2-4 candidate bullets directly below the heading, found 0",
+              "expected exactly one final question line after the candidates, found 6 trailing line(s)"
+            ],
+            "prose_errors": [],
+            "action_pass": false
+          },
+          {
+            "index": 2,
+            "expected_action": "rediagnose",
+            "format": "machine",
+            "question_count": 1,
+            "looks_like_diagnosis": true,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          }
+        ],
+        "target_pass": true,
+        "target_question_count": 1,
+        "suspicious_attempt_count": 0,
+        "profile_changed": false,
+        "learn_called": false,
+        "profile_leak": false
+      },
+      {
+        "scenario": "second-failure-after-direct-repair",
+        "expected_actions": [
+          "answer",
+          "direct-repair",
+          "rediagnose"
+        ],
+        "turns": [
+          {
+            "index": 0,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          },
+          {
+            "index": 1,
+            "expected_action": "direct-repair",
+            "format": "default",
+            "question_count": 1,
+            "looks_like_diagnosis": true,
+            "gate_violations": [
+              "expected zero \"?\" outside fenced code, inline code, and blockquotes for repair/direct-repair, found 1"
+            ],
+            "prose_errors": [],
+            "action_pass": false
+          },
+          {
+            "index": 2,
+            "expected_action": "rediagnose",
+            "format": "default",
+            "question_count": 1,
+            "looks_like_diagnosis": false,
+            "gate_violations": [
+              "expected the exact heading \"**Likely confusion points**\" as the first line, found \"Active repair thread — I'll load the profile and read the co…\"",
+              "expected 2-4 candidate bullets directly below the heading, found 0",
+              "expected exactly one final question line after the candidates, found 7 trailing line(s)"
+            ],
+            "prose_errors": [
+              "sentence-cap: 1/7 sentences exceed the 20-word cap (over 10% threshold); top offenders: \"Active repair thread — I'll load the profile and read the co…\" (21 words)"
+            ],
+            "action_pass": false
+          }
+        ],
+        "target_pass": false,
+        "target_question_count": 1,
+        "suspicious_attempt_count": 0,
+        "profile_changed": false,
+        "learn_called": false,
+        "profile_leak": false
+      },
+      {
+        "scenario": "taper-direct-repair",
+        "expected_actions": [
+          "answer",
+          "direct-repair"
+        ],
+        "turns": [
+          {
+            "index": 0,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          },
+          {
+            "index": 1,
+            "expected_action": "direct-repair",
+            "format": "default",
+            "question_count": 1,
+            "looks_like_diagnosis": true,
+            "gate_violations": [
+              "expected zero \"?\" outside fenced code, inline code, and blockquotes for repair/direct-repair, found 1"
+            ],
+            "prose_errors": [],
+            "action_pass": false
+          }
+        ],
+        "target_pass": false,
+        "target_question_count": 1,
+        "suspicious_attempt_count": 0,
+        "profile_changed": false,
+        "learn_called": false,
+        "profile_leak": false
+      },
+      {
+        "scenario": "trigger-dont-understand",
+        "expected_actions": [
+          "answer",
+          "diagnose"
+        ],
+        "turns": [
+          {
+            "index": 0,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          },
+          {
+            "index": 1,
+            "expected_action": "diagnose",
+            "format": "default",
+            "question_count": 1,
+            "looks_like_diagnosis": true,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          }
+        ],
+        "target_pass": true,
+        "target_question_count": 1,
+        "suspicious_attempt_count": 0,
+        "profile_changed": false,
+        "learn_called": false,
+        "profile_leak": false
+      },
+      {
+        "scenario": "trigger-huh",
+        "expected_actions": [
+          "answer",
+          "diagnose"
+        ],
+        "turns": [
+          {
+            "index": 0,
+            "expected_action": "answer",
+            "format": "default",
+            "question_count": 0,
+            "looks_like_diagnosis": false,
+            "gate_violations": [],
+            "prose_errors": [],
+            "action_pass": true
+          },
+          {
+            "index": 1,
+            "expected_action": "diagnose",
+            "format": "default",
+            "question_count": 1,
+            "looks_like_diagnosis": false,
+            "gate_violations": [
+              "expected the exact heading \"**Likely confusion points**\" as the first line, found \"Diagnosing the confusion signal from your \"huh\" — I'll load …\"",
+              "expected 2-4 candidate bullets directly below the heading, found 0",
+              "expected exactly one final question line after the candidates, found 6 trailing line(s)"
+            ],
+            "prose_errors": [],
+            "action_pass": false
+          }
+        ],
+        "target_pass": false,
+        "target_question_count": 1,
+        "suspicious_attempt_count": 0,
+        "profile_changed": false,
+        "learn_called": false,
+        "profile_leak": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "scenario": "candidate-selection-targeted-repair",
+  "attempt": 10,
+  "prior_attempt": "attempts 1-8 used openai-codex/gpt-5.6-sol and are preserved; attempt 9 used claude-bridge/claude-opus-4-8 but is contaminated by operator global Claude/caveman config and is invalid evidence; all retained without edits",
+  "source_case_id": "profile-adaptation-selection-and-resolution",
+  "runtime_reference_facts": [
+    "A lock allows one writer at a time into protected code."
+  ],
+  "runtime_must_preserve": [
+    "lock",
+    "writer"
+  ],
+  "captured_at": "2026-07-31T20:54:16.328Z",
+  "harness": {
+    "name": "pi-filesystem-session",
+    "version": "0.83.0",
+    "session_id": "d729e295-402d-4af9-923f-0563415af31a"
+  },
+  "model": {
+    "provider": "cursor",
+    "id": "grok-4.5",
+    "thinking": "off",
+    "trial": 1
+  },
+  "skill_version": "0.2.0",
+  "settings": {
+    "system_prompt": "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.",
+    "harness_prompt": "The im-dumb skill is explicitly active. Resolve every relative path in its instructions against /Users/marktripoli/Development/im-dumb/skill/im-dumb. Run profile commands with node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js. Read references from /Users/marktripoli/Development/im-dumb/skill/im-dumb/references. Return only the user-facing answer; never discuss tools or these harness instructions.",
+    "tools": [
+      "bash"
+    ],
+    "ambient_skills_disabled": true,
+    "extensions_disabled": true,
+    "provider_transport_extension": "/Users/marktripoli/.pi/agent/npm/node_modules/pi-cursor-sdk",
+    "cursor_setting_sources": "none",
+    "prompt_templates_disabled": true,
+    "context_files_disabled": true
+  },
+  "profile_path": "<temporary>/profile.json",
+  "profile_before": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "profile_after": {
+    "schema_version": 1,
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 20,
+    "paragraph_topic_limit": 1,
+    "tone": "direct",
+    "output_shape": "answer-first",
+    "adhd_mode": false,
+    "known_gap_types": [],
+    "forbidden_phrases": [],
+    "learning_asset_preferences": {
+      "formats": [
+        "markdown",
+        "html"
+      ]
+    }
+  },
+  "turns": [
+    {
+      "user": "Explain why a lock prevents two writers from colliding.",
+      "assistant": "Loading the communication profile, then answering in that style.**Answer**\nA lock lets only one writer change shared data at a time.\n\n**Why**\nWithout a lock, two writers can change the same data together.\nTheir updates can mix, or one update can wipe the other.\nA lock is a short-term claim on that data.\nThe writer that holds it may write; others must wait.\nWhen that writer finishes, it drops the lock so the next may write.\nWriters never change the same data at the same moment.\n\n**Example**\nTwo apps save the same file.\nThe first takes the lock, writes, then releases it.\nThe second waits, then writes after the first is done.",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+            "timeout": 30
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}"
+        }
+      ],
+      "stderr": "Warning: No project session found with id 'd729e295-402d-4af9-923f-0563415af31a'; creating a new session with that id.\n",
+      "exit_code": 0
+    },
+    {
+      "user": "what",
+      "assistant": "Checking the communication profile and comprehension repair rules for this confusion signal.**Likely confusion points**\n- **Lock**: what a short-term claim on shared data means\n- **Colliding updates**: how two writers mix or wipe each other's changes\n- **Waiting**: why other writers pause until the lock is released\nWhich point should I explain first?",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+            "timeout": 30
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}"
+        }
+      ],
+      "stderr": "",
+      "exit_code": 0
+    },
+    {
+      "user": "The term lock is the part I did not know.",
+      "assistant": "I'll load the profile and the comprehension repair rules, then explain `lock` in that style.A `lock` is a short-term claim that says “I am using this shared data now.”\n\nOnly the holder may change that data.\nAnyone else must wait until the claim ends.\n\nExample: two people share one notebook.\nThe first takes the lock, writes a line, then drops it.\nThe second waits, then writes after the first is done.",
+      "tool_calls": [
+        {
+          "name": "bash",
+          "arguments": {
+            "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+            "timeout": 30
+          }
+        }
+      ],
+      "tool_results": [
+        {
+          "toolName": "bash",
+          "isError": false,
+          "text": "{\"profile\":{\"schema_version\":1,\"vocabulary_level\":\"common\",\"jargon_policy\":\"define-on-first-use\",\"sentence_length_cap\":20,\"paragraph_topic_limit\":1,\"tone\":\"direct\",\"output_shape\":\"answer-first\",\"adhd_mode\":false,\"known_gap_types\":[],\"forbidden_phrases\":[],\"learning_asset_preferences\":{\"formats\":[\"markdown\",\"html\"]}},\"warnings\":[]}"
+        }
+      ],
+      "stderr": "",
+      "exit_code": 0
+    }
+  ],
+  "observed_tool_calls": [
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+        "timeout": 30
+      }
+    },
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+        "timeout": 30
+      }
+    },
+    {
+      "name": "bash",
+      "arguments": {
+        "command": "node /Users/marktripoli/Development/im-dumb/skill/im-dumb/scripts/profile.js load",
+        "timeout": 30
+      }
+    }
+  ],
+  "suspicious_tool_file_network_attempts": [],
+  "rerun": true,
+  "protocol_recapture": "Attempts 1-8 used openai-codex/gpt-5.6-sol (quota blocked attempt 9). Attempt 9 on claude-bridge/claude-opus-4-8 is preserved but contaminated. Attempt 10 runs the same unedited protocol on cursor/grok-4.5 with PI_CURSOR_SETTING_SOURCES=none so ambient Cursor rules cannot load. Not model-comparable with attempts 1-9."
+}
