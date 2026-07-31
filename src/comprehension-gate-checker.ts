@@ -56,7 +56,7 @@ function stripExclusions(text: string): string {
   return withoutBlockquotes.replace(/`[^`\n]*`/g, ' ');
 }
 
-function countQuestionMarksOutsideExclusions(text: string): number {
+export function countQuestionMarksOutsideExclusions(text: string): number {
   return (stripExclusions(text).match(/\?/g) ?? []).length;
 }
 
