@@ -6,8 +6,23 @@ import { CHECKER_IDS, type CheckerId } from './checkers.ts';
 // D14 — golden case schema (hand-rolled validator, no ajv)
 // ---------------------------------------------------------------------------
 
-export const GOLDEN_CATEGORIES = ['persona-baseline', 'jargon-decomposition', 'adhd-pair', 'adversarial'] as const;
+// prd.md §9.4 categories 1/2/3/6 (M1, prompt-only) and 4/5 (M2, turns-only — see
+// docs/plans/m2-comprehension-gate.md §3).
+export const GOLDEN_CATEGORIES = [
+  'persona-baseline',
+  'jargon-decomposition',
+  'adhd-pair',
+  'adversarial',
+  'comprehension-gate',
+  'profile-adaptation',
+] as const;
 export type GoldenCategory = (typeof GOLDEN_CATEGORIES)[number];
+
+export const TURNS_ONLY_CATEGORIES = ['comprehension-gate', 'profile-adaptation'] as const;
+export type TurnsOnlyCategory = (typeof TURNS_ONLY_CATEGORIES)[number];
+
+export const PROMPT_ONLY_CATEGORIES = ['persona-baseline', 'jargon-decomposition', 'adhd-pair', 'adversarial'] as const;
+export type PromptOnlyCategory = (typeof PROMPT_ONLY_CATEGORIES)[number];
 
 export const EXPECTED_RESULTS = ['pass', 'fail', 'warn'] as const;
 export type ExpectedResult = (typeof EXPECTED_RESULTS)[number];
@@ -17,14 +32,57 @@ export interface ExpectedCheck {
   expect: ExpectedResult;
 }
 
+// M2 §3 — closed runtime-write gap taxonomy (docs/plans/m2-comprehension-gate.md §4.1).
+export const GAP_TYPES = ['term', 'step', 'assumption', 'framing'] as const;
+export type GapType = (typeof GAP_TYPES)[number];
+
+// M2 §3 — dispatcher actions a golden turn can expect.
+export const EXPECTED_ACTIONS = [
+  'answer',
+  'diagnose',
+  'repair',
+  'direct-repair',
+  'rediagnose',
+  'record-resolution',
+] as const;
+export type ExpectedAction = (typeof EXPECTED_ACTIONS)[number];
+
+export const EXPECTED_FORMATS = ['default', 'machine'] as const;
+export type ExpectedFormat = (typeof EXPECTED_FORMATS)[number];
+
+// M2 §3.2 — confidence is finite, in [0,1], and a quarter step.
+const QUARTER_STEP_CONFIDENCES = new Set<number>([0, 0.25, 0.5, 0.75, 1]);
+
+export interface ExpectedKnownGap {
+  type: GapType;
+  confidence: number;
+}
+
+export interface GoldenTurn {
+  role: 'user' | 'assistant';
+  content: string;
+  // The fields below are allowed only on user turns and describe the
+  // immediately following assistant turn (M2 §3.1-§3.2).
+  expected_action?: ExpectedAction;
+  expected_gap_type?: GapType;
+  expected_question_count?: 0 | 1;
+  expected_candidate_count?: 2 | 3 | 4;
+  expected_known_gaps?: ExpectedKnownGap[];
+  expected_format?: ExpectedFormat;
+}
+
 export interface GoldenCase {
   id: string;
   category: GoldenCategory;
-  prompt: string;
+  // Exactly one of "prompt" (v1, prompt-only categories) or "turns" (v2,
+  // turns-only categories) is present — enforced by validateGoldenCase().
+  prompt?: string;
+  turns?: GoldenTurn[];
   profile: Record<string, unknown>;
   reference_facts: string[];
   must_preserve: string[];
   expected_checks: ExpectedCheck[];
+  // pair_id is forbidden when turns is present.
   pair_id?: string;
 }
 
@@ -71,9 +129,30 @@ export function validateGoldenCase(raw: unknown): GoldenValidationResult {
   if (typeof raw.category !== 'string' || !(GOLDEN_CATEGORIES as readonly string[]).includes(raw.category)) {
     errors.push(`"category" must be one of ${GOLDEN_CATEGORIES.join(', ')}`);
   }
+  const category =
+    typeof raw.category === 'string' && (GOLDEN_CATEGORIES as readonly string[]).includes(raw.category)
+      ? (raw.category as GoldenCategory)
+      : undefined;
 
-  if (typeof raw.prompt !== 'string' || raw.prompt.trim() === '') {
-    errors.push('"prompt" must be a non-empty string');
+  const hasPrompt = raw.prompt !== undefined;
+  const hasTurns = raw.turns !== undefined;
+
+  if (hasPrompt && hasTurns) {
+    errors.push('a golden case must have exactly one of "prompt" or "turns", not both');
+  } else if (!hasPrompt && !hasTurns) {
+    errors.push('a golden case must have exactly one of "prompt" or "turns"');
+  } else if (hasPrompt) {
+    if (typeof raw.prompt !== 'string' || raw.prompt.trim() === '') {
+      errors.push('"prompt" must be a non-empty string');
+    }
+    if (category !== undefined && !(PROMPT_ONLY_CATEGORIES as readonly string[]).includes(category)) {
+      errors.push(`category "${category}" requires "turns", not "prompt"`);
+    }
+  } else {
+    if (category !== undefined && !(TURNS_ONLY_CATEGORIES as readonly string[]).includes(category)) {
+      errors.push(`category "${category}" requires "prompt", not "turns"`);
+    }
+    validateTurns(raw.turns, errors);
   }
 
   if (!isPlainObject(raw.profile)) {
@@ -100,11 +179,200 @@ export function validateGoldenCase(raw: unknown): GoldenValidationResult {
     });
   }
 
-  if (raw.pair_id !== undefined && (typeof raw.pair_id !== 'string' || raw.pair_id.trim() === '')) {
-    errors.push('"pair_id" must be a non-empty string when present');
+  if (raw.pair_id !== undefined) {
+    if (hasTurns) {
+      errors.push('"pair_id" is forbidden when "turns" is present');
+    } else if (typeof raw.pair_id !== 'string' || raw.pair_id.trim() === '') {
+      errors.push('"pair_id" must be a non-empty string when present');
+    }
   }
 
   return { valid: errors.length === 0, errors };
+}
+
+// ---------------------------------------------------------------------------
+// M2 §3.1-§3.2 — turns[] shape, strict alternation, action matrix
+// ---------------------------------------------------------------------------
+
+const MIN_TURNS = 2;
+const MAX_TURNS = 8;
+
+const TURN_EXPECTATION_FIELDS = [
+  'expected_action',
+  'expected_gap_type',
+  'expected_question_count',
+  'expected_candidate_count',
+  'expected_known_gaps',
+  'expected_format',
+] as const;
+
+const TURN_ALLOWED_FIELDS = new Set<string>(['role', 'content', ...TURN_EXPECTATION_FIELDS]);
+
+// M2 §3.2 action matrix.
+const QUESTION_COUNT_BY_ACTION: Record<ExpectedAction, 0 | 1> = {
+  answer: 0,
+  diagnose: 1,
+  repair: 0,
+  'direct-repair': 0,
+  rediagnose: 1,
+  'record-resolution': 0,
+};
+
+const CANDIDATE_COUNT_REQUIRED_ACTIONS = new Set<ExpectedAction>(['diagnose', 'rediagnose']);
+const GAP_TYPE_REQUIRED_ACTIONS = new Set<ExpectedAction>(['repair', 'direct-repair', 'record-resolution']);
+const KNOWN_GAPS_REQUIRED_ACTIONS = new Set<ExpectedAction>(['record-resolution']);
+
+function validateTurns(rawTurns: unknown, errors: string[]): void {
+  if (!Array.isArray(rawTurns)) {
+    errors.push('"turns" must be an array');
+    return;
+  }
+
+  if (rawTurns.length < MIN_TURNS || rawTurns.length > MAX_TURNS) {
+    errors.push(`"turns" must have between ${MIN_TURNS} and ${MAX_TURNS} entries, got ${rawTurns.length}`);
+  }
+  if (rawTurns.length % 2 !== 0) {
+    errors.push('"turns" must have an even number of entries');
+  }
+
+  rawTurns.forEach((rawTurn, index) => {
+    if (!isPlainObject(rawTurn)) {
+      errors.push(`"turns[${index}]" must be an object`);
+      return;
+    }
+
+    for (const key of Object.keys(rawTurn)) {
+      if (!TURN_ALLOWED_FIELDS.has(key)) {
+        errors.push(`"turns[${index}]" has unknown field "${key}"`);
+      }
+    }
+
+    // Strict alternation, user-first, assistant-last: even indices are user
+    // turns, odd indices are assistant turns (only self-consistent when the
+    // overall length is even, checked above).
+    const expectedRole = index % 2 === 0 ? 'user' : 'assistant';
+    if (rawTurn.role !== 'user' && rawTurn.role !== 'assistant') {
+      errors.push(`"turns[${index}].role" must be "user" or "assistant"`);
+    } else if (rawTurn.role !== expectedRole) {
+      errors.push(`"turns[${index}].role" must be "${expectedRole}" (turns strictly alternate, starting with user)`);
+    }
+
+    if (typeof rawTurn.content !== 'string' || rawTurn.content.trim() === '') {
+      errors.push(`"turns[${index}].content" must be a non-empty string`);
+    }
+
+    if (rawTurn.role === 'assistant') {
+      for (const field of TURN_EXPECTATION_FIELDS) {
+        if (rawTurn[field] !== undefined) {
+          errors.push(`"turns[${index}]" is an assistant turn and must not set "${field}"`);
+        }
+      }
+      return;
+    }
+
+    if (rawTurn.role !== 'user') return;
+
+    let action: ExpectedAction | undefined;
+    if (typeof rawTurn.expected_action !== 'string' || !(EXPECTED_ACTIONS as readonly string[]).includes(rawTurn.expected_action)) {
+      errors.push(`"turns[${index}].expected_action" must be one of ${EXPECTED_ACTIONS.join(', ')}`);
+    } else {
+      action = rawTurn.expected_action as ExpectedAction;
+    }
+
+    if (typeof rawTurn.expected_format !== 'string' || !(EXPECTED_FORMATS as readonly string[]).includes(rawTurn.expected_format)) {
+      errors.push(`"turns[${index}].expected_format" must be one of ${EXPECTED_FORMATS.join(', ')}`);
+    }
+
+    if (rawTurn.expected_question_count !== 0 && rawTurn.expected_question_count !== 1) {
+      errors.push(`"turns[${index}].expected_question_count" must be 0 or 1`);
+    } else if (action !== undefined && rawTurn.expected_question_count !== QUESTION_COUNT_BY_ACTION[action]) {
+      errors.push(
+        `"turns[${index}].expected_question_count" must be ${QUESTION_COUNT_BY_ACTION[action]} for action "${action}"`,
+      );
+    }
+
+    const hasCandidateCount = rawTurn.expected_candidate_count !== undefined;
+    const candidateInRange =
+      rawTurn.expected_candidate_count === 2 || rawTurn.expected_candidate_count === 3 || rawTurn.expected_candidate_count === 4;
+    if (action !== undefined && CANDIDATE_COUNT_REQUIRED_ACTIONS.has(action)) {
+      if (!candidateInRange) {
+        errors.push(`"turns[${index}].expected_candidate_count" must be 2, 3, or 4 for action "${action}"`);
+      }
+    } else if (action !== undefined && hasCandidateCount) {
+      errors.push(`"turns[${index}].expected_candidate_count" is forbidden for action "${action}"`);
+    } else if (action === undefined && hasCandidateCount && !candidateInRange) {
+      errors.push(`"turns[${index}].expected_candidate_count" must be 2, 3, or 4`);
+    }
+
+    const hasGapType = rawTurn.expected_gap_type !== undefined;
+    const gapTypeValid = typeof rawTurn.expected_gap_type === 'string' && (GAP_TYPES as readonly string[]).includes(rawTurn.expected_gap_type);
+    if (action !== undefined && GAP_TYPE_REQUIRED_ACTIONS.has(action)) {
+      if (!gapTypeValid) {
+        errors.push(`"turns[${index}].expected_gap_type" must be one of ${GAP_TYPES.join(', ')} for action "${action}"`);
+      }
+    } else if (action !== undefined && hasGapType) {
+      errors.push(`"turns[${index}].expected_gap_type" is forbidden for action "${action}"`);
+    } else if (action === undefined && hasGapType && !gapTypeValid) {
+      errors.push(`"turns[${index}].expected_gap_type" must be one of ${GAP_TYPES.join(', ')}`);
+    }
+
+    if (rawTurn.expected_known_gaps !== undefined) {
+      validateKnownGaps(rawTurn.expected_known_gaps, index, errors);
+    } else if (action !== undefined && KNOWN_GAPS_REQUIRED_ACTIONS.has(action)) {
+      errors.push(`"turns[${index}].expected_known_gaps" is required for action "${action}"`);
+    }
+  });
+}
+
+function validateKnownGaps(rawGaps: unknown, turnIndex: number, errors: string[]): void {
+  if (!Array.isArray(rawGaps)) {
+    errors.push(`"turns[${turnIndex}].expected_known_gaps" must be an array`);
+    return;
+  }
+
+  const seenTypes: GapType[] = [];
+  rawGaps.forEach((entry, gapIndex) => {
+    if (!isPlainObject(entry)) {
+      errors.push(`"turns[${turnIndex}].expected_known_gaps[${gapIndex}]" must be an object`);
+      return;
+    }
+
+    for (const key of Object.keys(entry)) {
+      if (key !== 'type' && key !== 'confidence') {
+        errors.push(`"turns[${turnIndex}].expected_known_gaps[${gapIndex}]" has unknown field "${key}"`);
+      }
+    }
+
+    let type: GapType | undefined;
+    if (typeof entry.type !== 'string' || !(GAP_TYPES as readonly string[]).includes(entry.type)) {
+      errors.push(`"turns[${turnIndex}].expected_known_gaps[${gapIndex}].type" must be one of ${GAP_TYPES.join(', ')}`);
+    } else {
+      type = entry.type as GapType;
+    }
+
+    if (typeof entry.confidence !== 'number' || !QUARTER_STEP_CONFIDENCES.has(entry.confidence)) {
+      errors.push(
+        `"turns[${turnIndex}].expected_known_gaps[${gapIndex}].confidence" must be finite, in [0,1], and a quarter step (one of ${[
+          ...QUARTER_STEP_CONFIDENCES,
+        ].join(', ')})`,
+      );
+    }
+
+    if (type !== undefined) {
+      if (seenTypes.includes(type)) {
+        errors.push(`"turns[${turnIndex}].expected_known_gaps" has duplicate type "${type}"`);
+      }
+      seenTypes.push(type);
+    }
+  });
+
+  if (seenTypes.length === rawGaps.length) {
+    const sortedTypes = [...seenTypes].sort((a, b) => GAP_TYPES.indexOf(a) - GAP_TYPES.indexOf(b));
+    const isSorted = seenTypes.every((type, index) => type === sortedTypes[index]);
+    if (!isSorted) {
+      errors.push(`"turns[${turnIndex}].expected_known_gaps" must be sorted by type in taxonomy order (${GAP_TYPES.join(', ')})`);
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------

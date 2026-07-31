@@ -6,6 +6,7 @@ import path from 'node:path';
 
 import {
   GOLDEN_CATEGORIES,
+  PROMPT_ONLY_CATEGORIES,
   validateGoldenCase,
   validateGoldenCaseSet,
   verifyManifest,
@@ -83,7 +84,10 @@ test(`golden dataset: total case count is within the M1 draft range [${MIN_CASES
 
 test('golden dataset: every M1 category (persona-baseline, jargon-decomposition, adhd-pair, adversarial) is represented', () => {
   const cases = loadCases();
-  for (const category of GOLDEN_CATEGORIES) {
+  // M2 turns-only categories (comprehension-gate, profile-adaptation) are part of the
+  // D14 schema (see docs/plans/m2-comprehension-gate.md §3/§9 slice 3) but ship no case
+  // files until slice 4, so only the prompt-only M1 categories are checked here.
+  for (const category of PROMPT_ONLY_CATEGORIES) {
     const count = cases.filter((c) => c.category === category).length;
     assert.ok(count > 0, `expected at least one case in category "${category}"`);
   }
