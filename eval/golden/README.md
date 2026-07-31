@@ -213,8 +213,10 @@ and runtime evidence, not claims inferred from conversational prose.
 ### M2 slice 4 existing-case review note
 
 No published case bytes changed, so no special existing-case sign-off is
-required. Git diff and unchanged recorded hashes provide the proof. The
-manifest changes only add new M2 ids and hashes.
+required. Before this branch's PR was merged, independent Fable and Sol review
+corrected the embedded-marker fixture from a 47-code-point `too-long` overlap
+to a distinct at-most-40-code-point `no-marker` case. The published-case rule
+above applies only after merge; the manifest records the corrected hash.
 
 ## Dataset size
 

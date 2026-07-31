@@ -24,6 +24,7 @@ import {
   type GoldenCaseFile,
   type GoldenManifest,
 } from '../src/golden-schema.ts';
+import { MARKER_PHRASES, normalizeReply } from '../src/reference-classifier.ts';
 
 const repoRoot = path.resolve(fileURLToPath(import.meta.url), '../..');
 const goldenDir = path.join(repoRoot, 'eval', 'golden');
@@ -62,10 +63,6 @@ function userTurns(c: GoldenCase) {
   return c.turns?.filter((turn) => turn.role === 'user') ?? [];
 }
 
-function normalizeReply(value: string): string {
-  return value.normalize('NFKC').replace(/[‘’]/gu, "'").toLowerCase().trim().replace(/\s+/gu, ' ');
-}
-
 function normalizedCodePointLength(value: string): number {
   return [...normalizeReply(value)].length;
 }
@@ -74,13 +71,7 @@ function stripTerminalPunctuation(value: string): string {
   return normalizeReply(value).replace(/[.!?…]+$/u, '').trim();
 }
 
-const MARKERS = new Set([
-  'huh', 'what', 'confused', 'lost',
-  "i don't get it", 'i dont get it', "i don't understand", 'i dont understand',
-  'i am lost', "i'm lost", 'im lost',
-  "this doesn't make sense", 'this doesnt make sense', "that doesn't make sense", 'that doesnt make sense',
-  "still don't get it", 'still dont get it', "i still don't understand", 'i still dont understand',
-]);
+const MARKERS = new Set(MARKER_PHRASES);
 
 const GENERIC_LABELS = new Set(['something', 'other', 'not sure']);
 const BARE_REASKS = new Set([
@@ -248,7 +239,8 @@ test('golden dataset: false-positive/reset buckets have distinct frozen syntax a
   assert.match(normalizeReply(buckets.specific.content), /\?$/u);
   assert.ok(!MARKERS.has(stripTerminalPunctuation(buckets.specific.content)));
   assert.match(normalizeReply(buckets.specific.content), /huh/u);
-  assert.match(normalizeReply(buckets.embedded.content), /^i don't understand why this lookup returns null$/u);
+  assert.match(normalizeReply(buckets.embedded.content), /^i don't understand this null lookup$/u);
+  assert.ok(normalizedCodePointLength(buckets.embedded.content) <= 40, 'embedded marker must reach the marker rule');
   assert.ok(!MARKERS.has(stripTerminalPunctuation(buckets.embedded.content)));
   assert.match(cases.get('comprehension-gate-false-positive-specific-embedded')!.turns!.at(-1)!.content, /lookup returns `null`/u);
   assert.match(normalizeReply(buckets.newTask.content), /^new task:/u);
