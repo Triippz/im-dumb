@@ -18,21 +18,20 @@ eval/golden/
 ## Category mapping (prd.md §9.4 → D14 `category` enum)
 
 prd.md §9.4 lists six category types for the golden dataset. M1 ships
-categories 1, 2, 3, and 6 as prompt-only cases. Categories 4 and 5 are
-schema-v2 turns-only categories (see "Schema v2" below and
-`docs/plans/m2-comprehension-gate.md` §3): the schema and validator ship in
-M2 slice 3 (this document), but case files for these two categories are
-deferred to M2 slice 4 — `GOLDEN_CATEGORIES` already includes both, and any
-case declaring one of them must use `turns[]`, not `prompt`. AGENTS.md
-invariant 7 records this per-milestone split as deliberate, not drift.
+categories 1, 2, 3, and 6 as prompt-only cases. M2 adds categories 4 and 5
+as schema-v2 turns-only cases (see "Schema v2" below and
+`docs/plans/m2-comprehension-gate.md` §3). `GOLDEN_CATEGORIES` includes all
+six; a category 4 or 5 case must use `turns[]`, not `prompt`. AGENTS.md
+invariant 7 records this per-milestone eval-first sequence as deliberate,
+not drift.
 
 | # | prd.md §9.4 description | D14 `category` value | shape | status |
 |---|---|---|---|---|
 | 1 | Baseline explanations across three knowledge-level personas | `persona-baseline` | prompt (v1) | shipped |
 | 2 | Jargon-heavy source material requiring lossless decomposition | `jargon-decomposition` | prompt (v1) | shipped |
 | 3 | ADHD-mode on/off pairs on identical input | `adhd-pair` | prompt (v1) | shipped |
-| 4 | Comprehension-gate trigger cases, including false positives | `comprehension-gate` | turns (v2) | schema shipped, cases deferred to M2 slice 4 |
-| 5 | Profile-adaptation multi-turn sequences | `profile-adaptation` | turns (v2) | schema shipped, cases deferred to M2 slice 4 |
+| 4 | Comprehension-gate trigger cases, including false positives | `comprehension-gate` | turns (v2) | shipped in M2 slice 4 |
+| 5 | Profile-adaptation multi-turn sequences | `profile-adaptation` | turns (v2) | shipped in M2 slice 4 |
 | 6 | Adversarial cases inducing jargon leakage or unsafe over-simplification | `adversarial` | prompt (v1) | shipped |
 
 `PROMPT_ONLY_CATEGORIES` (categories 1/2/3/6) and `TURNS_ONLY_CATEGORIES`
@@ -102,11 +101,10 @@ Schema v2 adds a `turns[]` shape for `comprehension-gate` and
 by all M1 categories. **v1 cases remain valid under v2 unchanged** — a case
 with a bare `prompt` (no `turns`) validates exactly as it did under schema
 v1, and manifest hashing is unaffected by the schema change since it hashes
-file bytes, not schema version. This slice ships the schema and its
-validator (`docs/plans/m2-comprehension-gate.md` §9 slice 3); the
-turns-only category case files and the golden-turn evaluator/dispatcher
-(§3.4) that pairs a real assistant reply against these expectations are
-later slices (§9 slices 4 and 7) and are not implemented yet.
+file bytes, not schema version. M2 slice 3 ships the schema and validator; slice 4 ships the turns-only
+category case files. The golden-turn evaluator/dispatcher (§3.4), which pairs
+a real assistant reply against these expectations, remains a later slice and
+is not implemented yet.
 
 ### `GoldenTurn`
 
@@ -150,7 +148,11 @@ fields on that user turn may or must contain:
 "Optional" here is a schema-shape statement only: the field may be present
 or absent. Whether an optional or required `expected_known_gaps` array
 matches the real post-turn profile state is the golden-turn evaluator's job
-(§3.4, a later slice), not this schema's.
+(§3.4, a later slice), not this schema's. A CAS-conflict fixture represents a
+stale expected confidence in user content and an unchanged exact recognized
+post-state in `expected_known_gaps`. Its assistant reply stays user-facing;
+the exact tool outcome and stderr diagnostic belong to profile `learn` tests
+and fixed runtime evidence.
 
 ### `GapType` — closed taxonomy (M2 §4.1)
 
@@ -188,8 +190,34 @@ require this extra sign-off — only in-place edits to a case's `prompt`,
 `turns`, `profile`, `reference_facts`, `must_preserve`, or `expected_checks`
 do.
 
-## Dataset size (M1 draft)
+### Turns-case evaluation scope
 
-25-30 cases total (prd.md §9.4). Current count and per-category breakdown are
+For a turns case, `reference_facts` contains only subject-matter facts used
+for M1 fidelity; gate and persistence policy belongs in composition tests,
+not factual judging. `reference_facts` and `must_preserve` apply across the
+case's assistant turns as one transcript. Each `must_preserve` value must
+appear in at least one assistant reply. Declared `expected_checks` apply to
+each assistant reply independently. Cases containing a gate action do not
+declare the D9 `output-shape` or D10 `adhd-structure` checkers; sentence cap,
+forbidden phrases, and one-term-one-concept still apply. Explicit machine
+output declares a prose checker only when its frozen fixture can be evaluated
+by that checker.
+
+`profile` is the pre-sequence state. `expected_known_gaps` is the exact
+recognized post-action state for its paired assistant/tool step; preserved
+unknown entries are intentionally excluded. Assistant content is user-facing
+and never has to expose persistence diagnostics. Exact `learn` stdout,
+stderr, CAS, locking, and unknown-entry preservation are executable profile
+and runtime evidence, not claims inferred from conversational prose.
+
+### M2 slice 4 existing-case review note
+
+No published case bytes changed, so no special existing-case sign-off is
+required. Git diff and unchanged recorded hashes provide the proof. The
+manifest changes only add new M2 ids and hashes.
+
+## Dataset size
+
+25-50 cases total (prd.md §9.4). Current count and per-category breakdown are
 enforced by `test/golden-dataset.test.ts`, not restated here as a number that
 would drift out of sync with the actual dataset.

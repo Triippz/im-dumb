@@ -1,0 +1,72 @@
+{
+  "id": "profile-adaptation-direct-step-known-state",
+  "category": "profile-adaptation",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Explain how a deployment replaces an old app version.",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "The system starts the new version, checks it, then routes traffic away from the old version."
+    },
+    {
+      "role": "user",
+      "content": "im lost",
+      "expected_action": "direct-repair",
+      "expected_question_count": 0,
+      "expected_format": "default",
+      "expected_gap_type": "step",
+      "expected_known_gaps": [
+        {
+          "type": "term",
+          "confidence": 0.5
+        },
+        {
+          "type": "step",
+          "confidence": 0.75
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": "The unclear step is the handoff. After the new version passes its check, routing sends new requests to it."
+    }
+  ],
+  "profile": {
+    "known_gap_types": [
+      {
+        "type": "term",
+        "confidence": 0.5
+      },
+      {
+        "type": "step",
+        "confidence": 0.75
+      }
+    ]
+  },
+  "reference_facts": [
+    "Traffic moves only after the new version passes its check."
+  ],
+  "must_preserve": [
+    "new version",
+    "routing"
+  ],
+  "expected_checks": [
+    {
+      "checker": "sentence-cap",
+      "expect": "pass"
+    },
+    {
+      "checker": "forbidden-phrases",
+      "expect": "pass"
+    },
+    {
+      "checker": "one-term-one-concept",
+      "expect": "pass"
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "id": "profile-adaptation-success-reset",
+  "category": "profile-adaptation",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Explain how a checksum can reveal a changed file.",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "A checksum summarizes file contents. Changed contents usually produce a different checksum."
+    },
+    {
+      "role": "user",
+      "content": "huh",
+      "expected_action": "direct-repair",
+      "expected_question_count": 0,
+      "expected_format": "default",
+      "expected_gap_type": "term",
+      "expected_known_gaps": [
+        {
+          "type": "term",
+          "confidence": 0.75
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": "A `checksum` is a short value calculated from file contents. For example, editing one byte usually changes the checksum."
+    },
+    {
+      "role": "user",
+      "content": "That explanation worked.",
+      "expected_action": "record-resolution",
+      "expected_question_count": 0,
+      "expected_format": "default",
+      "expected_gap_type": "term",
+      "expected_known_gaps": [
+        {
+          "type": "term",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": "Glad the checksum explanation helped."
+    },
+    {
+      "role": "user",
+      "content": "confused",
+      "expected_action": "direct-repair",
+      "expected_question_count": 0,
+      "expected_format": "default",
+      "expected_gap_type": "term",
+      "expected_known_gaps": [
+        {
+          "type": "term",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": "`Checksum` means a short value calculated from file contents. For example, matching files usually have the same checksum."
+    }
+  ],
+  "profile": {
+    "known_gap_types": [
+      {
+        "type": "term",
+        "confidence": 0.75
+      }
+    ]
+  },
+  "reference_facts": [
+    "A checksum is calculated from file contents.",
+    "Changed contents usually produce a different checksum."
+  ],
+  "must_preserve": [
+    "checksum",
+    "file contents"
+  ],
+  "expected_checks": [
+    {
+      "checker": "sentence-cap",
+      "expect": "pass"
+    },
+    {
+      "checker": "forbidden-phrases",
+      "expect": "pass"
+    },
+    {
+      "checker": "one-term-one-concept",
+      "expect": "pass"
+    }
+  ]
+}

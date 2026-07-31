@@ -1,0 +1,75 @@
+{
+  "id": "profile-adaptation-active-state-reset",
+  "category": "profile-adaptation",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Explain why a cache can become stale.",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "A cache becomes stale when its saved copy no longer matches the source."
+    },
+    {
+      "role": "user",
+      "content": "confused",
+      "expected_action": "diagnose",
+      "expected_question_count": 1,
+      "expected_format": "default",
+      "expected_candidate_count": 3
+    },
+    {
+      "role": "assistant",
+      "content": "**Likely confusion points**\n- **Saved copy**: Which value the cache keeps may be unclear.\n- **Source change**: How the original value changes may be unclear.\n- **Stale result**: Why the old copy can still be returned may be unclear.\nWhich part should I trace first?"
+    },
+    {
+      "role": "user",
+      "content": "New task: explain DNS instead.",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "DNS maps a domain name to an address that a computer can contact."
+    },
+    {
+      "role": "user",
+      "content": "huh",
+      "expected_action": "diagnose",
+      "expected_question_count": 1,
+      "expected_format": "default",
+      "expected_candidate_count": 3
+    },
+    {
+      "role": "assistant",
+      "content": "**Likely confusion points**\n- **Domain name**: The human-readable site name may be unclear.\n- **Address**: The numeric destination may be unclear.\n- **Lookup**: How DNS connects the two may be unclear.\nWhich DNS part should I unpack?"
+    }
+  ],
+  "profile": {},
+  "reference_facts": [
+    "A stale cache contains a saved value that no longer matches its source.",
+    "DNS maps a domain name to an address."
+  ],
+  "must_preserve": [
+    "cache",
+    "DNS"
+  ],
+  "expected_checks": [
+    {
+      "checker": "sentence-cap",
+      "expect": "pass"
+    },
+    {
+      "checker": "forbidden-phrases",
+      "expect": "pass"
+    },
+    {
+      "checker": "one-term-one-concept",
+      "expect": "pass"
+    }
+  ]
+}

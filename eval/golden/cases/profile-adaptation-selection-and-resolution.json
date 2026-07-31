@@ -1,0 +1,79 @@
+{
+  "id": "profile-adaptation-selection-and-resolution",
+  "category": "profile-adaptation",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Explain why a lock prevents two writers from colliding.",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "A lock lets one writer enter the protected section while the other waits."
+    },
+    {
+      "role": "user",
+      "content": "what",
+      "expected_action": "diagnose",
+      "expected_question_count": 1,
+      "expected_format": "default",
+      "expected_candidate_count": 3,
+      "expected_known_gaps": []
+    },
+    {
+      "role": "assistant",
+      "content": "**Likely confusion points**\n- **Lock**: The permission token may be unclear.\n- **Protected section**: The code covered by the lock may be unclear.\n- **Waiting writer**: Why the second writer pauses may be unclear.\nWhich item is the gap?"
+    },
+    {
+      "role": "user",
+      "content": "The term lock is the part I did not know.",
+      "expected_action": "repair",
+      "expected_question_count": 0,
+      "expected_format": "default",
+      "expected_gap_type": "term",
+      "expected_known_gaps": []
+    },
+    {
+      "role": "assistant",
+      "content": "A `lock` is a one-at-a-time permission token. For example, one writer holds it while another waits."
+    },
+    {
+      "role": "user",
+      "content": "That fixed it.",
+      "expected_action": "record-resolution",
+      "expected_question_count": 0,
+      "expected_format": "default",
+      "expected_gap_type": "term",
+      "expected_known_gaps": [
+        {
+          "type": "term",
+          "confidence": 0.5
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": "Good. I will remember that the term was the gap."
+    }
+  ],
+  "profile": {},
+  "reference_facts": [
+    "A lock allows one writer at a time into protected code."
+  ],
+  "must_preserve": [
+    "lock",
+    "writer"
+  ],
+  "expected_checks": [
+    {
+      "checker": "sentence-cap",
+      "expect": "pass"
+    },
+    {
+      "checker": "forbidden-phrases",
+      "expect": "pass"
+    }
+  ]
+}

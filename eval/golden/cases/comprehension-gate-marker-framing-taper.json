@@ -1,0 +1,60 @@
+{
+  "id": "comprehension-gate-marker-framing-taper",
+  "category": "comprehension-gate",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Explain why an index speeds up a database lookup.",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "An index gives the database a shorter path to matching rows instead of scanning every row."
+    },
+    {
+      "role": "user",
+      "content": "This doesn't make sense",
+      "expected_action": "direct-repair",
+      "expected_question_count": 0,
+      "expected_format": "default",
+      "expected_gap_type": "assumption",
+      "expected_known_gaps": [
+        {
+          "type": "assumption",
+          "confidence": 0.75
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": "The missing assumption is that checking every row costs more as the table grows. An index keeps an ordered shortcut to likely matches."
+    }
+  ],
+  "profile": {
+    "known_gap_types": [
+      {
+        "type": "assumption",
+        "confidence": 0.75
+      }
+    ]
+  },
+  "reference_facts": [
+    "An index can avoid scanning every row."
+  ],
+  "must_preserve": [
+    "index",
+    "row"
+  ],
+  "expected_checks": [
+    {
+      "checker": "sentence-cap",
+      "expect": "pass"
+    },
+    {
+      "checker": "forbidden-phrases",
+      "expect": "pass"
+    }
+  ]
+}

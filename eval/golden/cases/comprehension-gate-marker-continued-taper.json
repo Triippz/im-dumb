@@ -1,0 +1,60 @@
+{
+  "id": "comprehension-gate-marker-continued-taper",
+  "category": "comprehension-gate",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Explain why retries can duplicate a payment.",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "If the first payment succeeds but its reply is lost, a retry can submit the payment again."
+    },
+    {
+      "role": "user",
+      "content": "Still don't get it",
+      "expected_action": "direct-repair",
+      "expected_question_count": 0,
+      "expected_format": "default",
+      "expected_gap_type": "framing",
+      "expected_known_gaps": [
+        {
+          "type": "framing",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": "Think of the retry as a new envelope carrying the same payment request. The server may receive both envelopes even when the client saw only one reply."
+    }
+  ],
+  "profile": {
+    "known_gap_types": [
+      {
+        "type": "framing",
+        "confidence": 1
+      }
+    ]
+  },
+  "reference_facts": [
+    "A lost response can cause a client to retry a request that already succeeded."
+  ],
+  "must_preserve": [
+    "retry",
+    "payment"
+  ],
+  "expected_checks": [
+    {
+      "checker": "sentence-cap",
+      "expect": "pass"
+    },
+    {
+      "checker": "forbidden-phrases",
+      "expect": "pass"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "id": "comprehension-gate-false-positive-specific-embedded",
+  "category": "comprehension-gate",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Explain what an HTTP status code is.",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "It is a number in a server response that summarizes the request result."
+    },
+    {
+      "role": "user",
+      "content": "What does \"huh\" mean here?",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "Here, `huh` is a quoted example inside a specific question."
+    },
+    {
+      "role": "user",
+      "content": "I don't understand why this lookup returns null",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "A lookup returns `null` when no matching record exists. Check the key and the missing-value path."
+    }
+  ],
+  "profile": {},
+  "reference_facts": [
+    "An HTTP status code summarizes a request result.",
+    "A nullable lookup can return null when no record matches."
+  ],
+  "must_preserve": [
+    "server response",
+    "null"
+  ],
+  "expected_checks": [
+    {
+      "checker": "sentence-cap",
+      "expect": "pass"
+    },
+    {
+      "checker": "forbidden-phrases",
+      "expect": "pass"
+    }
+  ]
+}

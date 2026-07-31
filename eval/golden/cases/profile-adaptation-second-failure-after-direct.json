@@ -1,0 +1,106 @@
+{
+  "id": "profile-adaptation-second-failure-after-direct",
+  "category": "profile-adaptation",
+  "turns": [
+    {
+      "role": "user",
+      "content": "Explain why a load balancer sends requests to several servers.",
+      "expected_action": "answer",
+      "expected_question_count": 0,
+      "expected_format": "default"
+    },
+    {
+      "role": "assistant",
+      "content": "It spreads incoming requests so one server does not carry all the work."
+    },
+    {
+      "role": "user",
+      "content": "lost",
+      "expected_action": "direct-repair",
+      "expected_question_count": 0,
+      "expected_format": "default",
+      "expected_gap_type": "framing",
+      "expected_known_gaps": [
+        {
+          "type": "framing",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": "Picture one checkout line being split across several open cashiers. The load balancer chooses an available server for each request."
+    },
+    {
+      "role": "user",
+      "content": "still don't get it",
+      "expected_action": "rediagnose",
+      "expected_question_count": 1,
+      "expected_format": "default",
+      "expected_candidate_count": 3,
+      "expected_known_gaps": [
+        {
+          "type": "framing",
+          "confidence": 1
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": "**Likely confusion points**\n- **Request arrival**: Where requests first land may be unclear.\n- **Server choice**: How one destination is selected may be unclear.\n- **Shared capacity**: Why several servers help may be unclear.\nWhich stage should I draw as a short sequence?"
+    },
+    {
+      "role": "user",
+      "content": "The missing step was how the load balancer chooses a server. That fixed it.",
+      "expected_action": "record-resolution",
+      "expected_question_count": 0,
+      "expected_format": "default",
+      "expected_gap_type": "step",
+      "expected_known_gaps": [
+        {
+          "type": "step",
+          "confidence": 0.5
+        },
+        {
+          "type": "framing",
+          "confidence": 0.75
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": "I recorded the server-choice step and reduced the earlier framing confidence. Unrelated profile entries remain unchanged."
+    }
+  ],
+  "profile": {
+    "known_gap_types": [
+      {
+        "type": "framing",
+        "confidence": 1
+      },
+      {
+        "type": "sequence",
+        "confidence": 0.6
+      }
+    ]
+  },
+  "reference_facts": [
+    "A load balancer distributes requests across servers.",
+    "A load balancer can choose a server for each request."
+  ],
+  "must_preserve": [
+    "load balancer",
+    "server",
+    "step"
+  ],
+  "expected_checks": [
+    {
+      "checker": "sentence-cap",
+      "expect": "pass"
+    },
+    {
+      "checker": "forbidden-phrases",
+      "expect": "pass"
+    }
+  ]
+}
