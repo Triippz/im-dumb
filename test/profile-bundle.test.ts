@@ -76,7 +76,7 @@ test('the committed bundle runs with bare Node from a directory without node_mod
   result = runBundle(cwd, [], { HOME: home, IM_DUMB_PROFILE: undefined });
   assert.equal(result.status, 2);
   assert.equal(result.stdout, '');
-  assert.match(result.stderr, /^usage: profile\.js <load\|validate\|save>\n$/u);
+  assert.match(result.stderr, /^usage: profile\.js <load\|validate\|save\|learn>\n$/u);
 
   const profileDir = path.join(home, '.im-dumb');
   mkdirSync(profileDir, { recursive: true });
@@ -111,6 +111,33 @@ test('the committed bundle honors IM_DUMB_PROFILE and saves atomically with priv
   assert.equal(loadResult.status, 0);
   assert.deepEqual(JSON.parse(loadResult.stdout), { profile: FULL_PROFILE, warnings: [] });
   assert.equal(loadResult.stderr, '');
+});
+
+test('the committed bundle applies strict CAS learn offline with no extra dependency', () => {
+  const cwd = freshDir();
+  const home = freshDir();
+  const profilePath = path.join(home, 'profile.json');
+  const env = { HOME: home, IM_DUMB_PROFILE: profilePath };
+  writeFileSync(profilePath, JSON.stringify(FULL_PROFILE), { encoding: 'utf8', mode: 0o600 });
+
+  let result = runBundle(cwd, ['learn'], env, JSON.stringify({
+    type: 'term', outcome: 'success', expectedConfidence: null,
+  }));
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(JSON.parse(result.stdout).applied, true);
+  assert.equal(result.stderr, '');
+  assert.deepEqual(JSON.parse(readFileSync(profilePath, 'utf8')).known_gap_types, [
+    ...FULL_PROFILE.known_gap_types,
+    { type: 'term', confidence: 0.5 },
+  ]);
+
+  result = runBundle(cwd, ['learn'], env, JSON.stringify({
+    type: 'term', outcome: 'success', expectedConfidence: null,
+  }));
+  assert.equal(result.status, 1);
+  assert.deepEqual(JSON.parse(result.stdout), { error: 'conflict', currentConfidence: 0.5 });
+  assert.equal(result.stderr, 'learn: conflict\n');
+  assert.deepEqual(readdirSync(home), ['profile.json']);
 });
 
 test('the committed bundle validates without mutation and preserves hidden fields through load-modify-save', () => {

@@ -348,6 +348,11 @@ including existing `save` and new `learn`:
 - stale threshold: `30_000ms`;
 - these are named, testable constants, not user profile fields;
 - lock content includes an unguessable token, PID, and creation time;
+- stale reclaim uses immutable private candidates named
+  `<lock>.reclaim.<createdAt>.<pid>.<token>`; deterministic earliest-candidate
+  election plus a token-keyed hard link pins the stale main inode, writers scan
+  candidates before and after lock creation, and dead-PID stale candidates
+  self-heal by unique-path deletion;
 - a caller removes only a lock whose token it owns;
 - a lock is proven stale only after rereading and confirming the same token,
   age above the stale threshold, and that `process.kill(pid, 0)` reports
@@ -356,6 +361,11 @@ including existing `save` and new `learn`:
   lock is not removed;
 - removal repeats the token check immediately before unlinking; and
 - a live or not-proven-stale contended lock remains after `lock-timeout`.
+
+`lock-timeout` can therefore mean active contention or a deliberately retained
+invalid/PID-reused artifact. Manual recovery is allowed only after confirming
+no profile writer is live: remove the exact `<profile-path>.lock` file and the
+matching `<profile-path>.lock.reclaim.*` candidate files.
 
 `learn` acquires the lock, reads raw bytes, parses, and strictly validates the
 on-disk profile before mutation. Missing, malformed, unsupported-version,
