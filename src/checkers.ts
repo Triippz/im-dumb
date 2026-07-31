@@ -5,7 +5,9 @@ import { FILLER_PHRASES, CONCEPT_SYNONYM_SETS } from './data/lexicon.ts';
 // Checker registry (FR7) — consumed by src/golden-schema.ts (D14) for the
 // `expected_checks[].checker` enum. Not every id below has an implementing
 // function in this file: `profile-schema` is src/profile.ts's validate(),
-// `golden-case-schema` is src/golden-schema.ts's validateGoldenCase().
+// `golden-case-schema` is src/golden-schema.ts's validateGoldenCase(),
+// `comprehension-gate` is src/comprehension-gate-checker.ts's
+// checkComprehensionGate().
 // ---------------------------------------------------------------------------
 
 export const CHECKER_IDS = [
@@ -17,6 +19,7 @@ export const CHECKER_IDS = [
   'frontmatter',
   'profile-schema',
   'golden-case-schema',
+  'comprehension-gate',
 ] as const;
 
 export type CheckerId = (typeof CHECKER_IDS)[number];

@@ -35,6 +35,7 @@ test('CHECKER_IDS covers the FR7 checker set', () => {
     'frontmatter',
     'profile-schema',
     'golden-case-schema',
+    'comprehension-gate',
   ]) {
     assert.ok((CHECKER_IDS as readonly string[]).includes(id), `expected CHECKER_IDS to include "${id}"`);
   }
