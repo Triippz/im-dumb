@@ -135,6 +135,15 @@ not a reason to weaken fixtures.
 Not yet a required PR check: full Layer 2 offline smoke suite with a pinned
 judge model (deliberately deferred to M3 in AGENTS.md).
 
+## M3 (planned)
+
+Layer 2 runner + Gate 3 token budget + human quiz protocol:
+[`docs/plans/m3-eval-infrastructure.md`](../docs/plans/m3-eval-infrastructure.md).
+
+Dual path: local CLI dry-run without secrets; live pinned judge in CI when a
+repo secret exists. Gate 5 shadow/canary stays deferred. M2 runtime acceptance
+remains open and is not a prerequisite for starting M3 infrastructure.
+
 ## How to extend without rotting the gate
 
 1. Add or change a **case** → update `eval/golden/`, regenerate/verify the
