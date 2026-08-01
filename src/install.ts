@@ -66,8 +66,7 @@ export function installSkill(options: {
     if (previousVersion === version) {
       if (!existsSync(path.join(options.destDir, 'scripts', 'profile.js'))) {
         rmSync(options.destDir, { recursive: true, force: true });
-        copyTree(options.sourceDir, options.destDir);
-        materializeSkillPaths(options.destDir);
+        installTree(options.sourceDir, options.destDir);
         return {
           action: 'repaired',
           destDir: options.destDir,
@@ -86,8 +85,7 @@ export function installSkill(options: {
       };
     }
     rmSync(options.destDir, { recursive: true, force: true });
-    copyTree(options.sourceDir, options.destDir);
-    materializeSkillPaths(options.destDir);
+    installTree(options.sourceDir, options.destDir);
     return {
       action: 'upgraded',
       destDir: options.destDir,
@@ -96,14 +94,23 @@ export function installSkill(options: {
     };
   }
 
-  copyTree(options.sourceDir, options.destDir);
-  materializeSkillPaths(options.destDir);
+  installTree(options.sourceDir, options.destDir);
   return { action: 'installed', destDir: options.destDir, version };
 }
 
 function copyTree(sourceDir: string, destDir: string): void {
   mkdirSync(path.dirname(destDir), { recursive: true });
   cpSync(sourceDir, destDir, { recursive: true, force: true });
+}
+
+function installTree(sourceDir: string, destDir: string): void {
+  try {
+    copyTree(sourceDir, destDir);
+    materializeSkillPaths(destDir);
+  } catch (error) {
+    rmSync(destDir, { recursive: true, force: true });
+    throw error;
+  }
 }
 
 const PROFILE_SCRIPT_TOKEN = '{{IM_DUMB_PROFILE_SCRIPT}}';
@@ -127,6 +134,9 @@ function materializeSkillPaths(destDir: string): boolean {
 function markdownFiles(root: string): string[] {
   return readdirSync(root, { withFileTypes: true }).flatMap((entry) => {
     const file = path.join(root, entry.name);
+    if (entry.isSymbolicLink()) {
+      throw new Error(`refusing to materialize symlink: ${file}`);
+    }
     return entry.isDirectory() ? markdownFiles(file) : entry.name.endsWith('.md') ? [file] : [];
   });
 }

@@ -78,13 +78,7 @@ function increment(counts: Record<string, number>, key: string): void {
 }
 
 function mergedProfile(partial: Record<string, unknown>): { profile?: Profile; errors: string[] } {
-  const raw = {
-    ...DEFAULT_PROFILE,
-    known_gap_types: DEFAULT_PROFILE.known_gap_types.map((gap) => ({ ...gap })),
-    forbidden_phrases: [...DEFAULT_PROFILE.forbidden_phrases],
-    learning_asset_preferences: { formats: [...DEFAULT_PROFILE.learning_asset_preferences.formats] },
-    ...partial,
-  };
+  const raw = { ...DEFAULT_PROFILE, ...partial };
   const checked = validate(raw, 'save');
   return checked.errors.length === 0 ? { profile: checked.profile, errors: [] } : { errors: checked.errors };
 }

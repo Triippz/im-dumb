@@ -78,6 +78,7 @@ npx im-dumb install --targets claude,cursor,codex,pi --scope global
 |---|---|---|
 | Claude Code | `~/.claude/skills/` | `.claude/skills/` |
 | Cursor | `~/.cursor/skills/` | `.cursor/skills/` or `.agents/skills/` |
+| Codex | `$CODEX_HOME/skills/` (defaults to `~/.codex/skills/`) | Not supported; Codex has no documented project skill root |
 | Pi | `~/.pi/agent/skills/` or `~/.agents/skills/` | `.pi/skills/` or `.agents/skills/` |
 | Claude API / claude.ai | Manual upload | — |
 | OpenAI hosted | Manual upload or local-shell path | — |

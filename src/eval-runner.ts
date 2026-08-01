@@ -29,13 +29,10 @@ import {
   validateSmokeCaseIds,
 } from './smoke-manifest.ts';
 import {
-  AGGREGATE_CEILING_PERCENT,
-  PER_CASE_CEILING_PERCENT,
-  countCodePoints,
+  buildTokenOverheadReportFromPairs,
   hashDatasetManifest,
-  overheadPercent,
   validateCapture,
-  type CaseOverhead,
+  type CapturePair,
   type TokenOverheadReport,
 } from './token-overhead.ts';
 
@@ -179,15 +176,7 @@ export function parseEvalRunnerArgs(argv: string[], repoRoot = defaultRepoRoot()
 }
 
 function profileFromCase(partial: Record<string, unknown>): Profile {
-  const raw = {
-    ...DEFAULT_PROFILE,
-    known_gap_types: DEFAULT_PROFILE.known_gap_types.map((gap) => ({ ...gap })),
-    forbidden_phrases: [...DEFAULT_PROFILE.forbidden_phrases],
-    learning_asset_preferences: {
-      formats: [...DEFAULT_PROFILE.learning_asset_preferences.formats],
-    },
-    ...partial,
-  };
+  const raw = { ...DEFAULT_PROFILE, ...partial };
   const checked = validate(raw, 'load');
   if (checked.errors.length > 0) {
     throw new Error(`invalid case profile: ${checked.errors.join('; ')}`);
@@ -221,6 +210,46 @@ function tryLoadCandidateResponse(baselinesDir: string, caseId: string): string 
   }
 }
 
+function evaluateLayer1SmokeCase(options: {
+  caseId: string;
+  goldenDir: string;
+  baselinesDir: string;
+  quarantined: boolean;
+}): { golden: GoldenCase; response: string | null; result: Omit<CaseSmokeResult, 'judge'> } {
+  const goldenPath = path.join(options.goldenDir, `${options.caseId}.json`);
+  const golden = loadGoldenCase(goldenPath);
+  if (golden.id !== options.caseId) throw new Error(`${goldenPath}: id mismatch`);
+
+  const response = tryLoadCandidateResponse(options.baselinesDir, options.caseId);
+  if (response === null) {
+    return {
+      golden,
+      response,
+      result: {
+        caseId: options.caseId,
+        candidateStatus: 'missing',
+        layer1ErrorCount: 0,
+        layer1WarnCount: 0,
+        quarantined: options.quarantined,
+      },
+    };
+  }
+
+  const violations = runChecks(response, profileFromCase(golden.profile), false);
+  return {
+    golden,
+    response,
+    result: {
+      caseId: options.caseId,
+      candidateStatus: 'present',
+      layer1ErrorCount: violations.filter((v) => v.severity === 'error').length,
+      layer1WarnCount: violations.filter((v) => v.severity === 'warn').length,
+      quarantined: options.quarantined,
+      layer1Violations: violations,
+    },
+  };
+}
+
 function emptyArtifact(skillVersion: string, mode: EvalArtifact['mode']): EvalArtifact {
   return {
     mode,
@@ -239,7 +268,7 @@ export function buildTokenOverheadForSmoke(options: {
   caseIds: readonly string[];
   baselinesDir: string;
 }): TokenOverheadReport | null {
-  const cases: CaseOverhead[] = [];
+  const pairs: CapturePair[] = [];
   for (const caseId of options.caseIds) {
     const baselinePath = path.join(options.baselinesDir, `${caseId}.baseline.json`);
     const candidatePath = path.join(options.baselinesDir, `${caseId}.candidate.json`);
@@ -254,42 +283,9 @@ export function buildTokenOverheadForSmoke(options: {
     }
     const baseline = validateCapture(baselineRaw, baselinePath);
     const candidate = validateCapture(candidateRaw, candidatePath);
-    const baselineCodePoints = countCodePoints(baseline.response);
-    const candidateCodePoints = countCodePoints(candidate.response);
-    const percent = overheadPercent(baselineCodePoints, candidateCodePoints);
-    cases.push({
-      caseId,
-      baselineCodePoints,
-      candidateCodePoints,
-      baselineEstimatedTokens: baselineCodePoints / 4,
-      candidateEstimatedTokens: candidateCodePoints / 4,
-      overheadPercent: percent,
-      exceedsCeiling: percent > PER_CASE_CEILING_PERCENT,
-    });
+    pairs.push({ caseId, baseline, candidate });
   }
-  if (cases.length === 0) return null;
-
-  const baselineCodePoints = cases.reduce((sum, item) => sum + item.baselineCodePoints, 0);
-  const candidateCodePoints = cases.reduce((sum, item) => sum + item.candidateCodePoints, 0);
-  const aggregatePercent = overheadPercent(baselineCodePoints, candidateCodePoints);
-  return {
-    approximateTokenMethod: 'Unicode code points / 4',
-    ceilings: {
-      aggregatePercent: AGGREGATE_CEILING_PERCENT,
-      perCasePercent: PER_CASE_CEILING_PERCENT,
-      // ponytail: still report-only until multi-trial captures + CI flip
-      reportOnly: true,
-    },
-    cases,
-    aggregate: {
-      baselineCodePoints,
-      candidateCodePoints,
-      baselineEstimatedTokens: baselineCodePoints / 4,
-      candidateEstimatedTokens: candidateCodePoints / 4,
-      overheadPercent: aggregatePercent,
-      exceedsCeiling: aggregatePercent > AGGREGATE_CEILING_PERCENT,
-    },
-  };
+  return pairs.length === 0 ? null : buildTokenOverheadReportFromPairs(pairs);
 }
 
 export function buildDryRunArtifact(input: {
@@ -394,36 +390,12 @@ function runDrySmoke(options: EvalRunnerArgs): EvalSmokeResult {
     const cases: Array<Omit<CaseSmokeResult, 'judge'>> = [];
 
     for (const caseId of manifest.caseIds) {
-      const goldenPath = path.join(options.goldenDir, `${caseId}.json`);
-      const golden = loadGoldenCase(goldenPath);
-      if (golden.id !== caseId) {
-        throw new Error(`${goldenPath}: id mismatch`);
-      }
-
-      const response = tryLoadCandidateResponse(options.baselinesDir, caseId);
-      const isQuarantined = quarantined.has(caseId);
-
-      if (response === null) {
-        cases.push({
-          caseId,
-          candidateStatus: 'missing',
-          layer1ErrorCount: 0,
-          layer1WarnCount: 0,
-          quarantined: isQuarantined,
-        });
-        continue;
-      }
-
-      const profile = profileFromCase(golden.profile);
-      const violations = runChecks(response, profile, false);
-      cases.push({
+      cases.push(evaluateLayer1SmokeCase({
         caseId,
-        candidateStatus: 'present',
-        layer1ErrorCount: violations.filter((v) => v.severity === 'error').length,
-        layer1WarnCount: violations.filter((v) => v.severity === 'warn').length,
-        quarantined: isQuarantined,
-        layer1Violations: violations,
-      });
+        goldenDir: options.goldenDir,
+        baselinesDir: options.baselinesDir,
+        quarantined: quarantined.has(caseId),
+      }).result);
     }
 
     return {
@@ -468,61 +440,30 @@ export async function runEvalSmokeAsync(options: EvalRunnerArgs): Promise<EvalSm
     const cases: CaseSmokeResult[] = [];
 
     for (const caseId of manifest.caseIds) {
-      const goldenPath = path.join(options.goldenDir, `${caseId}.json`);
-      const golden = loadGoldenCase(goldenPath);
-      if (golden.id !== caseId) {
-        throw new Error(`${goldenPath}: id mismatch`);
-      }
-
-      const response = tryLoadCandidateResponse(options.baselinesDir, caseId);
-      const isQuarantined = quarantined.has(caseId);
-
-      if (response === null) {
-        cases.push({
-          caseId,
-          candidateStatus: 'missing',
-          layer1ErrorCount: 0,
-          layer1WarnCount: 0,
-          quarantined: isQuarantined,
-          judge: failedJudge('candidate missing'),
-        });
-        continue;
-      }
-
-      const profile = profileFromCase(golden.profile);
-      const violations = runChecks(response, profile, false);
-      const layer1ErrorCount = violations.filter((v) => v.severity === 'error').length;
-      const layer1WarnCount = violations.filter((v) => v.severity === 'warn').length;
-
-      if (layer1ErrorCount > 0) {
-        cases.push({
-          caseId,
-          candidateStatus: 'present',
-          layer1ErrorCount,
-          layer1WarnCount,
-          quarantined: isQuarantined,
-          layer1Violations: violations,
-          judge: failedJudge('layer1 errors'),
-        });
-        continue;
-      }
-
-      const judge = await judgeCase({
+      const evaluated = evaluateLayer1SmokeCase({
         caseId,
-        golden,
-        response,
-        client,
-        pin,
-        trialsPerCase: options.trialsPerCase,
+        goldenDir: options.goldenDir,
+        baselinesDir: options.baselinesDir,
+        quarantined: quarantined.has(caseId),
       });
+      if (evaluated.response === null) {
+        cases.push({ ...evaluated.result, judge: failedJudge('candidate missing') });
+        continue;
+      }
+      if (evaluated.result.layer1ErrorCount > 0) {
+        cases.push({ ...evaluated.result, judge: failedJudge('layer1 errors') });
+        continue;
+      }
       cases.push({
-        caseId,
-        candidateStatus: 'present',
-        layer1ErrorCount,
-        layer1WarnCount,
-        quarantined: isQuarantined,
-        layer1Violations: violations,
-        judge,
+        ...evaluated.result,
+        judge: await judgeCase({
+          caseId,
+          golden: evaluated.golden,
+          response: evaluated.response,
+          client,
+          pin,
+          trialsPerCase: options.trialsPerCase,
+        }),
       });
     }
 

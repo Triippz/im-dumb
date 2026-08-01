@@ -27,8 +27,7 @@ test('detectHarnesses: finds claude/cursor/pi markers under home and project', (
     found.map((item) => item.id).sort(),
     ['claude', 'codex', 'cursor', 'pi'],
   );
-  assert.equal(found.find((item) => item.id === 'codex')?.installable, true);
-  assert.equal(found.find((item) => item.id === 'claude')?.installable, true);
+  assert.ok(found.every((item) => item.markerPath.startsWith('/')));
 });
 
 test('resolveInstallDestinations: per-harness paths when .agents/skills absent', () => {

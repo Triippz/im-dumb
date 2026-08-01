@@ -166,7 +166,11 @@ export function overheadPercent(baselineCodePoints: number, candidateCodePoints:
 }
 
 export function buildTokenOverheadReport(rawCaptures: unknown[], expected: ExpectedCaptureSet): TokenOverheadReport {
-  const pairs = pairCaptures(rawCaptures, expected);
+  return buildTokenOverheadReportFromPairs(pairCaptures(rawCaptures, expected));
+}
+
+export function buildTokenOverheadReportFromPairs(pairs: readonly CapturePair[]): TokenOverheadReport {
+  if (pairs.length === 0) throw new Error('capture pair set is empty');
   const cases = pairs.map(({ caseId, baseline, candidate }): CaseOverhead => {
     const baselineCodePoints = countCodePoints(baseline.response);
     const candidateCodePoints = countCodePoints(candidate.response);

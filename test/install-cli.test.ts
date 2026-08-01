@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdirSync, mkdtempSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
@@ -64,7 +64,7 @@ test('runInstallCli: installs Codex into its native root', async () => {
   assert.match(readFileSync(path.join(home, '.codex', 'skills', 'im-dumb', 'SKILL.md'), 'utf8'), /name: im-dumb/);
 });
 
-test('runInstallCli: project scope skips Codex but installs compatible targets', async () => {
+test('runInstallCli: rejects a project-scope Codex target without partial installation', async () => {
   const home = tempDir();
   const project = tempDir();
   mkdirSync(path.join(project, '.git'));
@@ -72,11 +72,8 @@ test('runInstallCli: project scope skips Codex but installs compatible targets',
     ['install', '--targets', 'claude,codex', '--scope', 'project', '--home', home],
     { homeDir: home, cwd: project, isTTY: false },
   );
-  const lines: string[] = [];
-  const { exitCode } = await runInstallCli(args, { log: (line) => lines.push(line) });
-  assert.equal(exitCode, 0);
-  assert.ok(readFileSync(path.join(project, '.claude', 'skills', 'im-dumb', 'SKILL.md'), 'utf8'));
-  assert.ok(lines.some((line) => /skipping Codex/i.test(line)));
+  await assert.rejects(runInstallCli(args, { log: () => {} }), /global installation only/);
+  assert.equal(existsSync(path.join(project, '.claude', 'skills', 'im-dumb')), false);
 });
 
 test('runInstallCli: missing --targets without TTY fails closed', async () => {

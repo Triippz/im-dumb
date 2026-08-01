@@ -157,11 +157,6 @@ export async function runInstallCli(
     scope = selected.scope;
   }
 
-  if (scope === 'project' && targets.includes('codex')) {
-    log('Codex supports global installation only; skipping Codex for this project-scope run.');
-    targets = targets.filter((id) => id !== 'codex');
-  }
-
   const destinations = resolveInstallDestinations({
     targets,
     scope,
@@ -177,23 +172,12 @@ export async function runInstallCli(
   for (const dest of destinations) {
     const prior = installed.get(dest.destDir);
     if (prior) {
-      results.push({
-        harness: dest.harness,
-        destDir: dest.destDir,
-        viaSharedAgents: dest.viaSharedAgents,
-        action: 'skipped',
-        version: prior.version,
-        reason: 'shared destination already handled',
-      });
+      results.push({ ...dest, action: 'skipped', version: prior.version, reason: 'shared destination already handled' });
       continue;
     }
     const outcome = installSkill({ sourceDir, destDir: dest.destDir });
     installed.set(dest.destDir, outcome);
-    results.push({
-      harness: dest.harness,
-      viaSharedAgents: dest.viaSharedAgents,
-      ...outcome,
-    });
+    results.push({ ...dest, ...outcome });
   }
 
   if (args.json) {
@@ -234,22 +218,12 @@ async function promptTargets(
       }
     });
 
-  const installable = detected.filter((item) => item.installable);
-  if (installable.length === 0) {
-    throw new Error('no installable harnesses detected (looked for .claude, .cursor, .codex, .pi, .agents)');
+  if (!detected.length) {
+    throw new Error('no harnesses detected (looked for .claude, .cursor, .codex, .pi, .agents)');
   }
+  log(`Detected: ${detected.map(({ id }) => id).join(', ')}`);
 
-  if (detected.length === 0) log('Detected: (none)');
-  else {
-    log(
-      'Detected: ' +
-        detected
-          .map((item) => `${item.id}${item.installable ? '' : ' (manual only)'}`)
-          .join(', '),
-    );
-  }
-
-  const defaultIds = installable.map((item) => item.id).join(',');
+  const defaultIds = detected.map(({ id }) => id).join(',');
   const rawTargets = await ask(`Targets [${defaultIds}]: `);
   const targets = parseTargets(rawTargets === '' ? defaultIds : rawTargets);
   const rawScope = await ask('Scope [global]: ');

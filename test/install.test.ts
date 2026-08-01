@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
@@ -81,6 +81,27 @@ test('installSkill: same version restores a missing bundled script', () => {
   assert.equal(result.action, 'repaired');
   assert.equal(result.reason, 'missing bundled script');
   assert.ok(readFileSync(path.join(dest, 'scripts', 'profile.js'), 'utf8').length > 0);
+});
+
+test('installSkill: refuses markdown symlinks during same-version repair', () => {
+  const root = tempDir();
+  const dest = path.join(root, 'im-dumb');
+  const outside = path.join(root, 'outside.md');
+  installSkill({ sourceDir: skillSource, destDir: dest });
+  writeFileSync(outside, 'outside');
+  symlinkSync(outside, path.join(dest, 'references', 'outside.md'));
+  assert.throws(() => installSkill({ sourceDir: skillSource, destDir: dest }), /materialize symlink/);
+  assert.equal(readFileSync(outside, 'utf8'), 'outside');
+});
+
+test('installSkill: removes a fresh tree when materialization rejects a source symlink', () => {
+  const root = tempDir();
+  const source = path.join(root, 'source');
+  const dest = path.join(root, 'im-dumb');
+  cpSync(skillSource, source, { recursive: true });
+  symlinkSync(path.join(root, 'outside.md'), path.join(source, 'references', 'outside.md'));
+  assert.throws(() => installSkill({ sourceDir: source, destDir: dest }), /materialize symlink/);
+  assert.equal(existsSync(dest), false);
 });
 
 test('installSkill: different installed version upgrades', () => {
