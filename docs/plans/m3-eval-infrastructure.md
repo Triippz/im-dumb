@@ -37,7 +37,7 @@ Revision 1 — post-#7/#8; M2 runtime acceptance left open; no further capture l
 4. **Live judge when configured** — env/config pins `JUDGE_MODEL` + version; temperature 0; provider adapter behind a tiny interface (OpenAI-compatible first; Cursor/Codex optional later).
 5. **CI dual path** — if secret missing: run dry-run job (or skip live judge with explicit notice). If secret present: run live smoke and **block on regression**.
 6. **Multi-trial** — 3–5 trials per judged case; report raw per-dimension pass/fail; no ELO/ranking aggregation (`eval/rubric.md`, `eval/comprehension-rubric.md`).
-7. **Gate 3** — token-overhead report becomes blocking when trial count ≥ product floor (`REQUIRED_TRIAL_COUNT` today is 1; raise when multi-trial captures exist).
+7. **Gate 3** — token-overhead remains report-only until repeated paired generation captures and an explicit CI enforcement path land. Set the product floor only then; the current `REQUIRED_TRIAL_COUNT = 1` validates the historical single-trial report shape and is not an enforcement threshold.
 8. **Quiz protocol** — finalize human A/B comprehension-quiz procedure under `eval/` (materials, scoring sheet, pass criteria = quiz-accuracy delta, not judge score).
 9. **Artifacts** — JSON + short markdown summary per run, gitignored or under `eval/results/` with clear “not golden” policy.
 

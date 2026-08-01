@@ -45,7 +45,7 @@ The model applies the profile while generating the answer. There is no second re
 - **Your structure** — answer first, short sections, controlled sentence length, and examples when they help.
 - **Your jargon policy** — avoid it, define it once, or allow it.
 - **ADHD mode** — restructures long answers into headed chunks with no more than three sibling items. It is a communication preference, not a medical feature.
-- **Comprehension repair** — planned for M2: when something still does not land, the skill names likely confusion points instead of asking a vague “what do you mean?”
+- **Comprehension repair** — when something still does not land, the skill names likely confusion points instead of asking a vague “what do you mean?”
 
 ## How it works
 
@@ -59,7 +59,7 @@ The same profile is designed to travel across Claude Code, Cursor, OpenAI Codex/
 ## Install
 
 > [!IMPORTANT]
-> **Pre-release:** the package is not on npm yet (`private: true` until M6). The M4 installer CLI is implemented in-repo — build locally, then run `node dist/install-cli.js install …`. After publish, the same entrypoint is `npx im-dumb`.
+> **Pre-release:** the package is not on npm yet (`private: true` until an owner-authorized npm publication). The M4 installer CLI is implemented in-repo — build locally, then run `node dist/install-cli.js install …`. After publish, the same entrypoint is `npx im-dumb`.
 
 From a clone:
 
@@ -68,7 +68,7 @@ npm run build
 node dist/install-cli.js install --targets claude,cursor,pi --scope global
 ```
 
-After npm publish (M6):
+After owner-authorized npm publication:
 
 ```bash
 npx im-dumb install --targets claude,cursor,pi --scope global
@@ -88,7 +88,7 @@ Hosted upload automation is intentionally out of scope for v1 because it would r
 
 - Bundled skill scripts make **no outbound network calls** at invocation time.
 - Compiled JavaScript has **zero runtime dependencies**.
-- Running `npx im-dumb` (after M6 publish) will need network access once, to download the package; after install, the skill's bundled scripts still make no outbound network calls when invoked. Local `node dist/install-cli.js` needs no network.
+- Running `npx im-dumb` (after owner-authorized npm publication) will need network access once, to download the package; after install, the skill's bundled scripts still make no outbound network calls when invoked. Local `node dist/install-cli.js` needs no network.
 - The installer only writes local files that you can inspect.
 - Profile paths can be overridden with `IM_DUMB_PROFILE`; profile validation rejects unknown fields on save.
 

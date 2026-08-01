@@ -60,6 +60,14 @@ jobs:
         run: |
           echo "dry run: computed ${{ steps.version.outputs.next_version }} (${{ steps.version.outputs.bump }}); nothing tagged or published"
 
+      - name: Validate npm publication request
+        if: ${{ !inputs.dry_run && inputs.publish_npm }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          node --input-type=module -e 'import pkg from "./package.json" with { type: "json" }; if (pkg.private) throw new Error("package.json is private; refuse to create a publish release"); if (!process.env.NODE_AUTH_TOKEN) throw new Error("NPM_TOKEN is required for npm publication")'
+          npm whoami
+
       - name: Apply version, changelog, and tag
         if: ${{ !inputs.dry_run }}
         env:
@@ -70,9 +78,9 @@ jobs:
           npm run verify:dist-sync
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add package.json skill/im-dumb/SKILL.md CHANGELOG.md
+          git add package.json package-lock.json skill/im-dumb/SKILL.md CHANGELOG.md
           git commit -m "chore(release): v${NEXT_VERSION}"
-          git tag "v${NEXT_VERSION}"
+          git tag -a "v${NEXT_VERSION}" -m "chore(release): v${NEXT_VERSION}"
           git push origin HEAD --follow-tags
 
       - name: Publish to npm
