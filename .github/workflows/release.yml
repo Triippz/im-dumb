@@ -1,0 +1,92 @@
+# Manual release only. Never triggered by merge.
+name: release
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Compute version and changelog without tagging or publishing'
+        type: boolean
+        default: true
+      publish_npm:
+        description: 'Publish to npm (requires the package to be public and NPM_TOKEN set)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24.x
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      # Release-blocking gate: the full offline suite must be green.
+      - run: npm ci
+      - run: npm run build
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run verify:golden
+      - run: npm run verify:dist-sync
+      - run: npm run check:skill
+      - run: npm run eval:smoke
+
+      - name: Live judge gate (only when configured)
+        if: vars.JUDGE_SMOKE_ENABLED == 'true'
+        env:
+          JUDGE_API_KEY: ${{ secrets.JUDGE_API_KEY }}
+          JUDGE_MODEL: ${{ vars.JUDGE_MODEL }}
+          JUDGE_MODEL_VERSION: ${{ vars.JUDGE_MODEL_VERSION }}
+          GENERATOR_MODEL: ${{ vars.GENERATOR_MODEL }}
+        run: npm run eval:smoke:live
+
+      - name: Compute next version and changelog
+        id: version
+        run: npm run release:prepare
+
+      - name: Stop here on dry run
+        if: inputs.dry_run
+        run: |
+          echo "dry run: computed ${{ steps.version.outputs.next_version }} (${{ steps.version.outputs.bump }}); nothing tagged or published"
+
+      - name: Apply version, changelog, and tag
+        if: ${{ !inputs.dry_run }}
+        env:
+          NEXT_VERSION: ${{ steps.version.outputs.next_version }}
+        run: |
+          npm run release:prepare -- --write
+          npm run build
+          npm run verify:dist-sync
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json skill/im-dumb/SKILL.md CHANGELOG.md
+          git commit -m "chore(release): v${NEXT_VERSION}"
+          git tag "v${NEXT_VERSION}"
+          git push origin HEAD --follow-tags
+
+      - name: Publish to npm
+        if: ${{ !inputs.dry_run && inputs.publish_npm }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
+
+      - name: Cut skill bundle for hosted upload
+        if: ${{ !inputs.dry_run }}
+        run: |
+          zip -r "im-dumb-skill-${{ steps.version.outputs.next_version }}.zip" skill/im-dumb
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        if: ${{ !inputs.dry_run }}
+        with:
+          name: skill-bundle
+          path: im-dumb-skill-*.zip

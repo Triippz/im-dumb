@@ -42,9 +42,9 @@ There is no separate `installer/` package directory — the CLI lives in `src/in
 ## Governance
 
 - **PR titles**: valid Conventional Commit headers (`feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`, `feat!:`/`BREAKING CHANGE:`). CI lints and blocks on failure. Version bumps derive from this history.
-- **CI green before merge** — single override path only (required label + second approver), shared with the eval-gate override.
+- **CI green before merge** — single override path only: the `override-gate` label plus a second approving review from someone who did not write the change, per-PR, never carried forward, and never valid for a release run. Shared with the eval-gate override; see `docs/plans/m6-release-governance.md` §3.
 - **Required PR checks**: PR-title semantic lint, TypeScript build/typecheck, Layer 1 deterministic skill-constraint checks, Layer 2 offline eval smoke suite.
-- **Releases are manual**: `workflow_dispatch` workflow computes next SemVer from commit history, runs full nightly eval suite (all five gates, prd.md §9.2) as release-blocking gate, publishes npm, tags, generates changelog, optionally cuts skill-bundle zip for hosted upload. Never auto-publish on merge.
+- **Releases are manual**: `.github/workflows/release.yml` is `workflow_dispatch` only. It computes the next SemVer from Conventional Commit history (`src/release-version.ts`), runs the full offline suite as a release-blocking gate, then writes `package.json` + skill `metadata.version` + `CHANGELOG.md`, tags, and uploads a skill-bundle zip artifact. `dry_run` defaults to true and npm publish needs a second explicit `publish_npm` opt-in, so nothing ships by accident. Never auto-publish on merge. `npm run release:prepare` is the local dry run.
 
 ## Milestones (prd.md §12)
 

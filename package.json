@@ -25,7 +25,8 @@
     "verify:dist-sync": "diff -u dist/profile.js skill/im-dumb/scripts/profile.js",
     "eval:smoke": "node src/eval-runner.ts --dry-run",
     "eval:smoke:live": "node src/eval-runner.ts --live",
-    "install:skill": "node src/install-cli.ts install"
+    "install:skill": "node src/install-cli.ts install",
+    "release:prepare": "node src/release-cli.ts"
   },
   "devDependencies": {
     "@types/node": "24.13.3",
