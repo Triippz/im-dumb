@@ -151,7 +151,7 @@ test('main skill loads onboarding detail only for onboarding/editing and resumes
 test('main skill loads comprehension detail only for a later possible signal or active repair thread', () => {
   const comprehension = section(body, 'Comprehension repair');
   assert.match(comprehension, /Reject markers in quotes, inline\/fenced code, specific questions, task\/topic\s+resets, or oversized punctuation/i);
-  assert.match(comprehension, /ordinary answer, name the quoted,\s+inline-code, or code-block wrapper; no diagnosis or `\?`, even in a quote\/code example/i);
+  assert.match(comprehension, /ordinary answer, name the quoted,\s+inline-code, or code-block wrapper; no diagnosis or `\?`, even in a quote\/code example; retain `hostile`/i);
   assert.match(comprehension, /possible later-turn confusion signal/i);
   assert.match(comprehension, /active repair thread/i);
   assert.match(comprehension, /read\s+`references\/comprehension\.md`/i);
