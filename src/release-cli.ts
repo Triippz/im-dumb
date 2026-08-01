@@ -64,6 +64,17 @@ function main(): void {
   pkg.version = nextVersion;
   writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`, 'utf8');
 
+  const lockPath = path.join(repoRoot, 'package-lock.json');
+  if (existsSync(lockPath)) {
+    const lock = JSON.parse(readFileSync(lockPath, 'utf8')) as {
+      version?: string;
+      packages?: Record<string, { version?: string }>;
+    };
+    lock.version = nextVersion;
+    if (lock.packages?.[''] !== undefined) lock.packages[''].version = nextVersion;
+    writeFileSync(lockPath, `${JSON.stringify(lock, null, 2)}\n`, 'utf8');
+  }
+
   const skillPath = path.join(repoRoot, 'skill', 'im-dumb', 'SKILL.md');
   const skill = readFileSync(skillPath, 'utf8');
   writeFileSync(skillPath, skill.replace(/(\n {2}version:\s*)[^\s#]+/, `$1${nextVersion}`), 'utf8');
@@ -73,7 +84,7 @@ function main(): void {
   const body = existing.startsWith('# Changelog') ? existing.slice(CHANGELOG_HEADER.length) : existing;
   writeFileSync(changelogPath, `${CHANGELOG_HEADER}\n${section}${body}`, 'utf8');
 
-  console.log(`\nwrote package.json, SKILL.md metadata.version, and CHANGELOG.md at ${nextVersion}`);
+  console.log(`\nwrote package.json, package-lock.json (when present), SKILL.md metadata.version, and CHANGELOG.md at ${nextVersion}`);
 }
 
 main();
