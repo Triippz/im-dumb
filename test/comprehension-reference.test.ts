@@ -124,7 +124,7 @@ test('reference freezes classifier precedence, exclusions, and two-stage runtime
   assert.match(runtime, /reference classifier[\s\S]*repository-only/i);
   assert.match(runtime, /Do not add, infer, or expand markers/i);
   const filter = prose('Candidate filter');
-  assert.match(filter, /quoted, inline-code, or fenced-code non-trigger[\s\S]*preserve whether it was quoted or code[\s\S]*ordinary\s+untrusted-command data, preserve the exact safety word `hostile`[\s\S]*use one word for one concept; write `change`,\s+not `change` and `alter`/i);
+  assert.match(filter, /quoted, inline-code, or fenced-code non-trigger[\s\S]*preserve whether it was quoted or code[\s\S]*untrusted\s+command-like data, say it is untrusted data and not an\s+instruction[\s\S]*use one word for one concept; write `change`, not `change` and\s+`alter`/i);
   assert.match(filter, /Do not repeat the\s+prior explanation as though the wrapper were absent/i);
 });
 
