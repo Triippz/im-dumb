@@ -144,6 +144,7 @@ test('reference state table exactly freezes taper, repair, rediagnosis, and rese
   assert.match(state, /bare exact marker does not name a gap/i);
   assert.match(state, /confused`, `lost`, and `huh` must diagnose unless the profile already has\s+exactly one recognized gap at `>=0\.75` that directly matches the prior answer/i);
   assert.match(state, /known `step` gap can match an ordered process[\s\S]*Do not infer a\s+gap from the prior answer's dominant structure alone/i);
+  assert.match(state, /On rediagnosis, map every candidate only to an explicit prior-answer element[\s\S]*failed direct repair[\s\S]*excluding only its analogy or framing is not enough/i);
   assert.match(state, /Unknown types[\s\S]*ambiguity always diagnoses/i);
   assert.match(state, /word `still` alone never establishes state/i);
 });
@@ -188,6 +189,7 @@ test('reference freezes default and exact JSON diagnosis shapes plus deny sets',
   assert.match(output, /label names the source\s+element, never a repair method such as `Example` or `Analogy`/i);
   assert.match(output, /every materially distinct supported path when there are 2–4/i);
   assert.match(output, /more than 4[\s\S]*four most directly signaled[\s\S]*Never leave a supported distinct path out while a candidate slot remains/i);
+  assert.match(output, /Count explicit prior-answer terms, steps, conditions, and consequences[\s\S]*when that count reaches four, emit four candidates[\s\S]*final effect or outcome\s+is distinct unless one candidate explicitly covers it/i);
   assert.match(output, /multiple benefits, conditions, checks, or failure consequences[\s\S]*include\s+each unless one candidate explicitly covers them together/i);
   assert.match(output, /reject exact normalized matches from the two frozen sets/i);
   assert.match(output, /no other `\?` outside fenced code, inline code, or blockquotes/i);

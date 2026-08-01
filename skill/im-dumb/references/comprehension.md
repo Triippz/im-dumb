@@ -96,6 +96,10 @@ widens the search and overrides taper. Unknown types and recognized duplicates
 are inert; ambiguity always diagnoses. The word `still` alone never establishes
 state; use immediate turn history. Ordinary input is not a confusion signal.
 
+On rediagnosis, map every candidate only to an explicit prior-answer element.
+After a failed direct repair, exclude the failed concrete element from every
+candidate; excluding only its analogy or framing is not enough.
+
 ## Output contract
 
 An explicit user output contract outranks the default Markdown shape. Apply
@@ -143,10 +147,13 @@ element, never a repair method such as `Example` or `Analogy`; put the proposed
 method in its description. Cover every materially distinct supported path when there are 2–4. When there
 are more than 4, cover the four most directly signaled by the user's question,
 current failure, and prior answer; name no lower-salience path over one of
-them. Never leave a supported distinct path out while a candidate slot remains.
-When the prior answer states multiple benefits, conditions, checks, or failure
-consequences, include each unless one candidate explicitly covers them together.
-Labels and descriptions remain non-empty after trim. Normalize deny-set comparisons with NFKC, lowercase, trim, and
+them. Count explicit prior-answer terms, steps, conditions, and consequences:
+when that count reaches four, emit four candidates. A final effect or outcome
+is distinct unless one candidate explicitly covers it. Never leave a supported
+distinct path out while a candidate slot remains. When the prior answer states
+multiple benefits, conditions, checks, or failure consequences, include each
+unless one candidate explicitly covers them together. Labels and descriptions
+remain non-empty after trim. Normalize deny-set comparisons with NFKC, lowercase, trim, and
 collapsed whitespace. Reject exact normalized matches from the two frozen sets.
 
 ```generic-label-deny
