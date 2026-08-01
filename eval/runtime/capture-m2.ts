@@ -13,8 +13,19 @@ const casesDir = path.join(repo, 'eval', 'golden', 'cases');
 // Attempts 1-8 ran openai-codex, 10-11 grok-4.5, 12-13 composer-2.5. Runs are
 // only comparable within one model, so pin all three together per attempt.
 const attempt = Number(process.env.IM_DUMB_CAPTURE_ATTEMPT ?? 13);
-const captureRunId = randomUUID();
-const outputDir = path.join(repo, 'eval', 'runtime', 'm2', 'attempts', `attempt-${attempt}`, 'captures');
+const attemptDir = path.join(repo, 'eval', 'runtime', 'm2', 'attempts', `attempt-${attempt}`);
+const captureRunIdFile = path.join(attemptDir, '.capture-run-id');
+const outputDir = path.join(attemptDir, 'captures');
+// A resume belongs to the same attempt, so it retains its attempt-level ID.
+async function loadCaptureRunId(): Promise<string> {
+  await mkdir(attemptDir, { recursive: true });
+  const existing = await readFile(captureRunIdFile, 'utf8').catch(() => '');
+  if (existing.trim()) return existing.trim();
+  const id = randomUUID();
+  await writeFile(captureRunIdFile, `${id}\n`);
+  return id;
+}
+const captureRunId = await loadCaptureRunId();
 const provider = process.env.IM_DUMB_CAPTURE_PROVIDER ?? 'cursor';
 const model = process.env.IM_DUMB_CAPTURE_MODEL ?? 'composer-2.5';
 // Cursor needs its SDK transport; native providers must stay native so a
