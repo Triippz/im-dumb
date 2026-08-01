@@ -100,16 +100,19 @@ On rediagnosis, map every candidate only to an explicit prior-answer element.
 Write each description as that source phrase or a close source paraphrase, not
 a new explanatory gloss: write `incoming requests`, never “what someone sends
 when using a website.” After a failed diagnosis, lead with a different source
-proposition; never lead with the prior leading candidate or its paraphrase. Do
-not add an unseen actor, success branch, event, or condition in its label or
+proposition and choose at least two materially distinct paths absent from its
+failed candidate set. Never merely relabel, split, or reorder its old coverage.
+Do not add an unseen actor, success branch, event, or condition in its label or
 description. Do not turn `process` into `succeeds` unless the prior answer says
 so. After a failed direct repair, exclude the failed concrete proposition and
 every paraphrase from every candidate; excluding only its analogy or framing
 is not enough. If it is a distribution proposition, exclude divide, distribute,
 spread, route, and equivalents; use an unused stated benefit, condition, or
-consequence instead. A distinct explicit step remains allowed (for example,
-selecting an available server), but not another explanation of why work is
-distributed across several servers.
+consequence instead. For a failed distribution repair with four remaining
+paths, use request, server selection, stated speed, and failure availability.
+A distinct explicit step remains allowed (for example, selecting an available
+server), but not another explanation of why work is distributed across several
+servers.
 
 ## Output contract
 
