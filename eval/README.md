@@ -138,12 +138,12 @@ not a reason to weaken fixtures.
 Not yet a required PR check: full Layer 2 offline smoke suite with a pinned
 judge model (deliberately deferred to M3 in AGENTS.md).
 
-## M3 (in progress)
+## M3 (Layer 2 / Gate 3–4)
 
 Plan: [`docs/plans/m3-eval-infrastructure.md`](../docs/plans/m3-eval-infrastructure.md).
 
-Shipped so far: `eval/smoke-manifest.json`, quarantine list, `src/eval-aggregate.ts`,
-`src/judge-client.ts` (mock + HTTP adapter), and dry-run CLI:
+Shipped: `eval/smoke-manifest.json`, quarantine list, `src/eval-aggregate.ts`,
+`src/judge-client.ts` (mock + HTTP adapter), dry-run + live CLI:
 
 ```bash
 npm run eval:smoke
@@ -159,9 +159,12 @@ Live judge (injectable mock in tests; HTTP adapter when pinned):
 npm run eval:smoke:live
 ```
 
-CI live job runs only when repo variable `JUDGE_SMOKE_ENABLED=true` and the
-judge secret/vars are set. Gate 5 shadow/canary stays deferred. M2 runtime
-acceptance remains open.
+CI live smoke (`.github/workflows/eval-smoke-live.yml`) is path-filtered and
+runs only when repo variable `JUDGE_SMOKE_ENABLED=true` and the judge
+secret/vars are set. Gate 4 nightly (`.github/workflows/eval-nightly.yml`)
+runs on a schedule / `workflow_dispatch` and treats live judge failures as
+warn-only. Gate 5 shadow/canary stays deferred. M2 runtime acceptance
+remains open.
 
 ## How to extend without rotting the gate
 

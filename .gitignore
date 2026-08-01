@@ -10,3 +10,10 @@ dist/
 # Private planning artifacts kept locally, not published.
 prd.md
 docs/plans/reviews/
+
+# Local eval secrets / non-golden run artifacts
+.eval.env
+eval/results/
+
+# Autopilot run ledgers (local orchestration state)
+.claude/autopilot/

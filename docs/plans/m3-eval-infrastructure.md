@@ -49,15 +49,15 @@ Revision 1 — post-#7/#8; M2 runtime acceptance left open; no further capture l
 
 ### Acceptance criteria
 
-- [ ] Public plan exists (`docs/plans/m3-eval-infrastructure.md`) before runner behavior ships (this file).
-- [ ] Local CLI dry-run green on clean checkout with no secrets.
-- [ ] Live smoke runnable with pinned judge when secret provided.
-- [ ] CI: dry-run always; live Layer 2 smoke required only when secret configured (document the toggle).
-- [ ] Gate 3 wired from existing token-overhead module with reported ceilings.
-- [ ] Human quiz protocol checked into `eval/` and linked from `eval/README.md`.
-- [ ] AGENTS.md aspirational Layer 2 note updated only when the PR check actually exists.
-- [ ] No ELO; raw per-dimension results only.
-- [ ] Flaky-case quarantine mechanism documented and tested.
+- [x] Public plan exists (`docs/plans/m3-eval-infrastructure.md`) before runner behavior ships (this file).
+- [x] Local CLI dry-run green on clean checkout with no secrets.
+- [x] Live smoke runnable with pinned judge when secret provided.
+- [x] CI: dry-run always; live Layer 2 smoke required only when secret configured (document the toggle).
+- [x] Gate 3 wired from existing token-overhead module with reported ceilings.
+- [x] Human quiz protocol checked into `eval/` and linked from `eval/README.md`.
+- [x] AGENTS.md aspirational Layer 2 note updated only when the PR check actually exists.
+- [x] No ELO; raw per-dimension results only.
+- [x] Flaky-case quarantine mechanism documented and tested.
 
 ### Traceability (prd §9 → delivery)
 

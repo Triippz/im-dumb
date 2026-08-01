@@ -59,22 +59,32 @@ test('CI verifies dist/profile.js is byte-for-byte in sync with the committed sk
 test('the new CI verification steps run inside the existing node 24.x/26.x build job, not a separate job', () => {
   const ci = readText('.github/workflows/ci.yml');
   const buildStart = ci.indexOf('\n  build:');
-  const liveStart = ci.indexOf('\n  eval-smoke-live:');
   assert.ok(buildStart >= 0, 'expected a top-level "build:" job');
-  const buildJob = liveStart > buildStart ? ci.slice(buildStart, liveStart) : ci.slice(buildStart);
+  const buildJob = ci.slice(buildStart);
   assert.match(buildJob, /node: \[24\.x, 26\.x\]/);
   for (const needle of ['verify:golden', 'verify:dist-sync', '--skill-doc', 'eval:smoke']) {
     assert.ok(buildJob.includes(needle), `expected build job to include "${needle}"`);
   }
-  assert.ok(!buildJob.includes('eval:smoke:live'), 'live smoke belongs in the gated job');
+  assert.ok(!buildJob.includes('eval:smoke:live'), 'live smoke belongs in the gated workflow');
 });
 
-test('CI live smoke job is gated on JUDGE_SMOKE_ENABLED and judge secrets', () => {
-  const ci = readText('.github/workflows/ci.yml');
-  assert.match(ci, /eval-smoke-live:/);
-  assert.match(ci, /vars\.JUDGE_SMOKE_ENABLED == 'true'/);
-  assert.match(ci, /secrets\.JUDGE_API_KEY/);
-  assert.match(ci, /npm run eval:smoke:live/);
+test('CI live smoke workflow is path-filtered and gated on JUDGE_SMOKE_ENABLED', () => {
+  const live = readText('.github/workflows/eval-smoke-live.yml');
+  assert.match(live, /vars\.JUDGE_SMOKE_ENABLED == 'true'/);
+  assert.match(live, /secrets\.JUDGE_API_KEY/);
+  assert.match(live, /npm run eval:smoke:live/);
+  assert.match(live, /paths:/);
+  assert.ok(live.includes("- 'src/**'"), 'expected path filter for src/**');
+  assert.ok(live.includes("- 'eval/**'"), 'expected path filter for eval/**');
+});
+
+test('Gate 4 nightly workflow is schedule + workflow_dispatch and warn-only for live', () => {
+  const nightly = readText('.github/workflows/eval-nightly.yml');
+  assert.match(nightly, /schedule:/);
+  assert.match(nightly, /workflow_dispatch:/);
+  assert.match(nightly, /npm run eval:smoke/);
+  assert.match(nightly, /continue-on-error:\s*true/);
+  assert.match(nightly, /npm run eval:smoke:live/);
 });
 
 test('CI still preserves SHA-pinned actions and the semantic PR-title check', () => {
