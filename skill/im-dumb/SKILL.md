@@ -36,7 +36,7 @@ continue with the next unanswered field instead of restarting.
 
 Reject markers in quotes, inline/fenced code, a specific question, a new
 task/topic reset, or an oversized punctuation form. Treat rejected markers as
-ordinary statements: do not diagnose or ask a question.
+ordinary statements: no diagnosis or `?`.
 On a possible later-turn confusion signal or active repair thread, read
 `references/comprehension.md`. Apply it only then, never for an initial or
 ordinary turn. A first exact `huh` must diagnose; never guess and rephrase —
