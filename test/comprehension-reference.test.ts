@@ -186,7 +186,8 @@ test('reference freezes default and exact JSON diagnosis shapes plus deny sets',
   assert.match(output, /Every candidate maps to\s+an explicit term, step, assumption, or framing element in the prior answer/i);
   assert.match(output, /Never invent unseen actors, failures, or branches/i);
   assert.match(output, /label names the source\s+element, never a repair method such as `Example` or `Analogy`/i);
-  assert.match(output, /2–4 most salient distinct paths[\s\S]*user's question, current failure, and prior answer/i);
+  assert.match(output, /every materially distinct supported path when there are 2–4/i);
+  assert.match(output, /more than 4[\s\S]*four most directly signaled[\s\S]*Never leave a supported distinct path out while a candidate slot remains/i);
   assert.match(output, /multiple benefits, conditions, checks, or failure consequences[\s\S]*include\s+each unless one candidate explicitly covers them together/i);
   assert.match(output, /reject exact normalized matches from the two frozen sets/i);
   assert.match(output, /no other `\?` outside fenced code, inline code, or blockquotes/i);

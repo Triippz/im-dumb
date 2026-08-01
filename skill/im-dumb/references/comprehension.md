@@ -140,11 +140,13 @@ The question is plain, non-list, user-directed, and ends in `?`. Emit no other
 an explicit term, step, assumption, or framing element in the prior answer.
 Never invent unseen actors, failures, or branches. A label names the source
 element, never a repair method such as `Example` or `Analogy`; put the proposed
-method in its description. Cover the 2–4 most salient distinct paths supported
-by the user's question, current failure, and prior answer. When the prior answer
-states multiple benefits, conditions, checks, or failure consequences, include
-each unless one candidate explicitly covers them together. Labels and
-descriptions remain non-empty after trim. Normalize deny-set comparisons with NFKC, lowercase, trim, and
+method in its description. Cover every materially distinct supported path when there are 2–4. When there
+are more than 4, cover the four most directly signaled by the user's question,
+current failure, and prior answer; name no lower-salience path over one of
+them. Never leave a supported distinct path out while a candidate slot remains.
+When the prior answer states multiple benefits, conditions, checks, or failure
+consequences, include each unless one candidate explicitly covers them together.
+Labels and descriptions remain non-empty after trim. Normalize deny-set comparisons with NFKC, lowercase, trim, and
 collapsed whitespace. Reject exact normalized matches from the two frozen sets.
 
 ```generic-label-deny
