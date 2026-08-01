@@ -1,50 +1,56 @@
-# M2 runtime acceptance — open
+# M2 runtime acceptance — open, but not for the reason the later attempts suggest
 
-Automated thresholds have never passed. Thirteen attempts are preserved
-unedited under `attempts/` and `attempt-*-report.md`. Nothing here was
-loosened to make a run look green.
+Thirteen attempts are preserved unedited under `attempts/` and
+`attempt-*-report.md`. Nothing was loosened to make a run look green.
 
-## Where it stands (attempt 13)
+## The series, by the numbers
 
-- Captures: 17/17
-- Triggers: 1/2 · diagnoses: 5/7 · false positives: 4/9 · prose errors: 14
-- Diagnosis-like turns still carrying preamble: 6/12
+Read from `attempt-*-results.json` (`runtime.all_thresholds_pass`):
 
-## What the thirteen attempts actually showed
+| attempt | model | pass | triggers | false pos | diagnoses | taper | prose |
+|---|---|---|---|---|---|---|---|
+| 5 | openai-codex | **yes** | 2/2 | 9/9 | 7/7 | yes | 1 |
+| 6 | openai-codex | **yes** | 2/2 | 9/9 | 7/7 | yes | 0 |
+| 7 | openai-codex | no | 2/2 | 9/9 | 7/7 | **no** | 1 |
+| 8 | openai-codex | no | **1/2** | 9/9 | **5/7** | yes | 1 |
+| 12 | composer-2.5 | no | 1/2 | 7/9 | 3/7 | no | 8 |
+| 13 | composer-2.5 | no | 1/2 | 4/9 | 5/7 | no | 14 |
 
-Attempts 1–8 ran `openai-codex`, 10–11 `grok-4.5`, 12–13 `composer-2.5`.
-Attempt 9 was contaminated by a protocol fault. So the series is **not one
-experiment** — it is several short series on different models, and only runs
-sharing a model are comparable.
+Attempt 9 was contaminated by a protocol fault. Attempts 10–11 ran grok-4.5.
 
-Within the composer-2.5 pair (12 → 13) the explicit forbid-list harden moved
-diagnoses 3 → 5 but made false positives worse (7/9 → 4/9) and doubled prose
-errors (8 → 14). Prompt hardening has plateaued: each tightening buys one
-metric and spends another.
+## What that actually says
 
-The remaining gap looks like model capability, not missing instruction text.
-The gate asks the generator to suppress preamble, classify a confusion marker,
-and hold the language rules in one pass.
+**The gate passed.** Attempt 6 was a clean sweep on openai-codex: every
+threshold green, zero prose errors. Attempt 5 passed too.
 
-## Next step needs an owner decision
+So the current red state is not an unproven design. Two things happened after
+attempt 6, and they got tangled:
 
-Re-baselining means picking one capable model and running a clean series on
-it. The harness no longer hardcodes that choice:
+1. **A regression.** Prompt edits after attempt 6 broke taper (7), then
+   triggers and diagnoses (8) — still on openai-codex, so the model is not the
+   explanation for that step down.
+2. **A model switch.** Attempts 10–13 moved to grok-4.5 and composer-2.5.
+   The regression was then debugged against weaker models, which is why each
+   hardening pass bought one metric and spent another.
+
+Chasing a regression on a different model than the one that exposed it is why
+thirteen attempts produced no convergence.
+
+## Next step
+
+Re-run the current `SKILL.md` on the model that passed. One run, decisive:
 
 ```bash
 IM_DUMB_CAPTURE_ATTEMPT=14 \
-IM_DUMB_CAPTURE_PROVIDER=cursor \
-IM_DUMB_CAPTURE_MODEL=<model> \
+IM_DUMB_CAPTURE_PROVIDER=openai \
+IM_DUMB_CAPTURE_MODEL=<the codex model used in attempts 1-8> \
 node eval/runtime/capture-m2.ts
 ```
 
-Pick the model deliberately and keep provider/model/attempt pinned together
-for the whole series. Do not mix models inside one series and do not compare
-across them.
+- Green → the skill is sound; the composer-2.5 numbers are a capability floor
+  to document, not a defect to fix.
+- Red → it is a real regression. Bisect the `SKILL.md` changes between
+  attempt 6 and now, on that same model, and do not switch models mid-bisect.
 
-The alternative is to accept a documented capability floor: state which model
-class the comprehension gate is verified on and stop treating weaker-model
-runs as failures of the skill.
-
-Either way, this is a judgment call about scope, not another capture loop.
-Capture loops are paused until someone makes it.
+Keep provider, model, and attempt pinned together for a whole series. Runs are
+only comparable within one model.
