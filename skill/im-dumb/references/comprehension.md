@@ -105,9 +105,11 @@ not add an unseen actor, success branch, event, or condition in its label or
 description. Do not turn `process` into `succeeds` unless the prior answer says
 so. After a failed direct repair, exclude the failed concrete proposition and
 every paraphrase from every candidate; excluding only its analogy or framing
-is not enough. A distinct explicit step remains allowed (for example, selecting
-an available server), but not another explanation of why work is distributed
-across several servers.
+is not enough. If it is a distribution proposition, exclude divide, distribute,
+spread, route, and equivalents; use an unused stated benefit, condition, or
+consequence instead. A distinct explicit step remains allowed (for example,
+selecting an available server), but not another explanation of why work is
+distributed across several servers.
 
 ## Output contract
 
