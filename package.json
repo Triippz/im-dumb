@@ -12,7 +12,8 @@
     "test": "node --test 'test/**/*.test.ts'",
     "check:skill": "node dist/check-cli.js --file skill/im-dumb/SKILL.md --skill-doc",
     "verify:golden": "node --test test/golden-dataset.test.ts",
-    "verify:dist-sync": "diff -u dist/profile.js skill/im-dumb/scripts/profile.js"
+    "verify:dist-sync": "diff -u dist/profile.js skill/im-dumb/scripts/profile.js",
+    "eval:smoke": "node src/eval-runner.ts --dry-run"
   },
   "devDependencies": {
     "@types/node": "24.13.3",
