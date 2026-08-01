@@ -249,8 +249,8 @@ test('jargon avoidance preserves a user term once as an inline source label, the
   assert.match(language, /`define-on-first-use` keeps the technical term and defines it[\s\S]{0,30}once/i);
   assert.match(language, /`allow` permits jargon without automatic definitions/i);
   assert.match(language, /One term per concept[\s\S]{0,120}jargon policy/i);
-  assert.match(language, /Preserve user-supplied technical terms under the rule above/i);
-  assert.match(language, /Never simplify[\s\S]{0,30}away quantities, conditions, warnings, or safety-critical facts/i);
+  assert.match(language, /Preserve user-supplied terms exactly, including spacing/i);
+  assert.match(language, /Never simplify[\s\S]{0,30}away\s+quantities, conditions, warnings, or safety-critical facts/i);
 });
 
 test('ADHD mode restructures with the D10 simple-answer exemption', () => {

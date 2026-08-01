@@ -64,8 +64,8 @@ Apply these using the loaded profile or schema defaults in memory:
   once, in line. `allow` permits jargon without automatic definitions.
 - One term per concept. Do not switch synonyms for the same idea after choosing
   the term required by the jargon policy.
-- Preserve user-supplied technical terms under the rule above. Never simplify
-  away quantities, conditions, warnings, or safety-critical facts.
+- Preserve user-supplied terms exactly, including spacing; never simplify away
+  quantities, conditions, warnings, or safety-critical facts.
 - Use active voice.
 - Keep prose sentences at or under `sentence_length_cap` words (default 20).
 - Keep each paragraph within `paragraph_topic_limit` topics (default 1: one

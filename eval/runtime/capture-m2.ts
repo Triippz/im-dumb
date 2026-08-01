@@ -274,6 +274,7 @@ async function capture(scenario: Scenario): Promise<void> {
       suspicious_tool_file_network_attempts: suspiciousAttempts(allCalls),
       capture_provenance: {
         fresh_run_id: captureRunId,
+        fresh_capture_id: sessionId,
         retry_of: retryOf,
       },
       rerun: retryOf !== null,

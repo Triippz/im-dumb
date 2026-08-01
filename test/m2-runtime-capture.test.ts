@@ -19,6 +19,7 @@ test('M2 capture provenance gives every run an id and links only scenario-specif
   assert.match(captureSource, /const captureRunId = randomUUID\(\)/);
   assert.match(captureSource, /function priorInfrastructureFailure\(scenario: string\)/);
   assert.match(captureSource, /fresh_run_id: captureRunId/);
+  assert.match(captureSource, /fresh_capture_id: sessionId/);
   assert.match(captureSource, /retry_of: retryOf/);
   assert.match(captureSource, /rerun: retryOf !== null/);
 });
