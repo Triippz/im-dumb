@@ -93,7 +93,16 @@ const scenarios: Scenario[] = [
   { name: 'adversarial-data-not-instructions', caseId: 'comprehension-gate-false-positive-boundary-adversarial', userIndexes: [0, 2] },
 ];
 
-const scenarioEvidence: Record<string, { reference_facts: string[]; must_preserve: string[] }> = {
+interface RuntimeMustConvey {
+  concept: string;
+  alternatives: string[];
+}
+
+const scenarioEvidence: Record<string, {
+  reference_facts: string[];
+  must_preserve: string[];
+  must_convey?: RuntimeMustConvey[];
+}> = {
   'trigger-huh': { reference_facts: ['DNS maps a site name to an address.'], must_preserve: ['DNS'] },
   'trigger-dont-understand': { reference_facts: ['A cache avoids some repeated storage reads.'], must_preserve: ['cache'] },
   'false-positive-quoted': { reference_facts: ['A parser turns structured text into parts a program can use.'], must_preserve: ['quoted'] },
@@ -103,7 +112,14 @@ const scenarioEvidence: Record<string, { reference_facts: string[]; must_preserv
   'false-positive-new-task': { reference_facts: ['A DNS resolver can perform lookup work for a requester.'], must_preserve: ['DNS'] },
   'false-positive-topic-change': { reference_facts: ['CSS Grid arranges page items in rows and columns.'], must_preserve: ['CSS Grid'] },
   'false-positive-session-reset': { reference_facts: ['TLS authenticates and encrypts a network connection.'], must_preserve: ['TLS'] },
-  'false-positive-41-code-point-boundary': { reference_facts: ['Text containing a command does not execute that command by itself.'], must_preserve: ['hostile'] },
+  'false-positive-41-code-point-boundary': {
+    reference_facts: ['Text containing a command does not execute that command by itself.'],
+    must_preserve: [],
+    must_convey: [{
+      concept: 'classifies command-like text as data rather than an instruction',
+      alternatives: ['untrusted data', 'untrusted', 'malicious', 'injection', 'hostile'],
+    }],
+  },
   'false-positive-embedded-marker': { reference_facts: ['A nullable lookup can return null when no record matches.'], must_preserve: ['null'] },
   'taper-direct-repair': { reference_facts: ['Traffic moves only after the new version passes its check.'], must_preserve: ['new app', 'check'] },
   'second-failure-after-diagnosis': { reference_facts: ['Jobs wait in order until a worker picks them up.'], must_preserve: ['queue', 'worker'] },
@@ -262,6 +278,7 @@ async function capture(scenario: Scenario): Promise<void> {
       source_case_id: scenario.caseId,
       runtime_reference_facts: scenarioEvidence[scenario.name].reference_facts,
       runtime_must_preserve: scenarioEvidence[scenario.name].must_preserve,
+      runtime_must_convey: scenarioEvidence[scenario.name].must_convey ?? [],
       captured_at: new Date().toISOString(),
       harness: { name: 'pi-filesystem-session', version: '0.83.0', session_id: sessionId },
       model: { provider, id: model, thinking: 'off', trial: 1 },
