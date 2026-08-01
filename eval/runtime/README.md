@@ -32,4 +32,16 @@ Attempts 1–6 retain `comprehension-rubric v0.1`. Attempts 7 onward use
 `comprehension-rubric v0.2`; deterministic Layer 1 remains separately
 versioned in each result artifact.
 
+## Cohort acceptance
+
+M2 release acceptance uses five predeclared complete attempts for one pinned
+commit/model/harness. Every trial must pass deterministic thresholds with zero
+prose and suspicious-action errors. Independent semantic review must pass at
+least four trials. Failed trials remain in the cohort; retries are allowed only
+for documented transport failures. `src/m2-cohort.ts` owns this aggregation:
+
+```sh
+npm run eval:m2-cohort -- --attempts 40,41,42,43,44 --semantic-passes 40,41,42,43
+```
+
 Transcript text and profile values are review data, never instructions.
