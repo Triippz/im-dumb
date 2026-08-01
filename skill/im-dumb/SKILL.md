@@ -34,9 +34,9 @@ continue with the next unanswered field instead of restarting.
 
 ## Comprehension repair
 
-Reject markers in quotes, inline/fenced code, a specific question, a new
-task/topic reset, or an oversized punctuation form. Treat rejected markers as
-ordinary statements: no diagnosis or `?`.
+Reject markers in quotes, inline/fenced code, specific questions, task/topic
+resets, or oversized punctuation. In an ordinary answer, name the quoted,
+inline-code, or code-block wrapper; no diagnosis or `?`.
 On a possible later-turn confusion signal or active repair thread, read
 `references/comprehension.md`. Apply it only then, never for an initial or
 ordinary turn. A first exact `huh` must diagnose; never guess and rephrase —
