@@ -99,9 +99,11 @@ state; use immediate turn history. Ordinary input is not a confusion signal.
 On rediagnosis, map every candidate only to an explicit prior-answer element.
 Write each description as that source phrase or a close source paraphrase, not
 a new explanatory gloss: write `incoming requests`, never “what someone sends
-when using a website.” Do not add an unseen actor, success branch, event, or
-condition in its label or description. Do not turn `process` into `succeeds`
-unless the prior answer says so. After a failed direct repair, exclude the failed concrete proposition and
+when using a website.” After a failed diagnosis, lead with a different source
+proposition; never lead with the prior leading candidate or its paraphrase. Do
+not add an unseen actor, success branch, event, or condition in its label or
+description. Do not turn `process` into `succeeds` unless the prior answer says
+so. After a failed direct repair, exclude the failed concrete proposition and
 every paraphrase from every candidate; excluding only its analogy or framing
 is not enough. A distinct explicit step remains allowed (for example, selecting
 an available server), but not another explanation of why work is distributed
@@ -151,10 +153,11 @@ The question is plain, non-list, user-directed, and ends in `?`. Emit no other
 an explicit term, step, assumption, or framing element in the prior answer.
 Never invent unseen actors, failures, or branches. A label names the source
 element, never a repair method such as `Example` or `Analogy`; put the proposed
-method in its description. Cover every materially distinct supported path when there are 2–4. When there
-are more than 4, cover the four most directly signaled by the user's question,
-current failure, and prior answer; name no lower-salience path over one of
-them. Count explicit prior-answer terms, steps, conditions, and consequences:
+method in its description. Cover every materially distinct supported path when there are 2–4. If four
+explicit distinct paths exist, emit four: use an unused fourth slot for a
+stated benefit, condition, or consequence. When there are more than 4, cover
+the four most directly signaled by the user's question, current failure, and
+prior answer; name no lower-salience path over one of them. Count explicit prior-answer terms, steps, conditions, and consequences:
 when that count reaches four, emit four candidates. A final effect or outcome
 is distinct unless one candidate explicitly covers it. Never leave a supported
 distinct path out while a candidate slot remains. When the prior answer states
