@@ -13,7 +13,10 @@ import { classifyComprehensionReply, type ReferenceContext, type ReferenceReason
 import type { Profile } from '../../src/profile.ts';
 
 const root = path.resolve(import.meta.dirname, '../..');
-const attempt = 13;
+const attempt = Number(process.env.IM_DUMB_CAPTURE_ATTEMPT ?? 13);
+if (!Number.isSafeInteger(attempt) || attempt < 1) {
+  throw new Error('IM_DUMB_CAPTURE_ATTEMPT must be a positive integer');
+}
 const attemptDir = path.join(root, 'eval', 'runtime', 'm2', 'attempts', `attempt-${attempt}`, 'captures');
 const outputJson = path.join(root, 'eval', 'runtime', 'm2', `attempt-${attempt}-results.json`);
 const outputMarkdown = path.join(root, 'eval', 'runtime', 'm2', `attempt-${attempt}-report.md`);
@@ -77,6 +80,13 @@ function exactRecordResolution(profile: Profile): boolean {
 const captures = await Promise.all((await readdir(attemptDir)).filter((name) => name.endsWith('.json')).sort().map(async (name) =>
   JSON.parse(await readFile(path.join(attemptDir, name), 'utf8')) as Capture,
 ));
+const expectedScenarios = new Set(Object.keys(expectedActions));
+const observedScenarios = new Set(captures.map((capture) => capture.scenario));
+const missingScenarios = [...expectedScenarios].filter((scenario) => !observedScenarios.has(scenario));
+const unexpectedScenarios = [...observedScenarios].filter((scenario) => !expectedScenarios.has(scenario));
+if (captures.length !== expectedScenarios.size || observedScenarios.size !== captures.length || missingScenarios.length > 0 || unexpectedScenarios.length > 0) {
+  throw new Error(`incomplete or invalid capture set for attempt ${attempt}: expected ${expectedScenarios.size} unique scenarios, got ${captures.length}; missing=[${missingScenarios.join(', ')}]; unexpected=[${unexpectedScenarios.join(', ')}]`);
+}
 
 const scenarioResults = captures.map((capture) => {
   const actions = expectedActions[capture.scenario];
