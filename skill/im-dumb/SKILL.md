@@ -34,9 +34,10 @@ continue with the next unanswered field instead of restarting.
 
 ## Comprehension repair
 
-Before treating a marker as a signal, reject one in quotes, inline/fenced code,
-a specific question, a new task/topic reset, or an oversized punctuation form.
-On a later possible confusion signal or active repair thread, read
+Reject markers in quotes, inline/fenced code, a specific question, a new
+task/topic reset, or an oversized punctuation form. Treat rejected markers as
+ordinary statements: do not diagnose or ask a question.
+On a possible later-turn confusion signal or active repair thread, read
 `references/comprehension.md`. Apply it only then, never for an initial or
 ordinary turn. A first exact `huh` must diagnose; never guess and rephrase —
 first line `**Likely confusion points**` or `{`. Forbidden before that line:
