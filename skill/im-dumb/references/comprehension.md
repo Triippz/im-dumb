@@ -99,9 +99,10 @@ state; use immediate turn history. Ordinary input is not a confusion signal.
 On rediagnosis, map every candidate only to an explicit prior-answer element.
 Write each description as that source phrase or a close source paraphrase, not
 a new explanatory gloss: write `incoming requests`, never “what someone sends
-when using a website.” After a failed diagnosis, lead with a different source
-proposition and choose at least two materially distinct paths absent from its
-failed candidate set. Never merely relabel, split, or reorder its old coverage.
+when using a website.” Do not introduce a person, visitor, user, sender, or
+website event unless that wording is explicit in the source. After a failed
+diagnosis, lead with a different source proposition and choose at least two
+materially distinct paths absent from its failed candidate set. Never merely relabel, split, or reorder its old coverage.
 Do not add an unseen actor, success branch, event, or condition in its label or
 description. Do not turn `process` into `succeeds` unless the prior answer says
 so. After a failed direct repair, exclude the failed concrete proposition and
