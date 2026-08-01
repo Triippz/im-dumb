@@ -56,6 +56,10 @@ test('README links both M1 evidence reports', () => {
   assert.match(readme, /\(eval\/baselines\/m1-live-spot-check\.md\)/);
 });
 
+test('README links the eval stack map', () => {
+  assert.match(readme, /\(eval\/README\.md\)/);
+});
+
 test('README discloses the M1 spot-check and token-overhead results honestly', () => {
   const status = section(readme, '## M1 evaluation status');
   assert.match(status, /0 of 5/);

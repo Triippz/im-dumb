@@ -18,7 +18,7 @@ The product-requirements §9.10 pre-code checklist is satisfied **per-milestone*
 
 ```
 docs/plans/         # public milestone requirements and implementation plans
-eval/               # golden dataset, judge rubric, captured baselines/candidates + M1 reports
+eval/               # eval stack map (README.md), golden dataset, rubrics, baselines, M2 runtime evidence
 src/                # profile module, deterministic checkers, CLIs
 test/               # node:test suites + fixtures
 skill/im-dumb/      # the skill package: SKILL.md + scripts/profile.js + references/
