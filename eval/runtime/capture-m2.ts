@@ -10,10 +10,12 @@ import { DEFAULT_PROFILE, type Profile } from '../../src/profile.ts';
 const repo = path.resolve(import.meta.dirname, '../..');
 const skillDir = path.join(repo, 'skill', 'im-dumb');
 const casesDir = path.join(repo, 'eval', 'golden', 'cases');
-const attempt = 13;
+// Attempts 1-8 ran openai-codex, 10-11 grok-4.5, 12-13 composer-2.5. Runs are
+// only comparable within one model, so pin all three together per attempt.
+const attempt = Number(process.env.IM_DUMB_CAPTURE_ATTEMPT ?? 13);
 const outputDir = path.join(repo, 'eval', 'runtime', 'm2', 'attempts', `attempt-${attempt}`, 'captures');
-const provider = 'cursor';
-const model = 'composer-2.5';
+const provider = process.env.IM_DUMB_CAPTURE_PROVIDER ?? 'cursor';
+const model = process.env.IM_DUMB_CAPTURE_MODEL ?? 'composer-2.5';
 // Provider transport only; every other extension stays disabled.
 const providerExtension = path.join(homedir(), '.pi/agent/npm/node_modules/pi-cursor-sdk');
 // Without this, Cursor loads ~1000 ambient rules and the harness hangs / contaminates.

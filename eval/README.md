@@ -135,8 +135,9 @@ not a reason to weaken fixtures.
 | `npm run verify:dist-sync` | Bundled `profile.js` matches the built artifact |
 | PR title lint | Conventional Commits for SemVer history |
 
-Not yet a required PR check: full Layer 2 offline smoke suite with a pinned
-judge model (deliberately deferred to M3 in AGENTS.md).
+Layer 2 dry-run smoke became a required PR check in M3 (`npm run eval:smoke`).
+The pinned-judge live suite runs only when `JUDGE_SMOKE_ENABLED` and the judge
+secrets are configured.
 
 ## M3 (Layer 2 / Gate 3–4)
 
@@ -163,7 +164,8 @@ CI live smoke (`.github/workflows/eval-smoke-live.yml`) is path-filtered and
 runs only when repo variable `JUDGE_SMOKE_ENABLED=true` and the judge
 secret/vars are set. Gate 4 nightly (`.github/workflows/eval-nightly.yml`)
 runs on a schedule / `workflow_dispatch` and treats live judge failures as
-warn-only. Gate 5 shadow/canary stays deferred. M2 runtime acceptance
+warn-only. Gate 5 shadow/canary needs live traffic to shadow, and the skill
+has no users yet, so it stays unbuilt on purpose. M2 runtime acceptance
 remains open.
 
 ## How to extend without rotting the gate
