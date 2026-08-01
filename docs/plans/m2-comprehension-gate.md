@@ -405,8 +405,8 @@ Conversation state is transient and never stored in the profile.
 
 | State/event | Result | Next state |
 |---|---|---|
-| `normal` + first confusion, no clear high-confidence type | diagnose with 2–4 candidates, one question | `diagnosed` |
-| `normal` + first confusion, one clear type at `>=0.75` | direct repair, zero questions | `repaired` |
+| `normal` + first confusion, no matching profile gap at `>=0.75` | diagnose with 2–4 candidates, one question | `diagnosed` |
+| `normal` + first confusion, exactly one matching profile gap at `>=0.75` | direct repair, zero questions | `repaired` |
 | `diagnosed` + user selects/confirms candidate | targeted repair, zero questions | `repaired` |
 | `diagnosed` + another confusion signal | full wider rediagnosis; do not re-offer the same failed lead | `diagnosed` |
 | `repaired` + another confusion signal | full wider rediagnosis, even at confidence `1.0` | `diagnosed` |

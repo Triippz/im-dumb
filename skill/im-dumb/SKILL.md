@@ -67,7 +67,8 @@ Apply these using the loaded profile or schema defaults in memory:
   topic per paragraph).
 - Never use a phrase from `forbidden_phrases`. Also treat the built-in filler,
   hedging, and marketing lexicon as forbidden: no filler, hype, marketing
-  language, or unneeded hedging or disclaimers.
+  language, or unneeded hedging or disclaimers. Never write `really` or
+  `actually`.
 - Do not use unexplained acronyms or stack qualifiers in one sentence.
 
 ## ADHD mode

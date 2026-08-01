@@ -79,22 +79,22 @@ i still dont understand
 
 | State + event | Action | Next state |
 | --- | --- | --- |
-| `normal` + first confusion without one clear recognized type at `>=0.75` | diagnose | `diagnosed` |
-| `normal` + first confusion clearly mapped to one recognized type at `>=0.75` | direct repair | `repaired` |
+| `normal` + first confusion without one matching profile gap at `>=0.75` | diagnose | `diagnosed` |
+| `normal` + first confusion with exactly one matching profile gap at `>=0.75` | direct repair | `repaired` |
 | `diagnosed` + candidate selection/confirmation | targeted repair | `repaired` |
 | `diagnosed` + another confusion signal | full wider rediagnosis; do not re-offer the same failed lead | `diagnosed` |
 | `repaired` + another confusion signal | full wider rediagnosis, even at confidence `1` | `diagnosed` |
 | Any active state + explicit repair success | optionally record resolution, then ordinary reply | `normal` |
 | Any state + new task, topic change, or explicit session reset | ordinary answer; no failure inference | `normal` |
 
-Direct repair enters `repaired`. A bare exact marker can map clearly from the
-prior answer's dominant structure: an ordered process supports `step`, a key
-unexplained word supports `term`, a missing prerequisite supports `assumption`,
-and a failed presentation supports `framing`. If exactly one recognized type
-is at `>=0.75` and that dominant structure matches it, use direct repair.
-Immediate failure then widens the search and overrides taper. Unknown types
-and recognized duplicates are inert; ambiguity always diagnoses. The word `still` alone never establishes state;
-use immediate turn history. Ordinary input is not a confusion signal.
+Direct repair enters `repaired`. A bare exact marker does not name a gap:
+`confused`, `lost`, and `huh` must diagnose unless the profile already has
+exactly one recognized gap at `>=0.75` that directly matches the prior answer.
+For example, a known `step` gap can match an ordered process. Do not infer a
+gap from the prior answer's dominant structure alone. Immediate failure then
+widens the search and overrides taper. Unknown types and recognized duplicates
+are inert; ambiguity always diagnoses. The word `still` alone never establishes
+state; use immediate turn history. Ordinary input is not a confusion signal.
 
 ## Output contract
 
