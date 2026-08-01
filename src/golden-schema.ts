@@ -15,13 +15,14 @@ export const GOLDEN_CATEGORIES = [
   'adversarial',
   'comprehension-gate',
   'profile-adaptation',
+  'learning-asset',
 ] as const;
 export type GoldenCategory = (typeof GOLDEN_CATEGORIES)[number];
 
 export const TURNS_ONLY_CATEGORIES = ['comprehension-gate', 'profile-adaptation'] as const;
 export type TurnsOnlyCategory = (typeof TURNS_ONLY_CATEGORIES)[number];
 
-export const PROMPT_ONLY_CATEGORIES = ['persona-baseline', 'jargon-decomposition', 'adhd-pair', 'adversarial'] as const;
+export const PROMPT_ONLY_CATEGORIES = ['persona-baseline', 'jargon-decomposition', 'adhd-pair', 'adversarial', 'learning-asset'] as const;
 export type PromptOnlyCategory = (typeof PROMPT_ONLY_CATEGORIES)[number];
 
 export const EXPECTED_RESULTS = ['pass', 'fail', 'warn'] as const;
