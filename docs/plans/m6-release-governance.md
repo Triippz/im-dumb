@@ -20,7 +20,7 @@ Revision 1 — post-M5 merge (`8fbbbbd`). No package is published by this milest
 - Actually publishing to npm, tagging, or cutting a GitHub release
 - Flipping `private: true` to public
 - Hosted Claude API / OpenAI skill upload automation
-- Gate 5 shadow/canary (still deferred from M3)
+- Gate 5 shadow/canary — needs live traffic to shadow; unbuilt until the skill has users
 
 ## 2. Requirements
 

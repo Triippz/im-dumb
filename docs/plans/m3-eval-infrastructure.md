@@ -67,7 +67,7 @@ Revision 1 — post-#7/#8; M2 runtime acceptance left open; no further capture l
 | Gate 2 offline PR smoke | New runner + CI when secret present |
 | Gate 3 cost/token budget | Enforce via `src/token-overhead.ts` |
 | Gate 4 nightly full suite | Workflow `workflow_dispatch` / schedule; warn-only |
-| Gate 5 shadow/canary | Deferred |
+| Gate 5 shadow/canary | Unbuilt on purpose — nothing to shadow until the skill has users |
 | §9.5 multi-trial + significance | Runner scoring module |
 | §9.6 separable dimensions / no ELO | Rubrics already; runner must not collapse |
 | §9.8 human quiz | Protocol doc + materials checklist |
