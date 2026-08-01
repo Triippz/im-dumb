@@ -71,12 +71,13 @@ test('README discloses the M1 spot-check and token-overhead results honestly', (
   assert.doesNotMatch(readme, /production[- ]ready/i);
 });
 
-test('README roadmap marks M4/M5 shipped state and keeps M6 ahead', () => {
+test('README roadmap records shipped milestones and keeps unpublished status honest', () => {
   const roadmap = section(readme, '## Roadmap');
   assert.match(roadmap, /\*\*M4[^*]*\*\*/);
   assert.match(roadmap, /\*\*M5[^*]*\*\*/);
-  assert.match(roadmap, /\*\*M6:\*\*/);
+  assert.match(roadmap, /\*\*M6[^*]*\*\*/);
   assert.match(roadmap, /AV still ahead/i);
+  assert.match(roadmap, /No package published yet/i);
 });
 
 test('AGENTS repo layout is labeled actual and omits a separate installer/ directory', () => {
