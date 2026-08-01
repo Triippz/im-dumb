@@ -24,6 +24,8 @@ test('package.json declares the M1 step-1 scaffolding contract', () => {
   assert.equal(pkg.scripts.build, 'tsc -p tsconfig.build.json');
   assert.equal(pkg.scripts.typecheck, 'tsc --noEmit');
   assert.equal(pkg.scripts.test, "node --test 'test/**/*.test.ts'");
+  assert.equal(pkg.bin?.['im-dumb'], './dist/install-cli.js');
+  assert.ok(Array.isArray(pkg.files) && pkg.files.includes('skill/im-dumb/'));
 
   assert.deepEqual(Object.keys(pkg.devDependencies).sort(), ['@types/node', 'typescript']);
   assert.equal(pkg.devDependencies.typescript, '6.0.3');
