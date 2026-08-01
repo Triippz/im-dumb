@@ -216,7 +216,7 @@ test('reference freezes the four-type taxonomy and repair strategy', () => {
   assert.deepEqual(table('Gap taxonomy and repair'), [
     ['Type', 'Failure', 'Repair'],
     ['`term`', 'word, acronym, or symbol', 'define it with one plain example'],
-    ['`step`', 'procedural or causal transition', 'split and explain every consequential transition and condition; never drop a check or safety gate'],
+    ['`step`', 'procedural or causal transition', 'split and explain every consequential transition and condition; never drop a check or safety gate; retain `new app` and `check` exactly when supplied'],
     ['`assumption`', 'missing prerequisite', 'add the prerequisite first'],
     ['`framing`', 'analogy or overall presentation', 'replace the analogy or structure'],
   ]);
