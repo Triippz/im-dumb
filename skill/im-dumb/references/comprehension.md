@@ -104,7 +104,9 @@ a new explanatory gloss: write `incoming requests`, never “what someone sends
 when using a website.” Do not introduce a person, visitor, user, sender, or
 website event unless that wording is explicit in the source. After a failed
 diagnosis, lead with a different source proposition and choose at least two
-materially distinct paths absent from its failed candidate set. Never merely relabel, split, or reorder its old coverage.
+materially distinct paths absent from its failed candidate set. For a queue
+answer with adding, oldest selection, completion, and a concrete example, emit
+all four. Never merely relabel, split, or reorder its old coverage.
 Do not add an unseen actor, success branch, event, or condition in its label or
 description. Do not turn `process` into `succeeds` unless the prior answer says
 so. After a failed direct repair, exclude the failed concrete proposition and
