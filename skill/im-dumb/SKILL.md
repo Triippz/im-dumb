@@ -34,10 +34,14 @@ continue with the next unanswered field instead of restarting.
 
 ## Comprehension repair
 
-On a later user turn with a possible confusion signal, or while
-a repair thread is active, read `references/comprehension.md`. Only in those cases
-apply it. Do not load it for an initial or ordinary turn. A first exact `huh` must diagnose; never guess
-and rephrase — first line `**Likely confusion points**` or `{`. Forbidden before that line: Diagnosing, I'll load, loading your profile, Active repair thread. Profile failure never blocks diagnosis, rediagnosis, or repair.
+Before treating a marker as a signal, reject one in quotes, inline/fenced code,
+a specific question, a new task/topic reset, or an oversized punctuation form.
+On a later possible confusion signal or active repair thread, read
+`references/comprehension.md`. Apply it only then, never for an initial or
+ordinary turn. A first exact `huh` must diagnose; never guess and rephrase —
+first line `**Likely confusion points**` or `{`. Forbidden before that line:
+Diagnosing, I'll load, loading your profile, Active repair thread. Profile
+failure never blocks diagnosis, rediagnosis, or repair.
 
 ## Learning assets
 
@@ -67,8 +71,8 @@ Apply these using the loaded profile or schema defaults in memory:
   topic per paragraph).
 - Never use a phrase from `forbidden_phrases`. Also treat the built-in filler,
   hedging, and marketing lexicon as forbidden: no filler, hype, marketing
-  language, or unneeded hedging or disclaimers. Never write `really` or
-  `actually`.
+  language, or unneeded hedging or disclaimers. Never write `just`, `really`,
+  or `actually`.
 - Do not use unexplained acronyms or stack qualifiers in one sentence.
 
 ## ADHD mode

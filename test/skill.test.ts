@@ -150,16 +150,15 @@ test('main skill loads onboarding detail only for onboarding/editing and resumes
 
 test('main skill loads comprehension detail only for a later possible signal or active repair thread', () => {
   const comprehension = section(body, 'Comprehension repair');
-  assert.match(comprehension, /later user turn/i);
-  assert.match(comprehension, /possible confusion signal/i);
-  assert.match(comprehension, /repair thread is active/i);
-  assert.match(comprehension, /read `references\/comprehension\.md`/i);
-  assert.match(comprehension, /only (?:in|for) those cases/i);
-  assert.match(comprehension, /Do not load it for an initial or\s+ordinary\s+turn/i);
+  assert.match(comprehension, /marker as a signal, reject one in quotes, inline\/fenced code,\s+a specific question, a new task\/topic reset, or an oversized punctuation form/i);
+  assert.match(comprehension, /later possible confusion signal/i);
+  assert.match(comprehension, /active repair thread/i);
+  assert.match(comprehension, /read\s+`references\/comprehension\.md`/i);
+  assert.match(comprehension, /Apply it only then, never for an initial or\s+ordinary\s+turn/i);
   assert.match(comprehension, /first exact `huh` must diagnose; never guess\s+and rephrase/i);
   assert.match(comprehension, /first line `\*\*Likely confusion points\*\*` or `\{`/i);
   assert.match(comprehension, /Forbidden before that line[\s\S]{0,120}Diagnosing[\s\S]{0,80}I'll load[\s\S]{0,80}loading your profile[\s\S]{0,80}Active repair thread/i);
-  assert.match(comprehension, /profile failure never blocks diagnosis, rediagnosis, or\s+repair/i);
+  assert.match(comprehension, /profile\s+failure never blocks diagnosis, rediagnosis, or\s+repair/i);
 });
 
 // Non-trigger examples and the no-snapshot fallback live in the reference, not
@@ -230,7 +229,7 @@ test('language rules encode FR4 and apply configurable profile fields', () => {
     /paragraph_topic_limit[\s\S]{0,120}one\s+topic per paragraph/i,
     /forbidden_phrases/i,
     /built-in filler/i,
-    /Never write `really` or\s+`actually`/i,
+    /Never write `just`, `really`,\s+or `actually`/i,
     /unexplained acronyms/i,
     /stack qualifiers/i,
   ]) assert.match(language, rule);
