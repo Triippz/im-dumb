@@ -10,7 +10,7 @@ Revision 1 — post-M3 merge (`d5ad12b`); no npm publish in this milestone.
 
 **In scope (M4)**:
 - Public plan (this file)
-- Harness auto-detection (claude, cursor, pi; codex flagged manual-only)
+- Harness auto-detection and installation (claude, cursor, codex, pi)
 - Non-interactive install: `im-dumb install --targets … --scope global|project`
 - Interactive install when TTY and `--targets` omitted (multi-select + per-harness scope)
 - Idempotent copy (same version → no-op; different → upgrade)
@@ -21,7 +21,6 @@ Revision 1 — post-M3 merge (`d5ad12b`); no npm publish in this milestone.
 **Out of scope (M4)**:
 - npm publish / tags / GitHub release (M6 + explicit approval)
 - Hosted Claude API / OpenAI skill upload automation
-- Codex auto-install (detect + document only)
 - Changing skill behavior / profile schema
 - M5 learning assets
 
@@ -36,6 +35,7 @@ Revision 1 — post-M3 merge (`d5ad12b`); no npm publish in this milestone.
    - Claude project: `<project>/.claude/skills/im-dumb`
    - Cursor global: `~/.cursor/skills/im-dumb`
    - Cursor project: `<project>/.cursor/skills/im-dumb`
+   - Codex global: `$CODEX_HOME/skills/im-dumb` (defaults to `~/.codex/skills/im-dumb`); project scope is rejected until Codex documents a project skill root.
    - Pi global: `~/.pi/agent/skills/im-dumb` (fallback `~/.agents/skills/im-dumb`)
    - Pi project: `<project>/.pi/skills/im-dumb` (fallback `<project>/.agents/skills/im-dumb`)
 4. **Shared agents**: if `~/.agents/skills` or `<project>/.agents/skills` already exists (or `--prefer-agents`), write once to `{that}/im-dumb` and skip duplicate per-harness copies for targets that can consume it.
@@ -49,7 +49,7 @@ Revision 1 — post-M3 merge (`d5ad12b`); no npm publish in this milestone.
 - [x] Unit tests cover detect, path resolution, shared-agents collapse, idempotent upgrade/no-op (temp dirs; no touching real `~`).
 - [x] `npm run build` emits `dist/install-cli.js` with shebang; `node dist/install-cli.js install --help` works.
 - [x] Non-interactive install into a temp home/project succeeds and leaves name-sync intact.
-- [x] Codex is detected but never auto-written.
+- [x] Codex installs into its native `.codex/skills/im-dumb` root.
 - [x] AGENTS.md / README updated: installer implemented, still unpublished.
 - [x] No npm publish from this PR.
 

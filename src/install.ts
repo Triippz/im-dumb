@@ -3,7 +3,9 @@ import {
   existsSync,
   mkdirSync,
   readFileSync,
+  readdirSync,
   rmSync,
+  writeFileSync,
 } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -11,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 const VERSION_RE = /^metadata:\s*\n(?:[ \t]+.+\n)*?[ \t]+version:\s*([^\s#]+)/m;
 const SKILL_NAME = 'im-dumb';
 
-export type InstallAction = 'installed' | 'upgraded' | 'skipped';
+export type InstallAction = 'installed' | 'upgraded' | 'repaired' | 'skipped';
 
 export interface InstallResult {
   action: InstallAction;
@@ -62,8 +64,9 @@ export function installSkill(options: {
   if (existsSync(destSkill)) {
     const previousVersion = parseSkillVersion(readFileSync(destSkill, 'utf8'));
     if (previousVersion === version) {
+      const repaired = materializeSkillPaths(options.destDir);
       return {
-        action: 'skipped',
+        action: repaired ? 'repaired' : 'skipped',
         destDir: options.destDir,
         version,
         previousVersion,
@@ -72,6 +75,7 @@ export function installSkill(options: {
     }
     rmSync(options.destDir, { recursive: true, force: true });
     copyTree(options.sourceDir, options.destDir);
+    materializeSkillPaths(options.destDir);
     return {
       action: 'upgraded',
       destDir: options.destDir,
@@ -81,10 +85,40 @@ export function installSkill(options: {
   }
 
   copyTree(options.sourceDir, options.destDir);
+  materializeSkillPaths(options.destDir);
   return { action: 'installed', destDir: options.destDir, version };
 }
 
 function copyTree(sourceDir: string, destDir: string): void {
   mkdirSync(path.dirname(destDir), { recursive: true });
   cpSync(sourceDir, destDir, { recursive: true, force: true });
+}
+
+const PROFILE_SCRIPT_TOKEN = '{{IM_DUMB_PROFILE_SCRIPT}}';
+
+/** Replace the package placeholder with a shell-safe executable path in each installed copy. */
+function materializeSkillPaths(destDir: string): boolean {
+  const script = shellQuote(path.join(destDir, 'scripts', 'profile.js'));
+  let changed = false;
+  for (const file of markdownFiles(destDir)) {
+    const content = readFileSync(file, 'utf8');
+    const materialized = content
+      .replaceAll(PROFILE_SCRIPT_TOKEN, script)
+      .replaceAll('node scripts/profile.js', `node ${script}`);
+    if (materialized === content) continue;
+    writeFileSync(file, materialized);
+    changed = true;
+  }
+  return changed;
+}
+
+function markdownFiles(root: string): string[] {
+  return readdirSync(root, { withFileTypes: true }).flatMap((entry) => {
+    const file = path.join(root, entry.name);
+    return entry.isDirectory() ? markdownFiles(file) : entry.name.endsWith('.md') ? [file] : [];
+  });
+}
+
+function shellQuote(value: string): string {
+  return `'${value.replaceAll("'", "'\\''")}'`;
 }

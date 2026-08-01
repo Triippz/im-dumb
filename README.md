@@ -65,13 +65,13 @@ From a clone:
 
 ```bash
 npm run build
-node dist/install-cli.js install --targets claude,cursor,pi --scope global
+node dist/install-cli.js install --targets claude,cursor,codex,pi --scope global
 ```
 
 After owner-authorized npm publication:
 
 ```bash
-npx im-dumb install --targets claude,cursor,pi --scope global
+npx im-dumb install --targets claude,cursor,codex,pi --scope global
 ```
 
 | Harness | Global target | Project target |

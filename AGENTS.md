@@ -32,9 +32,9 @@ There is no separate `installer/` package directory — the CLI lives in `src/in
 ## Installer contract (v1 — implemented, unpublished)
 
 - Bin entry `im-dumb` → `dist/install-cli.js` (ready for `npx` after M6 publish).
-- Auto-detects harnesses: `~/.claude/`/`.claude/` (Claude Code), `~/.cursor/`/`.cursor/` (Cursor), `~/.pi/agent/`/`~/.agents/`/`.pi/`/`.agents/` (Pi), `.codex/` (flagged manual/local-shell only).
+- Auto-detects harnesses: `~/.claude/`/`.claude/` (Claude Code), `~/.cursor/`/`.cursor/` (Cursor), `~/.codex/`/`.codex/` (Codex), and `~/.pi/agent/`/`~/.agents/`/`.pi/`/`.agents/` (Pi).
 - Interactive prompts when TTY and `--targets` omitted; one global/project `--scope` for the run.
-- Non-interactive mode: `im-dumb install --targets claude,cursor,pi --scope global`.
+- Non-interactive mode: `im-dumb install --targets claude,cursor,codex,pi --scope global`.
 - Idempotent: detects existing install, diffs `metadata.version`, upgrades or skips — never duplicates.
 - Shared-directory aware: when `.agents/skills/` exists (or `--prefer-agents`), cursor+pi write once there; Claude still uses `.claude/skills/`.
 - Out of scope v1: automated upload to Claude API `/v1/skills` or OpenAI hosted skills (manual step, documented).

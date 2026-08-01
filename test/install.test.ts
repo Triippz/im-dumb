@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -28,16 +29,43 @@ test('installSkill: copies tree and reports installed', () => {
   const result = installSkill({ sourceDir: skillSource, destDir: dest });
   assert.equal(result.action, 'installed');
   assert.equal(result.version, '0.2.0');
-  assert.equal(readFileSync(path.join(dest, 'SKILL.md'), 'utf8').includes('name: im-dumb'), true);
+  const installedSkill = readFileSync(path.join(dest, 'SKILL.md'), 'utf8');
+  assert.equal(installedSkill.includes('name: im-dumb'), true);
+  assert.match(installedSkill, /node '.*\/scripts\/profile\.js' load/);
   assert.ok(readFileSync(path.join(dest, 'scripts', 'profile.js'), 'utf8').length > 0);
 });
 
-test('installSkill: same version is a no-op', () => {
+test('installSkill: materialized command safely quotes a special-character path', () => {
+  const root = tempDir();
+  const dest = path.join(root, "im dumb $cash 'quote'");
+  installSkill({ sourceDir: skillSource, destDir: dest });
+  assert.match(readFileSync(path.join(dest, 'SKILL.md'), 'utf8'), /node '.*\$cash '\\''quote'\\''\/scripts\/profile\.js' load/);
+});
+
+test('installSkill: profile script runs from a project cwd', () => {
+  const root = tempDir();
+  const dest = path.join(root, 'im-dumb');
+  installSkill({ sourceDir: skillSource, destDir: dest });
+  const project = path.join(root, 'project');
+  mkdirSync(project);
+  const result = spawnSync(process.execPath, [path.join(dest, 'scripts', 'profile.js'), 'load'], {
+    cwd: project,
+    env: { ...process.env, IM_DUMB_PROFILE: path.join(root, 'profile.json') },
+    encoding: 'utf8',
+  });
+  assert.equal(result.status, 1);
+  assert.equal(JSON.parse(result.stdout).error, 'missing');
+});
+
+test('installSkill: same version repairs legacy relative script commands', () => {
   const dest = path.join(tempDir(), 'im-dumb');
   assert.equal(installSkill({ sourceDir: skillSource, destDir: dest }).action, 'installed');
+  const skill = path.join(dest, 'SKILL.md');
+  writeFileSync(skill, readFileSync(skill, 'utf8').replace(/node '[^']+\/scripts\/profile\.js'/u, 'node scripts/profile.js'));
   const second = installSkill({ sourceDir: skillSource, destDir: dest });
-  assert.equal(second.action, 'skipped');
+  assert.equal(second.action, 'repaired');
   assert.equal(second.reason, 'same version');
+  assert.match(readFileSync(skill, 'utf8'), /node '.*\/scripts\/profile\.js' load/);
 });
 
 test('installSkill: different installed version upgrades', () => {

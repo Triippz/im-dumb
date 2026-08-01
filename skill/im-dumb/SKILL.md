@@ -8,7 +8,7 @@ metadata:
 ## Load the profile
 
 Before responding, when a shell is available, run
-`node scripts/profile.js load`; never read, open, or parse the profile file
+`node {{IM_DUMB_PROFILE_SCRIPT}} load`; never read, open, or parse the profile file
 directly. 
 
 | Profile status | Ordinary turn | Possible confusion or active repair thread | After thread reset |

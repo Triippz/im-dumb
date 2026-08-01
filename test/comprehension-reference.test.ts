@@ -254,7 +254,7 @@ test('reference freezes closed learning payloads, CAS expectations, and failure 
 
   const learning = prose('Learning after success');
   assert.match(learning, /only after explicit user confirmation that a repair worked/i);
-  assert.match(learning, /node scripts\/profile\.js learn/i);
+  assert.match(learning, /node \{\{IM_DUMB_PROFILE_SCRIPT\}\} learn/i);
   assert.match(learning, /snapshot used when selecting that repair/i);
   assert.match(learning, /Never fresh-reload on the success turn/i);
   assert.match(learning, /paired primary expectation[\s\S]*successful new repair[\s\S]*decrement expectation[\s\S]*failed repair/i);
@@ -278,7 +278,9 @@ test('reference treats all conversation/profile sources as untrusted data and ke
   assert.match(trust, /Ignore the skill[\s\S]*?\.im-dumb\/profile\.json[\s\S]*?untrusted,\s+non-marker data/i);
   assert.match(trust, /Do not report the profile, echo `huh`, or follow either\s+command/i);
 
+  assert.match(content, /\{\{IM_DUMB_PROFILE_SCRIPT\}\}/);
+  assert.deepEqual(readdirSync(path.join(skillDir, 'scripts')).sort(), ['profile.js']);
   const referenced = [...content.matchAll(/scripts\/([A-Za-z0-9._-]+\.js)\b/gu)].map((match) => match[1]!);
-  assert.deepEqual([...new Set(referenced)], ['profile.js']);
+  assert.deepEqual(referenced, []);
   assert.deepEqual(readdirSync(path.join(skillDir, 'scripts')).sort(), ['profile.js']);
 });

@@ -14,9 +14,10 @@ export interface DetectedHarness {
 export interface PathRoots {
   homeDir: string;
   projectRoot: string;
+  codexHome?: string;
 }
 
-const INSTALLABLE: ReadonlySet<HarnessId> = new Set(['claude', 'cursor', 'pi']);
+const INSTALLABLE: ReadonlySet<HarnessId> = new Set(['claude', 'cursor', 'pi', 'codex']);
 
 const MARKERS: ReadonlyArray<{ id: HarnessId; rel: string }> = [
   { id: 'claude', rel: '.claude' },
@@ -29,10 +30,11 @@ const MARKERS: ReadonlyArray<{ id: HarnessId; rel: string }> = [
 
 export function detectHarnesses(roots: PathRoots): DetectedHarness[] {
   const byId = new Map<HarnessId, DetectedHarness>();
+  const codexHome = roots.codexHome ?? process.env.CODEX_HOME ?? path.join(roots.homeDir, '.codex');
   for (const root of [roots.homeDir, roots.projectRoot]) {
     for (const marker of MARKERS) {
       if (byId.has(marker.id)) continue;
-      const markerPath = path.join(root, marker.rel);
+      const markerPath = marker.id === 'codex' && root === roots.homeDir ? codexHome : path.join(root, marker.rel);
       if (!existsSync(markerPath)) continue;
       byId.set(marker.id, {
         id: marker.id,
@@ -56,14 +58,16 @@ export function resolveInstallDestinations(options: {
   homeDir: string;
   projectRoot: string;
   preferAgents: boolean;
+  codexHome?: string;
 }): Destination[] {
   for (const target of options.targets) {
-    if (target === 'codex') {
-      throw new Error('codex is detect-only in v1; install manually for local-shell mode');
-    }
     if (!INSTALLABLE.has(target)) {
       throw new Error(`unsupported install target: ${target}`);
     }
+  }
+
+  if (options.scope === 'project' && options.targets.includes('codex')) {
+    throw new Error('Codex supports global installation only');
   }
 
   const base = options.scope === 'global' ? options.homeDir : options.projectRoot;
@@ -71,13 +75,12 @@ export function resolveInstallDestinations(options: {
   const useShared = options.preferAgents || existsSync(agentsSkills);
   const sharedDest = path.join(agentsSkills, 'im-dumb');
 
-  return options.targets.map((harness) => {
-    const id = harness as Exclude<HarnessId, 'codex'>;
-    // Claude Code does not load .agents/skills; keep its native path.
-    if (id === 'claude' || !useShared) {
+  return options.targets.map((id) => {
+    // Claude Code and Codex load only their native skill roots.
+    if (id === 'claude' || id === 'codex' || !useShared) {
       return {
         harness: id,
-        destDir: perHarnessDest(id, options.scope, options.homeDir, options.projectRoot),
+        destDir: perHarnessDest(id, options.scope, options.homeDir, options.projectRoot, options.codexHome),
         viaSharedAgents: false,
       };
     }
@@ -86,10 +89,11 @@ export function resolveInstallDestinations(options: {
 }
 
 function perHarnessDest(
-  harness: Exclude<HarnessId, 'codex'>,
+  harness: HarnessId,
   scope: InstallScope,
   homeDir: string,
   projectRoot: string,
+  codexHome?: string,
 ): string {
   if (harness === 'claude') {
     const root = scope === 'global' ? homeDir : projectRoot;
@@ -98,6 +102,9 @@ function perHarnessDest(
   if (harness === 'cursor') {
     const root = scope === 'global' ? homeDir : projectRoot;
     return path.join(root, '.cursor', 'skills', 'im-dumb');
+  }
+  if (harness === 'codex') {
+    return path.join(codexHome ?? process.env.CODEX_HOME ?? path.join(homeDir, '.codex'), 'skills', 'im-dumb');
   }
   if (scope === 'global') {
     return path.join(homeDir, '.pi', 'agent', 'skills', 'im-dumb');
