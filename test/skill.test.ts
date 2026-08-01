@@ -88,8 +88,8 @@ test('skill directory, frontmatter name, description, and version satisfy the sh
   );
 });
 
-test('SKILL.md body stays within the 900-word target and budget remains warning-only above 1000 (D12)', () => {
-  assert.ok((body.match(/\S+/gu) ?? []).length <= 900, 'SKILL.md body must stay within the M2 target');
+test('SKILL.md body stays within the 930-word M5 target and budget remains warning-only above 1000 (D12)', () => {
+  assert.ok((body.match(/\S+/gu) ?? []).length <= 930, "SKILL.md body must stay within the M5 target");
   const oversized = `${skillMdContent}\n${'word '.repeat(1100)}`;
   const budget = checkSkillFrontmatter(oversized, { expectedName: 'im-dumb' })
     .find((v) => /word warn threshold/i.test(v.message));

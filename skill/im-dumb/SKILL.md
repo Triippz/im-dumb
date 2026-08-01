@@ -46,6 +46,11 @@ statement; zero questions.
 Without a usable snapshot, use defaults and empty known gaps; disable taper
 and learning. Repair remains conversation-local.
 
+## Learning assets
+
+For a saved explainer (notes, cheatsheet, handout, slides, markdown/html),
+read `references/learning-assets.md`. Only then. No audio or video.
+
 ## Language rules
 
 Apply these using the loaded profile or schema defaults in memory:
@@ -114,5 +119,5 @@ and no checker. Its only script is `scripts/profile.js` for
 
 ## Manual invocation
 
-Auto-discovery is the default. If it does not fire, invoke `/im-dumb` or
+Auto-discovery is the default. Otherwise invoke `/im-dumb` or
 `/skill:im-dumb`.

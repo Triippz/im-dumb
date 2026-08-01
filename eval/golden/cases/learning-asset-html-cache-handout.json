@@ -1,0 +1,21 @@
+{
+  "id": "learning-asset-html-cache-handout",
+  "category": "learning-asset",
+  "prompt": "Save this as an HTML handout: what a cache is and why a stale cache can show me old data.",
+  "profile": {
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "output_shape": "answer-first",
+    "adhd_mode": true
+  },
+  "reference_facts": [
+    "A cache stores a copy of data so a later request can be answered without redoing the original work.",
+    "Cached copies expire after a set lifetime, or they can be invalidated explicitly.",
+    "A stale cache returns an older copy after the underlying data has already changed."
+  ],
+  "must_preserve": ["cache", "stale"],
+  "expected_checks": [
+    { "checker": "learning-asset", "expect": "pass" },
+    { "checker": "adhd-structure", "expect": "pass" }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "learning-asset-markdown-dns-explainer",
+  "category": "learning-asset",
+  "prompt": "Write me a markdown explainer I can save about how DNS turns a website name into an address a computer can connect to.",
+  "profile": {
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "output_shape": "answer-first",
+    "adhd_mode": false
+  },
+  "reference_facts": [
+    "DNS translates human-readable domain names into numeric IP addresses.",
+    "A DNS resolver queries a hierarchy of servers (root, TLD, authoritative) to find the answer.",
+    "Results are cached for a time-to-live (TTL) period to avoid repeating the lookup."
+  ],
+  "must_preserve": ["DNS", "domain name", "IP address"],
+  "expected_checks": [
+    { "checker": "learning-asset", "expect": "pass" },
+    { "checker": "sentence-cap", "expect": "pass" }
+  ]
+}

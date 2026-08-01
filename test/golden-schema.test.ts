@@ -163,12 +163,12 @@ function turnsCase(turns: unknown[], overrides: Record<string, unknown> = {}): R
 test('golden schema v2: new categories exist and are turns-only; v1 categories are prompt-only', () => {
   assert.deepEqual(
     [...GOLDEN_CATEGORIES],
-    ['persona-baseline', 'jargon-decomposition', 'adhd-pair', 'adversarial', 'comprehension-gate', 'profile-adaptation'],
+    ['persona-baseline', 'jargon-decomposition', 'adhd-pair', 'adversarial', 'comprehension-gate', 'profile-adaptation', 'learning-asset'],
   );
   assert.deepEqual([...TURNS_ONLY_CATEGORIES], ['comprehension-gate', 'profile-adaptation']);
   assert.deepEqual(
     [...PROMPT_ONLY_CATEGORIES],
-    ['persona-baseline', 'jargon-decomposition', 'adhd-pair', 'adversarial'],
+    ['persona-baseline', 'jargon-decomposition', 'adhd-pair', 'adversarial', 'learning-asset'],
   );
 });
 

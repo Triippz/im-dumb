@@ -20,6 +20,7 @@ export const CHECKER_IDS = [
   'profile-schema',
   'golden-case-schema',
   'comprehension-gate',
+  'learning-asset',
 ] as const;
 
 export type CheckerId = (typeof CHECKER_IDS)[number];
@@ -52,7 +53,7 @@ export const DESCRIPTION_MAX_LENGTH = 1024;
 export const SKILL_BODY_WORD_WARN_THRESHOLD = 1000;
 
 /** D12: drafting target for SKILL.md body word count. */
-export const SKILL_BODY_WORD_TARGET = 900;
+export const SKILL_BODY_WORD_TARGET = 930;
 
 // ---------------------------------------------------------------------------
 // Shared text helpers
@@ -514,6 +515,42 @@ export function checkSkillFrontmatter(content: string, options: FrontmatterCheck
       message: `body is ${bodyWordCount} words, exceeds the ${SKILL_BODY_WORD_WARN_THRESHOLD}-word warn threshold (target ${SKILL_BODY_WORD_TARGET})`,
     });
   }
+
+  return violations;
+}
+
+// ---------------------------------------------------------------------------
+// M5 — learning-asset structure (Layer 1, structural only; semantic quality
+// stays with the Layer 2 judge)
+// ---------------------------------------------------------------------------
+
+export type AssetFormat = 'markdown' | 'html';
+
+const PROFILE_APPLIED_RE = /profile applied/i;
+
+export function detectAssetFormat(asset: string): AssetFormat {
+  return /<article\b|<h1\b|<section\b/i.test(asset) ? 'html' : 'markdown';
+}
+
+export function checkLearningAsset(asset: string, format: AssetFormat = detectAssetFormat(asset)): Violation[] {
+  const violations: Violation[] = [];
+  const error = (message: string): void => {
+    violations.push({ checker: 'learning-asset', severity: 'error', message });
+  };
+
+  if (format === 'markdown') {
+    if (!/^#\s+\S/m.test(asset)) error('markdown asset needs an H1 title line');
+    if (!/^\s*(?:[-*+]\s+\S|\d+[.)]\s+\S)/m.test(asset)) error('markdown asset needs a numbered or bulleted step list');
+  } else {
+    if (!/<article\b/i.test(asset)) error('html asset needs an <article> wrapper');
+    if (!/<h1\b/i.test(asset)) error('html asset needs an <h1> title');
+    if (!/<section\b/i.test(asset)) error('html asset needs at least one <section> block');
+    if (/<script\b[^>]*\bsrc=/i.test(asset) || /<link\b[^>]*rel=["']?stylesheet/i.test(asset)) {
+      error('html asset must not require external scripts or stylesheets');
+    }
+  }
+
+  if (!PROFILE_APPLIED_RE.test(asset)) error('asset must end with a one-line "Profile applied" note');
 
   return violations;
 }

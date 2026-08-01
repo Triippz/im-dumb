@@ -33,8 +33,13 @@ not drift.
 | 4 | Comprehension-gate trigger cases, including false positives | `comprehension-gate` | turns (v2) | shipped in M2 slice 4 |
 | 5 | Profile-adaptation multi-turn sequences | `profile-adaptation` | turns (v2) | shipped in M2 slice 4 |
 | 6 | Adversarial cases inducing jargon leakage or unsafe over-simplification | `adversarial` | prompt (v1) | shipped |
+| 7 | M5 durable learning assets (markdown/HTML explainers) | `learning-asset` | prompt (v1) | shipped in M5 phase 1 |
 
-`PROMPT_ONLY_CATEGORIES` (categories 1/2/3/6) and `TURNS_ONLY_CATEGORIES`
+Category 7 is an M5 addition beyond prd.md §9.4's original six: an asset
+request is a single prompt turn, so it reuses the v1 prompt shape and adds
+the `learning-asset` structural checker on top of the usual language checks.
+
+`PROMPT_ONLY_CATEGORIES` (categories 1/2/3/6/7) and `TURNS_ONLY_CATEGORIES`
 (categories 4/5) are exported from `src/golden-schema.ts` and are exhaustive:
 a case's `category` fixes whether it must carry `prompt` or `turns[]`, and
 `validateGoldenCase()` rejects the mismatched shape either way.
@@ -54,7 +59,7 @@ whatever its category, carries these fields:
 | Field | Type | Required | Bounds / policy |
 |---|---|---|---|
 | `id` | string | yes | non-empty; stable once published, never reused; must equal the case's filename minus `.json` |
-| `category` | enum | yes | `persona-baseline \| jargon-decomposition \| adhd-pair \| adversarial \| comprehension-gate \| profile-adaptation` |
+| `category` | enum | yes | `persona-baseline \| jargon-decomposition \| adhd-pair \| adversarial \| comprehension-gate \| profile-adaptation \| learning-asset` |
 | `prompt` | string | exactly one of `prompt`/`turns` | non-empty; required and only allowed for `PROMPT_ONLY_CATEGORIES` (1/2/3/6) |
 | `turns` | `GoldenTurn[]` | exactly one of `prompt`/`turns` | required and only allowed for `TURNS_ONLY_CATEGORIES` (4/5); see "Schema v2" below |
 | `profile` | object | yes | arbitrary plain object — a partial `Profile` (src/profile.ts) overlay merged onto defaults by the eval runner; not validated against the full profile schema here |
