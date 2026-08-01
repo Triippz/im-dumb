@@ -14,3 +14,11 @@ test('M2 harness prompt supplies paths, not the diagnosis behavior being evaluat
   assert.match(prompt, /Read references/i);
   assert.doesNotMatch(prompt, /first line|Likely confusion points|Never start|Never narrate/i);
 });
+
+test('M2 capture provenance gives every run an id and links only scenario-specific infrastructure retries', () => {
+  assert.match(captureSource, /const captureRunId = randomUUID\(\)/);
+  assert.match(captureSource, /function priorInfrastructureFailure\(scenario: string\)/);
+  assert.match(captureSource, /fresh_run_id: captureRunId/);
+  assert.match(captureSource, /retry_of: retryOf/);
+  assert.match(captureSource, /rerun: retryOf !== null/);
+});

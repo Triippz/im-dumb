@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { appendFileSync } from 'node:fs';
+import { appendFileSync, readFileSync } from 'node:fs';
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { homedir, tmpdir } from 'node:os';
 import path from 'node:path';
@@ -13,6 +13,7 @@ const casesDir = path.join(repo, 'eval', 'golden', 'cases');
 // Attempts 1-8 ran openai-codex, 10-11 grok-4.5, 12-13 composer-2.5. Runs are
 // only comparable within one model, so pin all three together per attempt.
 const attempt = Number(process.env.IM_DUMB_CAPTURE_ATTEMPT ?? 13);
+const captureRunId = randomUUID();
 const outputDir = path.join(repo, 'eval', 'runtime', 'm2', 'attempts', `attempt-${attempt}`, 'captures');
 const provider = process.env.IM_DUMB_CAPTURE_PROVIDER ?? 'cursor';
 const model = process.env.IM_DUMB_CAPTURE_MODEL ?? 'composer-2.5';
@@ -28,6 +29,18 @@ function logProgress(line: string): void {
   const text = `[${new Date().toISOString()}] ${line}\n`;
   try { appendFileSync(progressLog, text); } catch { /* best-effort */ }
   process.stdout.write(line + '\n');
+}
+
+function priorInfrastructureFailure(scenario: string): { scenario: string; reason: string; log: string } | null {
+  try {
+    const lines = readFileSync(progressLog, 'utf8').trim().split('\n').reverse();
+    const prefix = `fail ${scenario}: `;
+    const match = lines.find((line) => line.includes(prefix));
+    if (match === undefined) return null;
+    return { scenario, reason: match.slice(match.indexOf(prefix) + prefix.length), log: `attempt-${attempt}/capture.log` };
+  } catch {
+    return null;
+  }
 }
 process.on('uncaughtException', (error) => { logProgress(`uncaughtException: ${error.stack ?? error}`); process.exit(1); });
 process.on('unhandledRejection', (reason) => { logProgress(`unhandledRejection: ${reason}`); process.exit(1); });
@@ -230,6 +243,7 @@ async function capture(scenario: Scenario): Promise<void> {
     }
     const profileAfter = JSON.parse(await readFile(profilePath, 'utf8')) as Profile;
     const allCalls = turns.flatMap((turn) => turn.tool_calls);
+    const retryOf = priorInfrastructureFailure(scenario.name);
     const record = {
       scenario: scenario.name,
       attempt,
@@ -258,8 +272,11 @@ async function capture(scenario: Scenario): Promise<void> {
       turns,
       observed_tool_calls: allCalls,
       suspicious_tool_file_network_attempts: suspiciousAttempts(allCalls),
-      rerun: true,
-      protocol_recapture: 'Attempts 1-8 openai-codex; attempt 9 contaminated; attempts 10-11 grok-4.5 and attempt 12 composer-2.5 preserved but failed automated thresholds on diagnosis preamble. Attempt 13 retries composer-2.5 after explicit forbid-list harden; not model-comparable with 1-8.',
+      capture_provenance: {
+        fresh_run_id: captureRunId,
+        retry_of: retryOf,
+      },
+      rerun: retryOf !== null,
     };
     await mkdir(outputDir, { recursive: true });
     await writeFile(path.join(outputDir, `${scenario.name}.json`), `${JSON.stringify(record, null, 2)}\n`);
