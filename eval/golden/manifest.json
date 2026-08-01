@@ -44,7 +44,7 @@
     {"id":"profile-adaptation-cas-conflict","path":"eval/golden/cases/profile-adaptation-cas-conflict.json","sha256":"96db92db162fdbf4aed4ab54ba56aa8d0432948fadb4fee50e867e1d74d6c156"},
     {"id":"profile-adaptation-direct-step-known-state","path":"eval/golden/cases/profile-adaptation-direct-step-known-state.json","sha256":"75659d815f5099126b74b21d4153444ed0ea3ee01de92ecc8e487cb0dc5deb58"},
     {"id":"profile-adaptation-second-failure-after-diagnosis","path":"eval/golden/cases/profile-adaptation-second-failure-after-diagnosis.json","sha256":"417c7f3c3289d8f1d272d3db006ffa6c0eba20c0d9653ce52daf4c7dbe63f91a"},
-    {"id":"profile-adaptation-second-failure-after-direct","path":"eval/golden/cases/profile-adaptation-second-failure-after-direct.json","sha256":"2e58eee5d01bd49bcf1017ba84acb6d6cdfd0feccdea82a03c0459f29729b8b3"},
+    {"id":"profile-adaptation-second-failure-after-direct","path":"eval/golden/cases/profile-adaptation-second-failure-after-direct.json","sha256":"015e1d164c215e7e32186a7e1870978da070d3b1055006f24823f0419a62fcdd"},
     {"id":"profile-adaptation-selection-and-resolution","path":"eval/golden/cases/profile-adaptation-selection-and-resolution.json","sha256":"59103fd6f99aff3fd14e3fa35ed7f59af80901b41e2141b22cfd5536f3c8e3b3"},
     {"id":"profile-adaptation-success-reset","path":"eval/golden/cases/profile-adaptation-success-reset.json","sha256":"79813f33fdae26e43d179b9dc038b6f633f2d509625cd0bb1c473afe62074960"}
   ]

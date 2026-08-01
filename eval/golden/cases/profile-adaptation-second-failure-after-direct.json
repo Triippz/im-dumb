@@ -37,7 +37,7 @@
       "expected_action": "rediagnose",
       "expected_question_count": 1,
       "expected_format": "default",
-      "expected_candidate_count": 3,
+      "expected_candidate_count": 2,
       "expected_known_gaps": [
         {
           "type": "framing",
@@ -47,7 +47,7 @@
     },
     {
       "role": "assistant",
-      "content": "**Likely confusion points**\n- **Request arrival**: Where requests first land may be unclear.\n- **Server choice**: How one destination is selected may be unclear.\n- **Shared capacity**: Why several servers help may be unclear.\nWhich stage should I draw as a short sequence?"
+      "content": "**Likely confusion points**\n- **Incoming request**: What reaches the load balancer before it chooses a destination.\n- **Server choice**: How it selects an available server for each request.\nWhich step should I explain first?"
     },
     {
       "role": "user",

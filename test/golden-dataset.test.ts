@@ -267,6 +267,12 @@ test('golden dataset: both consecutive-failure paths force rediagnosis', () => {
     { type: 'step', confidence: 0.5 },
     { type: 'framing', confidence: 0.75 },
   ]);
+  const rediagnose = userTurns(directCase)[2]!;
+  assert.equal(rediagnose.expected_candidate_count, 2);
+  const rediagnosisReply = directCase.turns![5]!.content;
+  assert.match(rediagnosisReply, /Incoming request/);
+  assert.match(rediagnosisReply, /Server choice/);
+  assert.doesNotMatch(rediagnosisReply, /Shared capacity|several servers help/i);
 });
 
 test('golden dataset: selection targets a repair and explicit success records its resolution', () => {

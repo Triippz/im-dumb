@@ -215,13 +215,19 @@ and never has to expose persistence diagnostics. Exact `learn` stdout,
 stderr, CAS, locking, and unknown-entry preservation are executable profile
 and runtime evidence, not claims inferred from conversational prose.
 
-### M2 slice 4 existing-case review note
+### M2 published-case review notes
 
-No published case bytes changed, so no special existing-case sign-off is
-required. Before this branch's PR was merged, independent Fable and Sol review
-corrected the embedded-marker fixture from a 47-code-point `too-long` overlap
-to a distinct at-most-40-code-point `no-marker` case. The published-case rule
-above applies only after merge; the manifest records the corrected hash.
+The `profile-adaptation-second-failure-after-direct` exemplar was revised to
+remove a rediagnosis candidate that re-offered the failed multi-server
+proposition. This is a contract correction, not a threshold change: the
+independent attempt-21 contract arbitration explicitly signed off on the edit;
+the PR description names that review and its evidence. The manifest records
+the new hash.
+
+Before M2 slice 4 merged, independent Fable and Sol review corrected the
+embedded-marker fixture from a 47-code-point `too-long` overlap to a distinct
+at-most-40-code-point `no-marker` case. The published-case rule above applies
+to every later in-place edit.
 
 ## Dataset size
 
