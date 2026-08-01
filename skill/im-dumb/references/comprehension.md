@@ -3,6 +3,16 @@
 Use this reference only after `SKILL.md` directs you to load it. Conversation
 state is transient. Never store it in the profile.
 
+## Non-triggering replies
+
+These replies must not trigger diagnosis:
+`huh!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!` (41 code points; too long) and
+`I don't understand this null lookup` (non-standalone marker). Ordinary
+statement; zero questions.
+
+Without a usable snapshot, use defaults and empty known gaps; disable taper
+and learning. Repair remains conversation-local.
+
 ## Runtime decision
 
 A lexical candidate is only stage one. In the same generation turn,

@@ -88,8 +88,8 @@ test('skill directory, frontmatter name, description, and version satisfy the sh
   );
 });
 
-test('SKILL.md body stays within the 930-word M5 target and budget remains warning-only above 1000 (D12)', () => {
-  assert.ok((body.match(/\S+/gu) ?? []).length <= 930, "SKILL.md body must stay within the M5 target");
+test('SKILL.md body stays within the 900-word target and budget remains warning-only above 1000 (D12)', () => {
+  assert.ok((body.match(/\S+/gu) ?? []).length <= 900, "SKILL.md body must stay within the 900-word target");
   const oversized = `${skillMdContent}\n${'word '.repeat(1100)}`;
   const budget = checkSkillFrontmatter(oversized, { expectedName: 'im-dumb' })
     .find((v) => /word warn threshold/i.test(v.message));
@@ -160,11 +160,16 @@ test('main skill loads comprehension detail only for a later possible signal or 
   assert.match(comprehension, /first line `\*\*Likely confusion points\*\*` or `\{`/i);
   assert.match(comprehension, /Forbidden before that line[\s\S]{0,120}Diagnosing[\s\S]{0,80}I'll load[\s\S]{0,80}loading your profile[\s\S]{0,80}Active repair thread/i);
   assert.match(comprehension, /profile failure never blocks diagnosis, rediagnosis, or\s+repair/i);
-  assert.match(comprehension, /replies must not trigger diagnosis[\s\S]*huh!{38}[\s\S]{0,80}41 code points; too long/i);
-  assert.match(comprehension, /I don't understand this null lookup[\s\S]{0,60}non-standalone marker/i);
-  assert.match(comprehension, /ordinary\s+statement; zero questions/i);
-  assert.match(comprehension, /Without a usable snapshot[\s\S]{0,120}defaults and empty known gaps[\s\S]{0,100}disable taper\s+and learning/i);
-  assert.match(comprehension, /Repair remains conversation-local/i);
+});
+
+// Non-trigger examples and the no-snapshot fallback live in the reference, not
+// the always-loaded body — they are only needed once repair is in play.
+test('comprehension reference carries the non-trigger examples and no-snapshot fallback', () => {
+  assert.match(comprehensionContent, /replies must not trigger diagnosis[\s\S]*huh!{38}[\s\S]{0,80}41 code points; too long/i);
+  assert.match(comprehensionContent, /I don't understand this null lookup[\s\S]{0,60}non-standalone marker/i);
+  assert.match(comprehensionContent, /ordinary\s+statement; zero questions/i);
+  assert.match(comprehensionContent, /Without a usable snapshot[\s\S]{0,120}defaults and empty known gaps[\s\S]{0,100}disable taper\s+and learning/i);
+  assert.match(comprehensionContent, /Repair remains conversation-local/i);
 });
 
 test('onboarding asks every visible field one at a time in schema order', () => {
