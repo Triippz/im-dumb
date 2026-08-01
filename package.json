@@ -3,6 +3,16 @@
   "version": "0.2.0",
   "type": "module",
   "private": true,
+  "description": "Cross-harness Agent Skill: personalized communication profile + comprehension gate.",
+  "bin": {
+    "im-dumb": "./dist/install-cli.js"
+  },
+  "files": [
+    "dist/",
+    "skill/im-dumb/",
+    "README.md",
+    "AGENTS.md"
+  ],
   "engines": {
     "node": ">=24"
   },
@@ -14,7 +24,8 @@
     "verify:golden": "node --test test/golden-dataset.test.ts",
     "verify:dist-sync": "diff -u dist/profile.js skill/im-dumb/scripts/profile.js",
     "eval:smoke": "node src/eval-runner.ts --dry-run",
-    "eval:smoke:live": "node src/eval-runner.ts --live"
+    "eval:smoke:live": "node src/eval-runner.ts --live",
+    "install:skill": "node src/install-cli.ts install"
   },
   "devDependencies": {
     "@types/node": "24.13.3",

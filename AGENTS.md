@@ -27,16 +27,16 @@ CLAUDE.md           # @AGENTS.md import — do not add content there
 README.md           # human-facing overview
 ```
 
-`installer/` does not exist yet — it is planned for **M4** (multi-harness packaging + `npx` installer); see Milestones below.
+There is no separate `installer/` package directory — the CLI lives in `src/install-cli.ts` (built to `dist/install-cli.js`) and copies `skill/im-dumb/`. npm publish remains **M6** (`private: true` until then); local verify via `npm run build && node dist/install-cli.js install …` or `npm run install:skill -- --targets …`.
 
-## Installer contract (v1 - planned for M4)
+## Installer contract (v1 — implemented, unpublished)
 
-- Runnable via `npx im-dumb`, zero global install.
+- Bin entry `im-dumb` → `dist/install-cli.js` (ready for `npx` after M6 publish).
 - Auto-detects harnesses: `~/.claude/`/`.claude/` (Claude Code), `~/.cursor/`/`.cursor/` (Cursor), `~/.pi/agent/`/`~/.agents/`/`.pi/`/`.agents/` (Pi), `.codex/` (flagged manual/local-shell only).
-- Interactive multi-select of detected harnesses + global/project scope toggle per harness.
-- Non-interactive mode: `npx im-dumb install --targets claude,cursor,pi --scope global`.
-- Idempotent: detects existing install, diffs version, prompts upgrade — never duplicates.
-- Shared-directory aware: prefers write-once to `.agents/skills/im-dumb/` when that convention is in use.
+- Interactive prompts when TTY and `--targets` omitted; one global/project `--scope` for the run.
+- Non-interactive mode: `im-dumb install --targets claude,cursor,pi --scope global`.
+- Idempotent: detects existing install, diffs `metadata.version`, upgrades or skips — never duplicates.
+- Shared-directory aware: when `.agents/skills/` exists (or `--prefer-agents`), cursor+pi write once there; Claude still uses `.claude/skills/`.
 - Out of scope v1: automated upload to Claude API `/v1/skills` or OpenAI hosted skills (manual step, documented).
 
 ## Governance

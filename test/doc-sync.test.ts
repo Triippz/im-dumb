@@ -36,9 +36,11 @@ test('README states the vocabulary_level field and its three exact enum values',
   assert.match(readme, /`expert`/);
 });
 
-test('README labels the npx installer as planned for M4', () => {
+test('README documents the M4 installer CLI and unpublished npm status', () => {
   const install = section(readme, '## Install');
-  assert.match(install, /M4/);
+  assert.match(install, /install-cli\.js/);
+  assert.match(install, /private:\s*true|not on npm/i);
+  assert.match(install, /M6/);
 });
 
 test('README qualifies npx download network use vs invocation-time no-network guarantee', () => {
@@ -69,13 +71,14 @@ test('README discloses the M1 spot-check and token-overhead results honestly', (
   assert.doesNotMatch(readme, /production[- ]ready/i);
 });
 
-test('README roadmap still marks M2 and later milestones as planned, not shipped', () => {
+test('README roadmap marks M4 in progress and keeps M5/M6 ahead', () => {
   const roadmap = section(readme, '## Roadmap');
-  assert.match(roadmap, /\*\*M2:\*\*/);
-  assert.match(roadmap, /\*\*M4:\*\*/);
+  assert.match(roadmap, /\*\*M4[^*]*\*\*/);
+  assert.match(roadmap, /\*\*M5:\*\*/);
+  assert.match(roadmap, /\*\*M6:\*\*/);
 });
 
-test('AGENTS repo layout is labeled actual and omits the nonexistent installer directory', () => {
+test('AGENTS repo layout is labeled actual and omits a separate installer/ directory', () => {
   const layout = section(agents, '## Repo layout');
   assert.match(layout, /## Repo layout \(actual\)/);
   const codeBlockMatch = /```\n([\s\S]*?)\n```/.exec(layout);
@@ -85,11 +88,11 @@ test('AGENTS repo layout is labeled actual and omits the nonexistent installer d
   for (const entry of ['docs/plans/', 'eval/', 'src/', 'test/', 'skill/im-dumb/', 'AGENTS.md', 'CLAUDE.md', 'README.md']) {
     assert.ok(block.includes(entry), `layout block should list "${entry}"`);
   }
-  assert.match(layout, /installer\/[\s\S]{0,120}(planned|does not exist)[\s\S]{0,40}M4|M4[\s\S]{0,120}installer/i);
+  assert.match(layout, /install-cli|no separate `installer\/`/i);
 });
 
-test('AGENTS installer contract section is labeled planned for M4', () => {
-  assert.match(agents, /## Installer contract \(v1 - planned for M4\)/);
+test('AGENTS installer contract section is marked implemented but unpublished', () => {
+  assert.match(agents, /## Installer contract \(v1 — implemented, unpublished\)/);
 });
 
 test('CLAUDE.md remains exactly the AGENTS.md import', () => {

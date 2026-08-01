@@ -59,15 +59,16 @@ The same profile is designed to travel across Claude Code, Cursor, OpenAI Codex/
 ## Install
 
 > [!IMPORTANT]
-> **Pre-release:** the skill and installer are not published yet. Packaging and the `npx` installer are planned for **M4**; M1 is building the profile, language rules, and evaluation gates first.
+> **Pre-release:** the package is not on npm yet (`private: true` until M6). The M4 installer CLI is implemented in-repo — build locally, then run `node dist/install-cli.js install …`. After publish, the same entrypoint is `npx im-dumb`.
 
-The planned install command is:
+From a clone:
 
 ```bash
-npx im-dumb
+npm run build
+node dist/install-cli.js install --targets claude,cursor,pi --scope global
 ```
 
-Non-interactive installs will support:
+After npm publish (M6):
 
 ```bash
 npx im-dumb install --targets claude,cursor,pi --scope global
@@ -87,8 +88,8 @@ Hosted upload automation is intentionally out of scope for v1 because it would r
 
 - Bundled skill scripts make **no outbound network calls** at invocation time.
 - Compiled JavaScript has **zero runtime dependencies**.
-- Running `npx im-dumb` (planned, M4) will need network access once, to download the package; after install, the skill's bundled scripts still make no outbound network calls when invoked.
-- The installer will only write local files that you can inspect.
+- Running `npx im-dumb` (after M6 publish) will need network access once, to download the package; after install, the skill's bundled scripts still make no outbound network calls when invoked. Local `node dist/install-cli.js` needs no network.
+- The installer only writes local files that you can inspect.
 - Profile paths can be overridden with `IM_DUMB_PROFILE`; profile validation rejects unknown fields on save.
 
 ## M1 evaluation status
@@ -118,11 +119,11 @@ The project uses strict TypeScript, Node’s built-in test runner, Conventional 
 ## Roadmap
 
 - **M1 — implementation and evidence complete, gates report-only:** profile, language rules, deterministic checkers, golden dataset, and captured evidence (see [M1 evaluation status](#m1-evaluation-status))
-- **M2:** comprehension gate and learned gaps
-- **M3:** full evaluation runner and human comprehension protocol
-- **M4:** multi-harness packaging and `npx` installer
+- **M2 — shipped (runtime acceptance open):** comprehension gate and learned gaps
+- **M3 — shipped:** Layer 2 smoke runner, Gate 3 report-only token signal, Gate 4 nightly warn
+- **M4 — in progress:** multi-harness packaging and installer CLI (unpublished until M6)
 - **M5:** profile-aware learning assets
-- **M6:** release and governance hardening
+- **M6:** release and governance hardening (npm publish)
 
 ## Why “im-dumb”?
 
