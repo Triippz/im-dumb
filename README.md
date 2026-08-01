@@ -100,6 +100,8 @@ M1's implementation and evidence-gathering are complete: the profile module and 
 
 Both reports are single-trial and report-only in M1: they are recorded risk, not blocking gates, and not M3 ground truth. This evidence is not a production-readiness signal — M3 adds a multi-trial, variance-aware, blocking evaluation runner before model-scored behavior gates a release.
 
+How the full stack fits together (Layer 1 checkers, golden dataset, rubrics, M2 runtime evidence) and why those gates are shaped the way they are: [eval/README.md](eval/README.md).
+
 ## Development
 
 Requires Node.js 24.12 or newer for stable TypeScript type stripping.
