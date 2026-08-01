@@ -4,7 +4,23 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { runChecks } from './check-cli.ts';
 import type { Violation } from './checkers.ts';
+import {
+  JUDGE_DIMENSIONS,
+  MAX_JUDGE_TRIALS,
+  MIN_JUDGE_TRIALS,
+  aggregateCaseTrials,
+  type CaseAggregate,
+  type TrialVerdict,
+} from './eval-aggregate.ts';
 import { validateGoldenCase, type GoldenCase } from './golden-schema.ts';
+import {
+  JUDGE_TEMPERATURE,
+  createHttpJudgeClient,
+  parseJudgePin,
+  type JudgeClient,
+  type JudgePin,
+  type JudgeVerdict,
+} from './judge-client.ts';
 import { DEFAULT_PROFILE, validate, type Profile } from './profile.ts';
 import {
   loadSmokeManifest,
@@ -23,9 +39,22 @@ export interface EvalRunnerArgs {
   goldenDir: string;
   repoRoot: string;
   skillVersion: string;
+  trialsPerCase: number;
+  judgeClient?: JudgeClient;
+  judgePin?: JudgePin;
+  env?: Record<string, string | undefined>;
 }
 
 export type CandidateStatus = 'present' | 'missing';
+
+export interface CaseJudgeResult {
+  trialCount: number;
+  overallPasses: number;
+  overallRate: number;
+  dimensions: CaseAggregate['dimensions'];
+  passed: boolean;
+  reason?: string;
+}
 
 export interface CaseSmokeResult {
   caseId: string;
@@ -34,21 +63,32 @@ export interface CaseSmokeResult {
   layer1WarnCount: number;
   quarantined: boolean;
   layer1Violations?: Violation[];
-  judge: null;
+  judge: CaseJudgeResult | null;
 }
 
-export interface DryRunArtifact {
-  mode: 'dry-run';
+export type JudgeArtifactMeta =
+  | { status: 'skipped' }
+  | {
+      status: 'ran';
+      modelId: string;
+      modelVersion: string;
+      temperature: typeof JUDGE_TEMPERATURE;
+      trialsPerCase: number;
+    };
+
+export interface EvalArtifact {
+  mode: 'dry-run' | 'live';
   skillVersion: string;
   datasetHash: string;
-  judge: { status: 'skipped' };
+  judge: JudgeArtifactMeta;
   blockingCaseIds: string[];
+  failedBlockingCaseIds: string[];
   cases: CaseSmokeResult[];
 }
 
 export interface EvalSmokeResult {
   exitCode: number;
-  artifact: DryRunArtifact;
+  artifact: EvalArtifact;
   error?: string;
 }
 
@@ -56,6 +96,23 @@ const DEFAULT_SKILL_VERSION = '0.2.0';
 
 function defaultRepoRoot(): string {
   return path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+}
+
+function emptyDimensions(): CaseAggregate['dimensions'] {
+  return Object.fromEntries(
+    JUDGE_DIMENSIONS.map((dimension) => [dimension, { passes: 0, trials: 0, rate: 0 }]),
+  ) as CaseAggregate['dimensions'];
+}
+
+function failedJudge(reason: string): CaseJudgeResult {
+  return {
+    trialCount: 0,
+    overallPasses: 0,
+    overallRate: 0,
+    dimensions: emptyDimensions(),
+    passed: false,
+    reason,
+  };
 }
 
 export function parseEvalRunnerArgs(argv: string[], repoRoot = defaultRepoRoot()): EvalRunnerArgs {
@@ -66,6 +123,7 @@ export function parseEvalRunnerArgs(argv: string[], repoRoot = defaultRepoRoot()
   let baselinesDir = path.join(repoRoot, 'eval/baselines');
   let goldenDir = path.join(repoRoot, 'eval/golden/cases');
   let skillVersion = DEFAULT_SKILL_VERSION;
+  let trialsPerCase = MIN_JUDGE_TRIALS;
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -84,6 +142,13 @@ export function parseEvalRunnerArgs(argv: string[], repoRoot = defaultRepoRoot()
       const value = argv[++i];
       if (!value) throw new Error('--skill-version requires a value');
       skillVersion = value;
+    } else if (arg === '--trials') {
+      const value = argv[++i];
+      const parsed = Number(value);
+      if (!Number.isInteger(parsed) || parsed < MIN_JUDGE_TRIALS || parsed > MAX_JUDGE_TRIALS) {
+        throw new Error(`--trials must be an integer ${MIN_JUDGE_TRIALS}–${MAX_JUDGE_TRIALS}`);
+      }
+      trialsPerCase = parsed;
     } else {
       throw new Error(`unknown argument: ${arg}`);
     }
@@ -98,6 +163,7 @@ export function parseEvalRunnerArgs(argv: string[], repoRoot = defaultRepoRoot()
     goldenDir,
     repoRoot,
     skillVersion,
+    trialsPerCase,
   };
 }
 
@@ -144,46 +210,182 @@ function tryLoadCandidateResponse(baselinesDir: string, caseId: string): string 
   }
 }
 
+function emptyArtifact(skillVersion: string, mode: EvalArtifact['mode']): EvalArtifact {
+  return {
+    mode,
+    skillVersion,
+    datasetHash: '0'.repeat(64),
+    judge: { status: 'skipped' },
+    blockingCaseIds: [],
+    failedBlockingCaseIds: [],
+    cases: [],
+  };
+}
+
 export function buildDryRunArtifact(input: {
   skillVersion: string;
   datasetHash: string;
-  cases: Array<Omit<CaseSmokeResult, 'judge'> & { judge?: null }>;
+  cases: Array<Omit<CaseSmokeResult, 'judge'>>;
   blockingCaseIds?: string[];
-}): DryRunArtifact {
+}): EvalArtifact {
+  const cases = input.cases.map((item) => ({ ...item, judge: null }));
   return {
     mode: 'dry-run',
     skillVersion: input.skillVersion,
     datasetHash: input.datasetHash,
     judge: { status: 'skipped' },
-    blockingCaseIds: input.blockingCaseIds ?? input.cases.filter((c) => !c.quarantined).map((c) => c.caseId),
-    cases: input.cases.map((item) => ({ ...item, judge: null })),
+    blockingCaseIds: input.blockingCaseIds ?? cases.filter((c) => !c.quarantined).map((c) => c.caseId),
+    failedBlockingCaseIds: [],
+    cases,
   };
 }
 
-export function runEvalSmoke(options: EvalRunnerArgs): EvalSmokeResult {
-  try {
-    if (!options.dryRun) {
-      return {
-        exitCode: 1,
-        artifact: buildDryRunArtifact({
-          skillVersion: options.skillVersion,
-          datasetHash: '0'.repeat(64),
-          cases: [],
-        }),
-        error: 'live judge mode is not wired yet; use --dry-run',
-      };
-    }
+function verdictToTrial(verdict: JudgeVerdict): TrialVerdict {
+  const dimensions: TrialVerdict['dimensions'] = {};
+  for (const dimension of JUDGE_DIMENSIONS) {
+    dimensions[dimension] = verdict.dimensions[dimension].pass;
+  }
+  return { dimensions };
+}
 
+async function judgeCase(options: {
+  caseId: string;
+  golden: GoldenCase;
+  response: string;
+  client: JudgeClient;
+  pin: JudgePin;
+  trialsPerCase: number;
+}): Promise<CaseJudgeResult> {
+  const trials: TrialVerdict[] = [];
+  for (let i = 0; i < options.trialsPerCase; i += 1) {
+    const verdict = await options.client.judge(
+      {
+        caseId: options.caseId,
+        candidateText: options.response,
+        rubricName: 'm1',
+        referenceFacts: options.golden.reference_facts,
+        mustPreserve: options.golden.must_preserve,
+      },
+      options.pin,
+    );
+    trials.push(verdictToTrial(verdict));
+  }
+  const aggregate = aggregateCaseTrials({
+    caseId: options.caseId,
+    trials,
+    quarantined: false,
+  });
+  // ponytail: no trailing baseline file yet — require a clean trial set.
+  const passed = aggregate.overallPasses === aggregate.trialCount;
+  return {
+    trialCount: aggregate.trialCount,
+    overallPasses: aggregate.overallPasses,
+    overallRate: aggregate.overallRate,
+    dimensions: aggregate.dimensions,
+    passed,
+    reason: passed ? undefined : 'not all trials passed every rubric dimension',
+  };
+}
+
+function resolveLiveJudge(options: EvalRunnerArgs): { client: JudgeClient; pin: JudgePin } {
+  if (options.judgeClient) {
+    return { client: options.judgeClient, pin: options.judgePin ?? options.judgeClient.pin };
+  }
+  const pin = options.judgePin ?? parseJudgePin(options.env ?? process.env);
+  return { client: createHttpJudgeClient({ pin }), pin };
+}
+
+/** Sync dry-run only. Live mode must call `runEvalSmokeAsync`. */
+export function runEvalSmoke(options: EvalRunnerArgs): EvalSmokeResult {
+  if (!options.dryRun) {
+    return {
+      exitCode: 1,
+      artifact: emptyArtifact(options.skillVersion, 'live'),
+      error: 'live judge mode requires runEvalSmokeAsync',
+    };
+  }
+  return runDrySmoke(options);
+}
+
+function runDrySmoke(options: EvalRunnerArgs): EvalSmokeResult {
+  try {
     const manifest = loadSmokeManifest(options.smokeManifest);
     const quarantine = loadSmokeQuarantine(options.smokeQuarantine);
-    const knownIds = manifest.caseIds; // validated against disk below via file loads
-    const missingFromQuarantine = validateSmokeCaseIds(quarantine.caseIds, knownIds);
+    const missingFromQuarantine = validateSmokeCaseIds(quarantine.caseIds, manifest.caseIds);
     if (missingFromQuarantine.length > 0) {
-      throw new Error(
-        `quarantine ids not in smoke manifest: ${missingFromQuarantine.join(', ')}`,
-      );
+      throw new Error(`quarantine ids not in smoke manifest: ${missingFromQuarantine.join(', ')}`);
     }
 
+    const datasetHash = hashDatasetManifest(readFileSync(options.smokeManifest, 'utf8'));
+    const blockingCaseIds = resolveBlockingCaseIds(manifest.caseIds, quarantine.caseIds);
+    const quarantined = new Set(quarantine.caseIds);
+    const cases: Array<Omit<CaseSmokeResult, 'judge'>> = [];
+
+    for (const caseId of manifest.caseIds) {
+      const goldenPath = path.join(options.goldenDir, `${caseId}.json`);
+      const golden = loadGoldenCase(goldenPath);
+      if (golden.id !== caseId) {
+        throw new Error(`${goldenPath}: id mismatch`);
+      }
+
+      const response = tryLoadCandidateResponse(options.baselinesDir, caseId);
+      const isQuarantined = quarantined.has(caseId);
+
+      if (response === null) {
+        cases.push({
+          caseId,
+          candidateStatus: 'missing',
+          layer1ErrorCount: 0,
+          layer1WarnCount: 0,
+          quarantined: isQuarantined,
+        });
+        continue;
+      }
+
+      const profile = profileFromCase(golden.profile);
+      const violations = runChecks(response, profile, false);
+      cases.push({
+        caseId,
+        candidateStatus: 'present',
+        layer1ErrorCount: violations.filter((v) => v.severity === 'error').length,
+        layer1WarnCount: violations.filter((v) => v.severity === 'warn').length,
+        quarantined: isQuarantined,
+        layer1Violations: violations,
+      });
+    }
+
+    return {
+      exitCode: 0,
+      artifact: buildDryRunArtifact({
+        skillVersion: options.skillVersion,
+        datasetHash,
+        blockingCaseIds,
+        cases,
+      }),
+    };
+  } catch (error) {
+    return {
+      exitCode: 1,
+      artifact: emptyArtifact(options.skillVersion, 'dry-run'),
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+export async function runEvalSmokeAsync(options: EvalRunnerArgs): Promise<EvalSmokeResult> {
+  if (options.dryRun) {
+    return runDrySmoke(options);
+  }
+
+  try {
+    const manifest = loadSmokeManifest(options.smokeManifest);
+    const quarantine = loadSmokeQuarantine(options.smokeQuarantine);
+    const missingFromQuarantine = validateSmokeCaseIds(quarantine.caseIds, manifest.caseIds);
+    if (missingFromQuarantine.length > 0) {
+      throw new Error(`quarantine ids not in smoke manifest: ${missingFromQuarantine.join(', ')}`);
+    }
+
+    const { client, pin } = resolveLiveJudge(options);
     const datasetHash = hashDatasetManifest(readFileSync(options.smokeManifest, 'utf8'));
     const blockingCaseIds = resolveBlockingCaseIds(manifest.caseIds, quarantine.caseIds);
     const quarantined = new Set(quarantine.caseIds);
@@ -197,52 +399,89 @@ export function runEvalSmoke(options: EvalRunnerArgs): EvalSmokeResult {
       }
 
       const response = tryLoadCandidateResponse(options.baselinesDir, caseId);
+      const isQuarantined = quarantined.has(caseId);
+
       if (response === null) {
         cases.push({
           caseId,
           candidateStatus: 'missing',
           layer1ErrorCount: 0,
           layer1WarnCount: 0,
-          quarantined: quarantined.has(caseId),
-          judge: null,
+          quarantined: isQuarantined,
+          judge: failedJudge('candidate missing'),
         });
         continue;
       }
 
       const profile = profileFromCase(golden.profile);
       const violations = runChecks(response, profile, false);
+      const layer1ErrorCount = violations.filter((v) => v.severity === 'error').length;
+      const layer1WarnCount = violations.filter((v) => v.severity === 'warn').length;
+
+      if (layer1ErrorCount > 0) {
+        cases.push({
+          caseId,
+          candidateStatus: 'present',
+          layer1ErrorCount,
+          layer1WarnCount,
+          quarantined: isQuarantined,
+          layer1Violations: violations,
+          judge: failedJudge('layer1 errors'),
+        });
+        continue;
+      }
+
+      const judge = await judgeCase({
+        caseId,
+        golden,
+        response,
+        client,
+        pin,
+        trialsPerCase: options.trialsPerCase,
+      });
       cases.push({
         caseId,
         candidateStatus: 'present',
-        layer1ErrorCount: violations.filter((v) => v.severity === 'error').length,
-        layer1WarnCount: violations.filter((v) => v.severity === 'warn').length,
-        quarantined: quarantined.has(caseId),
+        layer1ErrorCount,
+        layer1WarnCount,
+        quarantined: isQuarantined,
         layer1Violations: violations,
-        judge: null,
+        judge,
       });
     }
 
-    const artifact = buildDryRunArtifact({
-      skillVersion: options.skillVersion,
-      datasetHash,
-      blockingCaseIds,
-      cases,
-    });
-    return { exitCode: 0, artifact };
+    const failedBlockingCaseIds = cases
+      .filter((item) => !item.quarantined && item.judge !== null && !item.judge.passed)
+      .map((item) => item.caseId);
+
+    return {
+      exitCode: failedBlockingCaseIds.length === 0 ? 0 : 1,
+      artifact: {
+        mode: 'live',
+        skillVersion: options.skillVersion,
+        datasetHash,
+        judge: {
+          status: 'ran',
+          modelId: pin.modelId,
+          modelVersion: pin.modelVersion,
+          temperature: JUDGE_TEMPERATURE,
+          trialsPerCase: options.trialsPerCase,
+        },
+        blockingCaseIds,
+        failedBlockingCaseIds,
+        cases,
+      },
+    };
   } catch (error) {
     return {
       exitCode: 1,
-      artifact: buildDryRunArtifact({
-        skillVersion: options.skillVersion,
-        datasetHash: '0'.repeat(64),
-        cases: [],
-      }),
+      artifact: emptyArtifact(options.skillVersion, 'live'),
       error: error instanceof Error ? error.message : String(error),
     };
   }
 }
 
-export function run(argv: string[]): number {
+export async function runAsync(argv: string[]): Promise<number> {
   let args: EvalRunnerArgs;
   try {
     args = parseEvalRunnerArgs(argv);
@@ -251,28 +490,54 @@ export function run(argv: string[]): number {
     return 2;
   }
 
-  const result = runEvalSmoke(args);
-  if (result.error) {
-    process.stderr.write(`eval-smoke error: ${result.error}\n`);
-  }
+  const result = await runEvalSmokeAsync(args);
+  if (result.error) process.stderr.write(`eval-smoke error: ${result.error}\n`);
   process.stdout.write(
     args.json ? `${JSON.stringify(result.artifact)}\n` : formatHuman(result.artifact, result.error),
   );
   return result.exitCode;
 }
 
-function formatHuman(artifact: DryRunArtifact, error?: string): string {
+/** Sync CLI entry for dry-run; live throws usage toward runAsync. */
+export function run(argv: string[]): number {
+  let args: EvalRunnerArgs;
+  try {
+    args = parseEvalRunnerArgs(argv);
+  } catch (error) {
+    process.stderr.write(`usage error: ${error instanceof Error ? error.message : String(error)}\n`);
+    return 2;
+  }
+  if (!args.dryRun) {
+    process.stderr.write('eval-smoke error: --live requires the async CLI entry (node src/eval-runner.ts --live)\n');
+    return 2;
+  }
+  const result = runDrySmoke(args);
+  if (result.error) process.stderr.write(`eval-smoke error: ${result.error}\n`);
+  process.stdout.write(
+    args.json ? `${JSON.stringify(result.artifact)}\n` : formatHuman(result.artifact, result.error),
+  );
+  return result.exitCode;
+}
+
+function formatHuman(artifact: EvalArtifact, error?: string): string {
   if (error) return `${error}\n`;
+  const judgeLine =
+    artifact.judge.status === 'skipped'
+      ? 'judge: skipped'
+      : `judge: ${artifact.judge.modelId}@${artifact.judge.modelVersion} temp=${artifact.judge.temperature} trials=${artifact.judge.trialsPerCase}`;
   const lines = [
     `mode: ${artifact.mode}`,
     `skill: ${artifact.skillVersion}`,
     `dataset_hash: ${artifact.datasetHash}`,
-    `judge: ${artifact.judge.status}`,
-    `cases: ${artifact.cases.length} (blocking ${artifact.blockingCaseIds.length})`,
-    ...artifact.cases.map(
-      (item) =>
-        `- ${item.caseId}: candidate=${item.candidateStatus} layer1_errors=${item.layer1ErrorCount} layer1_warns=${item.layer1WarnCount}${item.quarantined ? ' quarantined' : ''}`,
-    ),
+    judgeLine,
+    `cases: ${artifact.cases.length} (blocking ${artifact.blockingCaseIds.length}, failed ${artifact.failedBlockingCaseIds.length})`,
+    ...artifact.cases.map((item) => {
+      const judgeBit =
+        item.judge === null
+          ? 'judge=n/a'
+          : `judge=${item.judge.passed ? 'pass' : 'fail'}${item.judge.reason ? ` (${item.judge.reason})` : ''}`;
+      return `- ${item.caseId}: candidate=${item.candidateStatus} layer1_errors=${item.layer1ErrorCount} ${judgeBit}${item.quarantined ? ' quarantined' : ''}`;
+    }),
   ];
   return `${lines.join('\n')}\n`;
 }
@@ -286,4 +551,6 @@ function isDirectExecution(argv1: string | undefined): boolean {
   }
 }
 
-if (isDirectExecution(process.argv[1])) process.exitCode = run(process.argv.slice(2));
+if (isDirectExecution(process.argv[1])) {
+  process.exitCode = await runAsync(process.argv.slice(2));
+}

@@ -149,9 +149,18 @@ npm run eval:smoke
 ```
 
 Dry-run validates the smoke set, runs Layer 1 when a baseline candidate exists,
-and records `judge: skipped` — no secrets, no network. Live judge + CI secret
-path still to wire. Gate 5 shadow/canary stays deferred. M2 runtime acceptance
-remains open.
+and records `judge: skipped` — no secrets, no network. CI always runs dry-run.
+
+Live judge (injectable mock in tests; HTTP adapter when pinned):
+
+```bash
+# requires JUDGE_API_KEY, JUDGE_MODEL, JUDGE_MODEL_VERSION — see .eval.env.example
+npm run eval:smoke:live
+```
+
+CI live job runs only when repo variable `JUDGE_SMOKE_ENABLED=true` and the
+judge secret/vars are set. Gate 5 shadow/canary stays deferred. M2 runtime
+acceptance remains open.
 
 ## How to extend without rotting the gate
 
