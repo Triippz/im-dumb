@@ -76,7 +76,7 @@ test('README roadmap marks M4/M5 shipped state and keeps M6 ahead', () => {
   assert.match(roadmap, /\*\*M4[^*]*\*\*/);
   assert.match(roadmap, /\*\*M5[^*]*\*\*/);
   assert.match(roadmap, /\*\*M6:\*\*/);
-  assert.match(roadmap, /slides and AV still ahead/i);
+  assert.match(roadmap, /AV still ahead/i);
 });
 
 test('AGENTS repo layout is labeled actual and omits a separate installer/ directory', () => {

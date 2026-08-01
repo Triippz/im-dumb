@@ -68,7 +68,7 @@ eval/golden/cases/learning-asset-*.json
 | ID | Decision |
 |---|---|
 | D1 | Assets are generated in the model response (fenced), not written by a bundled network script. |
-| D2 | Phase 2 slides = HTML `<section class="slide">` only; PPTX deferred unless a zero-dep need appears. |
+| D2 | Phase 2 slides = HTML `<section class="slide">` only; PPTX deferred unless a zero-dep need appears. **Shipped**: `MIN_DECK_SLIDES = 2`, per-slide heading required, same self-containment rule as HTML. |
 | D3 | Checker stays structural; semantic quality stays Layer 2 judge later. |
 | D4 | No new npm dependencies. |
 | D5 | Assets honor `learning_asset_preferences.formats` (already in the M1 profile schema); an empty list turns assets off. |
