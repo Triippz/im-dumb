@@ -74,3 +74,54 @@ test('checkLearningAsset: html with external script or stylesheet is an error', 
   assert.ok(checkLearningAsset(withScript, 'html').some((v) => /external/i.test(v.message)));
   assert.ok(checkLearningAsset(withCss, 'html').some((v) => /external/i.test(v.message)));
 });
+
+const GOOD_SLIDES = [
+  '<article class="deck">',
+  '  <h1>How a cache goes stale</h1>',
+  '  <section class="slide">',
+  '    <h2>What a cache is</h2>',
+  '    <p>A cache keeps a copy so the next request skips the work.</p>',
+  '  </section>',
+  '  <section class="slide">',
+  '    <h2>Why it goes stale</h2>',
+  '    <p>The copy stays after the real data changes.</p>',
+  '  </section>',
+  '  <section class="slide">',
+  '    <h2>Profile applied</h2>',
+  '    <p>Profile applied: short sentences, one idea per slide.</p>',
+  '  </section>',
+  '</article>',
+].join('\n');
+
+test('detectAssetFormat: slide sections are detected as slides, not plain html', () => {
+  assert.equal(detectAssetFormat(GOOD_SLIDES), 'slides');
+});
+
+test('checkLearningAsset: well-formed slide deck has no violations', () => {
+  assert.deepEqual(checkLearningAsset(GOOD_SLIDES, 'slides'), []);
+});
+
+test('checkLearningAsset: a deck needs at least two slides', () => {
+  const oneSlide = [
+    '<article class="deck">',
+    '  <h1>How a cache goes stale</h1>',
+    '  <section class="slide">',
+    '    <h2>What a cache is</h2>',
+    '    <p>Profile applied: short sentences.</p>',
+    '  </section>',
+    '</article>',
+  ].join('\n');
+  assert.ok(checkLearningAsset(oneSlide, 'slides').some((v) => /at least two slides/i.test(v.message)));
+});
+
+test('checkLearningAsset: every slide needs its own heading', () => {
+  const headless = GOOD_SLIDES.replace('    <h2>Why it goes stale</h2>\n', '');
+  assert.ok(checkLearningAsset(headless, 'slides').some((v) => /heading/i.test(v.message)));
+});
+
+test('checkLearningAsset: slide decks keep html self-containment and the profile note', () => {
+  const external = GOOD_SLIDES.replace('</article>', '  <script src="https://cdn.example.com/deck.js"></script>\n</article>');
+  const noNote = GOOD_SLIDES.replace(/Profile applied/g, 'Recap');
+  assert.ok(checkLearningAsset(external, 'slides').some((v) => /external/i.test(v.message)));
+  assert.ok(checkLearningAsset(noNote, 'slides').some((v) => /profile applied/i.test(v.message)));
+});

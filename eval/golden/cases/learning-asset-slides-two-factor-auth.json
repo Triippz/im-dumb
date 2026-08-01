@@ -1,0 +1,21 @@
+{
+  "id": "learning-asset-slides-two-factor-auth",
+  "category": "learning-asset",
+  "prompt": "Make me a short slide deck explaining two-factor authentication to my parents.",
+  "profile": {
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "output_shape": "answer-first",
+    "adhd_mode": false
+  },
+  "reference_facts": [
+    "Two-factor authentication requires a second proof of identity in addition to a password.",
+    "The second factor is usually a code from a phone app or text message, or a hardware key.",
+    "A stolen password alone is not enough to sign in when the second factor is required."
+  ],
+  "must_preserve": ["two-factor authentication", "password"],
+  "expected_checks": [
+    { "checker": "learning-asset", "expect": "pass" },
+    { "checker": "sentence-cap", "expect": "pass" }
+  ]
+}

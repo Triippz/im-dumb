@@ -122,7 +122,7 @@ The project uses strict TypeScript, Node’s built-in test runner, Conventional 
 - **M2 — shipped (runtime acceptance open):** comprehension gate and learned gaps
 - **M3 — shipped:** Layer 2 smoke runner, Gate 3 report-only token signal, Gate 4 nightly warn
 - **M4 — shipped:** multi-harness packaging and installer CLI (unpublished until M6)
-- **M5 — phase 1 shipped:** profile-aware learning assets (markdown/HTML explainers); slides and AV still ahead
+- **M5 — phases 1–2 shipped:** profile-aware learning assets (markdown/HTML explainers, HTML slide decks); AV still ahead
 - **M6:** release and governance hardening (npm publish)
 
 ## Why “im-dumb”?

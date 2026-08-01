@@ -50,7 +50,7 @@ There is no separate `installer/` package directory — the CLI lives in `src/in
 
 M1 profile + language rules → M2 comprehension gate → M3 eval infrastructure (before M4/M5 ship) → M4 multi-harness packaging + installer → M5 learning assets (markdown/html → slides → av) → M6 governance hardening.
 
-M5 phase 1 (markdown/HTML explainers) is shipped: `skill/im-dumb/references/learning-assets.md`, the `learning-asset` Layer 1 structure checker, and the `learning-asset` golden category. Slides (phase 2) and AV (phase 3) are still ahead. The SKILL.md body target moved 900 → 930 words to fit the asset trigger; the checker's warn threshold stays 1000 (D12 unchanged).
+M5 phases 1–2 are shipped: `skill/im-dumb/references/learning-assets.md`, the `learning-asset` Layer 1 structure checker (markdown, HTML, and `slides` formats), and the `learning-asset` golden category. A slide deck is HTML — one `<article>`, at least two `<section class="slide">`, each with its own heading. There is no PowerPoint binary output. AV (phase 3) is still ahead. The SKILL.md body target moved 900 → 930 words to fit the asset trigger; the checker's warn threshold stays 1000 (D12 unchanged).
 
 ## Doc sync rule
 

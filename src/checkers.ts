@@ -524,11 +524,16 @@ export function checkSkillFrontmatter(content: string, options: FrontmatterCheck
 // stays with the Layer 2 judge)
 // ---------------------------------------------------------------------------
 
-export type AssetFormat = 'markdown' | 'html';
+export type AssetFormat = 'markdown' | 'html' | 'slides';
 
 const PROFILE_APPLIED_RE = /profile applied/i;
+const SLIDE_SECTION_RE = /<section\b[^>]*class=["'][^"']*\bslide\b/gi;
+
+/** M5 phase 2: two slides is the minimum that makes a deck a deck. */
+export const MIN_DECK_SLIDES = 2;
 
 export function detectAssetFormat(asset: string): AssetFormat {
+  if (new RegExp(SLIDE_SECTION_RE.source, 'i').test(asset)) return 'slides';
   return /<article\b|<h1\b|<section\b/i.test(asset) ? 'html' : 'markdown';
 }
 
@@ -541,11 +546,25 @@ export function checkLearningAsset(asset: string, format: AssetFormat = detectAs
   if (format === 'markdown') {
     if (!/^#\s+\S/m.test(asset)) error('markdown asset needs an H1 title line');
     if (!/^\s*(?:[-*+]\s+\S|\d+[.)]\s+\S)/m.test(asset)) error('markdown asset needs a numbered or bulleted step list');
+  } else if (format === 'slides') {
+    if (!/<article\b/i.test(asset)) error('slide deck needs an <article> wrapper');
+    if (!/<h1\b/i.test(asset)) error('slide deck needs an <h1> deck title');
+
+    const slides = asset.match(SLIDE_SECTION_RE) ?? [];
+    if (slides.length < MIN_DECK_SLIDES) {
+      error(`slide deck needs at least two slides, found ${slides.length}`);
+    }
+    if (splitSlides(asset).some((slide) => !/<h[1-6]\b/i.test(slide))) {
+      error('every slide needs its own heading');
+    }
+    if (hasExternalAssets(asset)) {
+      error('slide deck must not require external scripts or stylesheets');
+    }
   } else {
     if (!/<article\b/i.test(asset)) error('html asset needs an <article> wrapper');
     if (!/<h1\b/i.test(asset)) error('html asset needs an <h1> title');
     if (!/<section\b/i.test(asset)) error('html asset needs at least one <section> block');
-    if (/<script\b[^>]*\bsrc=/i.test(asset) || /<link\b[^>]*rel=["']?stylesheet/i.test(asset)) {
+    if (hasExternalAssets(asset)) {
       error('html asset must not require external scripts or stylesheets');
     }
   }
@@ -553,4 +572,13 @@ export function checkLearningAsset(asset: string, format: AssetFormat = detectAs
   if (!PROFILE_APPLIED_RE.test(asset)) error('asset must end with a one-line "Profile applied" note');
 
   return violations;
+}
+
+function hasExternalAssets(asset: string): boolean {
+  return /<script\b[^>]*\bsrc=/i.test(asset) || /<link\b[^>]*rel=["']?stylesheet/i.test(asset);
+}
+
+function splitSlides(asset: string): string[] {
+  const opens = [...asset.matchAll(SLIDE_SECTION_RE)].map((match) => match.index ?? 0);
+  return opens.map((start, i) => asset.slice(start, opens[i + 1] ?? asset.length));
 }

@@ -41,10 +41,13 @@ sentences.
   Inline `<style>` is allowed and optional.
 - Same closing `Profile applied:` line, inside the final `<section>`.
 
-## Slides (Phase 2)
+## Slides
 
-When the user asks for slides, emit HTML with one `<section class="slide">`
-per point, following the same article rules. No binary PowerPoint output.
+When the user asks for slides, emit HTML: one `<article>` deck, one `<h1>`
+deck title, and one `<section class="slide">` per point. Every slide carries
+its own `<h2>` heading and one idea. A deck needs at least two slides. The
+last slide holds the `Profile applied:` line. Same self-containment rule as
+HTML: no external script or stylesheet. No binary PowerPoint output.
 
 ## Audio and video
 

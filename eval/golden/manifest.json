@@ -34,6 +34,7 @@
     {"id":"jargon-decomposition-oauth2-client-credentials","path":"eval/golden/cases/jargon-decomposition-oauth2-client-credentials.json","sha256":"680585008232a331ebb59f683b1a6816e83413189f9e1752f43d085972f45bcf"},
     {"id":"learning-asset-html-cache-handout","path":"eval/golden/cases/learning-asset-html-cache-handout.json","sha256":"7f3237e2d79a1817b885c31635ffe7bef2b7bee4913238566e7709ec4ba8fcc3"},
     {"id":"learning-asset-markdown-dns-explainer","path":"eval/golden/cases/learning-asset-markdown-dns-explainer.json","sha256":"e585230055a1741ea618f47b739ae31241efa009f399aa031343bbfe26d52424"},
+    {"id":"learning-asset-slides-two-factor-auth","path":"eval/golden/cases/learning-asset-slides-two-factor-auth.json","sha256":"84f00d7d75336fce2305b1796eda1fe9f64eae7878b800927d0f59d9dc1a4abe"},
     {"id":"persona-baseline-common-dns","path":"eval/golden/cases/persona-baseline-common-dns.json","sha256":"b67142858fa59a595e6603945ed8287983b0fd6e266dd51080996d4a988bda58"},
     {"id":"persona-baseline-expert-gc","path":"eval/golden/cases/persona-baseline-expert-gc.json","sha256":"eace28d864f251a00c3be63a86893ed020d90105c4370d0bfcf10b782c7134b3"},
     {"id":"persona-baseline-technical-ok-tcp-handshake","path":"eval/golden/cases/persona-baseline-technical-ok-tcp-handshake.json","sha256":"f9c11d5e826b924b583461d408d9362e1edb8f540436d1c6ddb3559c952672fc"},
