@@ -96,10 +96,12 @@ widens the search and overrides taper. Unknown types and recognized duplicates
 are inert; ambiguity always diagnoses. The word `still` alone never establishes
 state; use immediate turn history. Ordinary input is not a confusion signal.
 
-On rediagnosis, map every candidate only to an explicit prior-answer element;
-do not add an unseen actor, success branch, event, or condition in its label or
-description. Do not turn `process` into `succeeds` unless the prior answer says
-so. After a failed direct repair, exclude the failed concrete proposition and
+On rediagnosis, map every candidate only to an explicit prior-answer element.
+Write each description as that source phrase or a close source paraphrase, not
+a new explanatory gloss: write `incoming requests`, never “what someone sends
+when using a website.” Do not add an unseen actor, success branch, event, or
+condition in its label or description. Do not turn `process` into `succeeds`
+unless the prior answer says so. After a failed direct repair, exclude the failed concrete proposition and
 every paraphrase from every candidate; excluding only its analogy or framing
 is not enough. A distinct explicit step remains allowed (for example, selecting
 an available server), but not another explanation of why work is distributed
