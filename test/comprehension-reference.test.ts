@@ -131,8 +131,8 @@ test('reference freezes classifier precedence, exclusions, and two-stage runtime
 test('reference state table exactly freezes taper, repair, rediagnosis, and reset rows', () => {
   assert.deepEqual(table('Conversation state'), [
     ['State + event', 'Action', 'Next state'],
-    [`\`normal\` + first confusion without one clear recognized type at \`>=${TAPER_CONFIDENCE_THRESHOLD}\``, 'diagnose', '`diagnosed`'],
-    [`\`normal\` + first confusion clearly mapped to one recognized type at \`>=${TAPER_CONFIDENCE_THRESHOLD}\``, 'direct repair', '`repaired`'],
+    [`\`normal\` + first confusion without one matching profile gap at \`>=${TAPER_CONFIDENCE_THRESHOLD}\``, 'diagnose', '`diagnosed`'],
+    [`\`normal\` + first confusion with exactly one matching profile gap at \`>=${TAPER_CONFIDENCE_THRESHOLD}\``, 'direct repair', '`repaired`'],
     ['`diagnosed` + candidate selection/confirmation', 'targeted repair', '`repaired`'],
     ['`diagnosed` + another confusion signal', 'full wider rediagnosis; do not re-offer the same failed lead', '`diagnosed`'],
     ['`repaired` + another confusion signal', 'full wider rediagnosis, even at confidence `1`', '`diagnosed`'],
@@ -141,8 +141,9 @@ test('reference state table exactly freezes taper, repair, rediagnosis, and rese
   ]);
   const state = prose('Conversation state');
   assert.match(state, /direct repair enters `repaired`/i);
-  assert.match(state, /bare exact marker can map clearly from the\s+prior answer's dominant structure/i);
-  assert.match(state, /ordered process supports `step`[\s\S]*exactly one recognized type[\s\S]*>=0\.75[\s\S]*dominant structure matches it/i);
+  assert.match(state, /bare exact marker does not name a gap/i);
+  assert.match(state, /confused`, `lost`, and `huh` must diagnose unless the profile already has\s+exactly one recognized gap at `>=0\.75` that directly matches the prior answer/i);
+  assert.match(state, /known `step` gap can match an ordered process[\s\S]*Do not infer a\s+gap from the prior answer's dominant structure alone/i);
   assert.match(state, /Unknown types[\s\S]*ambiguity always diagnoses/i);
   assert.match(state, /word `still` alone never establishes state/i);
 });

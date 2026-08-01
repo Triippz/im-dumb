@@ -230,6 +230,7 @@ test('language rules encode FR4 and apply configurable profile fields', () => {
     /paragraph_topic_limit[\s\S]{0,120}one\s+topic per paragraph/i,
     /forbidden_phrases/i,
     /built-in filler/i,
+    /Never write `really` or\s+`actually`/i,
     /unexplained acronyms/i,
     /stack qualifiers/i,
   ]) assert.match(language, rule);
