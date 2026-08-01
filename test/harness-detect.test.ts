@@ -20,7 +20,7 @@ test('detectHarnesses: finds claude/cursor/pi markers under home and project', (
   mkdirSync(path.join(home, '.claude'), { recursive: true });
   mkdirSync(path.join(home, '.cursor'), { recursive: true });
   mkdirSync(path.join(project, '.pi'), { recursive: true });
-  mkdirSync(path.join(project, '.codex'), { recursive: true });
+  mkdirSync(path.join(home, '.codex'), { recursive: true });
 
   const found = detectHarnesses({ homeDir: home, projectRoot: project });
   assert.deepEqual(
@@ -69,6 +69,18 @@ test('resolveInstallDestinations: shared .agents/skills collapses cursor+pi, not
   assert.equal(byHarness.codex?.viaSharedAgents, false);
 });
 
+test('resolveInstallDestinations: prefer-agents keeps Claude and Codex native', () => {
+  const home = tempRoot();
+  const destinations = resolveInstallDestinations({
+    targets: ['claude', 'cursor', 'codex', 'pi'], scope: 'global', homeDir: home, projectRoot: tempRoot(), preferAgents: true,
+  });
+  const byHarness = Object.fromEntries(destinations.map((item) => [item.harness, item]));
+  assert.equal(byHarness.claude?.viaSharedAgents, false);
+  assert.equal(byHarness.codex?.viaSharedAgents, false);
+  assert.equal(byHarness.cursor?.viaSharedAgents, true);
+  assert.equal(byHarness.pi?.viaSharedAgents, true);
+});
+
 test('resolveInstallDestinations: project scope uses project root', () => {
   const home = tempRoot();
   const project = tempRoot();
@@ -97,6 +109,9 @@ test('resolveInstallDestinations: Codex uses CODEX_HOME and rejects unverified p
   assert.throws(() => resolveInstallDestinations({
     targets: ['codex'], scope: 'project', homeDir: home, projectRoot: tempRoot(), preferAgents: false,
   }), /global installation only/);
+  assert.throws(() => resolveInstallDestinations({
+    targets: ['codex'], scope: 'global', homeDir: home, projectRoot: tempRoot(), preferAgents: false, codexHome: '~/.codex',
+  }), /absolute path/);
 });
 
 test('detectHarnesses: empty roots → empty list', () => {

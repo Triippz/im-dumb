@@ -157,6 +157,11 @@ export async function runInstallCli(
     scope = selected.scope;
   }
 
+  if (scope === 'project' && targets.includes('codex')) {
+    log('Codex supports global installation only; skipping Codex for this project-scope run.');
+    targets = targets.filter((id) => id !== 'codex');
+  }
+
   const destinations = resolveInstallDestinations({
     targets,
     scope,
@@ -167,21 +172,23 @@ export async function runInstallCli(
   });
 
   const sourceDir = resolveSkillPackageDir();
-  const seen = new Set<string>();
+  const installed = new Map<string, ReturnType<typeof installSkill>>();
   const results = [];
   for (const dest of destinations) {
-    if (seen.has(dest.destDir)) {
+    const prior = installed.get(dest.destDir);
+    if (prior) {
       results.push({
         harness: dest.harness,
         destDir: dest.destDir,
         viaSharedAgents: dest.viaSharedAgents,
         action: 'skipped',
+        version: prior.version,
         reason: 'shared destination already handled',
       });
       continue;
     }
-    seen.add(dest.destDir);
     const outcome = installSkill({ sourceDir, destDir: dest.destDir });
+    installed.set(dest.destDir, outcome);
     results.push({
       harness: dest.harness,
       viaSharedAgents: dest.viaSharedAgents,

@@ -30,11 +30,11 @@ const MARKERS: ReadonlyArray<{ id: HarnessId; rel: string }> = [
 
 export function detectHarnesses(roots: PathRoots): DetectedHarness[] {
   const byId = new Map<HarnessId, DetectedHarness>();
-  const codexHome = roots.codexHome ?? process.env.CODEX_HOME ?? path.join(roots.homeDir, '.codex');
+  const codexHome = resolveCodexHome(roots.codexHome, roots.homeDir);
   for (const root of [roots.homeDir, roots.projectRoot]) {
     for (const marker of MARKERS) {
-      if (byId.has(marker.id)) continue;
-      const markerPath = marker.id === 'codex' && root === roots.homeDir ? codexHome : path.join(root, marker.rel);
+      if (byId.has(marker.id) || (marker.id === 'codex' && root !== roots.homeDir)) continue;
+      const markerPath = marker.id === 'codex' ? codexHome : path.join(root, marker.rel);
       if (!existsSync(markerPath)) continue;
       byId.set(marker.id, {
         id: marker.id,
@@ -104,12 +104,18 @@ function perHarnessDest(
     return path.join(root, '.cursor', 'skills', 'im-dumb');
   }
   if (harness === 'codex') {
-    return path.join(codexHome ?? process.env.CODEX_HOME ?? path.join(homeDir, '.codex'), 'skills', 'im-dumb');
+    return path.join(resolveCodexHome(codexHome, homeDir), 'skills', 'im-dumb');
   }
   if (scope === 'global') {
     return path.join(homeDir, '.pi', 'agent', 'skills', 'im-dumb');
   }
   return path.join(projectRoot, '.pi', 'skills', 'im-dumb');
+}
+
+function resolveCodexHome(codexHome: string | undefined, homeDir: string): string {
+  const root = codexHome ?? path.join(homeDir, '.codex');
+  if (!path.isAbsolute(root)) throw new Error('CODEX_HOME must be an absolute path');
+  return path.resolve(root);
 }
 
 export function parseTargets(raw: string): HarnessId[] {

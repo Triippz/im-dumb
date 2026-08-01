@@ -64,13 +64,25 @@ export function installSkill(options: {
   if (existsSync(destSkill)) {
     const previousVersion = parseSkillVersion(readFileSync(destSkill, 'utf8'));
     if (previousVersion === version) {
+      if (!existsSync(path.join(options.destDir, 'scripts', 'profile.js'))) {
+        rmSync(options.destDir, { recursive: true, force: true });
+        copyTree(options.sourceDir, options.destDir);
+        materializeSkillPaths(options.destDir);
+        return {
+          action: 'repaired',
+          destDir: options.destDir,
+          version,
+          previousVersion,
+          reason: 'missing bundled script',
+        };
+      }
       const repaired = materializeSkillPaths(options.destDir);
       return {
         action: repaired ? 'repaired' : 'skipped',
         destDir: options.destDir,
         version,
         previousVersion,
-        reason: 'same version',
+        reason: repaired ? 'materialized script path' : 'same version',
       };
     }
     rmSync(options.destDir, { recursive: true, force: true });
