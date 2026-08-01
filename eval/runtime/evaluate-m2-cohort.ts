@@ -4,14 +4,15 @@ import path from 'node:path';
 import { evaluateM2Cohort } from '../../src/m2-cohort.ts';
 
 const root = path.resolve(import.meta.dirname, '../..');
-const flag = (name: string): string => {
-  const value = process.argv.at(process.argv.indexOf(name) + 1);
-  if (!value) throw new Error(`missing ${name}`);
-  return value;
+const flag = (name: string, required = true): string => {
+  const index = process.argv.indexOf(name);
+  const value = index === -1 ? undefined : process.argv.at(index + 1);
+  if (required && !value) throw new Error(`missing ${name}`);
+  return value ?? '';
 };
-const parseAttempts = (value: string): number[] => value.split(',').map((item) => Number(item.trim()));
+const parseAttempts = (value: string): number[] => value ? value.split(',').map((item) => Number(item.trim())) : [];
 const attempts = parseAttempts(flag('--attempts'));
-const semanticPasses = new Set(parseAttempts(flag('--semantic-passes')));
+const semanticPasses = new Set(parseAttempts(flag('--semantic-passes', false)));
 
 const trials = await Promise.all(attempts.map(async (attempt) => {
   const file = path.join(root, 'eval', 'runtime', 'm2', `attempt-${attempt}-results.json`);
