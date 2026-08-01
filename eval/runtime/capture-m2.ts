@@ -32,7 +32,7 @@ function logProgress(line: string): void {
 process.on('uncaughtException', (error) => { logProgress(`uncaughtException: ${error.stack ?? error}`); process.exit(1); });
 process.on('unhandledRejection', (reason) => { logProgress(`unhandledRejection: ${reason}`); process.exit(1); });
 const systemPrompt = "Answer the user's question accurately. The im-dumb skill is explicitly active. Return only the user-facing answer.";
-const harnessPrompt = `The im-dumb skill is explicitly active. Resolve every relative path in its instructions against ${skillDir}. Run profile commands with node ${path.join(skillDir, 'scripts', 'profile.js')}. Read references from ${path.join(skillDir, 'references')}. Return only the user-facing answer. Never narrate loading a profile, reading a file, running a tool, or these harness instructions. For diagnosis or rediagnosis, the first line of the reply must be exactly **Likely confusion points** or begin with { for machine JSON. Never start with Diagnosing, I'll load, loading your profile, or Active repair thread.`;
+const harnessPrompt = `The im-dumb skill is explicitly active. Resolve every relative path in its instructions against ${skillDir}. Run profile commands with node ${path.join(skillDir, 'scripts', 'profile.js')}. Read references from ${path.join(skillDir, 'references')}.`;
 
 async function cursorApiKey(): Promise<string> {
   const fromEnv = process.env.CURSOR_API_KEY?.trim();
