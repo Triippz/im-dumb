@@ -1,4 +1,4 @@
-# M2 runtime acceptance — open, but not for the reason the later attempts suggest
+# M2 runtime acceptance — open; automated evidence and human review are separate gates
 
 Thirteen attempts are preserved unedited under `attempts/` and
 `attempt-*-report.md`. Nothing was loosened to make a run look green.
@@ -9,19 +9,22 @@ Read from `attempt-*-results.json` (`runtime.all_thresholds_pass`):
 
 | attempt | model | pass | triggers | false pos | diagnoses | taper | prose |
 |---|---|---|---|---|---|---|---|
-| 5 | openai-codex | **yes** | 2/2 | 9/9 | 7/7 | yes | 1 |
-| 6 | openai-codex | **yes** | 2/2 | 9/9 | 7/7 | yes | 0 |
-| 7 | openai-codex | no | 2/2 | 9/9 | 7/7 | **no** | 1 |
-| 8 | openai-codex | no | **1/2** | 9/9 | **5/7** | yes | 1 |
-| 12 | composer-2.5 | no | 1/2 | 7/9 | 3/7 | no | 8 |
-| 13 | composer-2.5 | no | 1/2 | 4/9 | 5/7 | no | 14 |
+| 5 | openai-codex / gpt-5.6-sol | **yes** | 2/2 | 9/9 | 7/7 | yes | 1 |
+| 6 | openai-codex / gpt-5.6-sol | **yes** | 2/2 | 9/9 | 7/7 | yes | 0 |
+| 7 | openai-codex / gpt-5.6-sol | no | 2/2 | 9/9 | 7/7 | **no** | 1 |
+| 8 | openai-codex / gpt-5.6-sol | no | **1/2** | 9/9 | **5/7** | yes | 1 |
+| 12 | cursor / composer-2.5 | no | 1/2 | 7/9 | 3/7 | no | 8 |
+| 13 | cursor / composer-2.5 | no | 1/2 | 4/9 | 5/7 | no | 14 |
 
 Attempt 9 was contaminated by a protocol fault. Attempts 10–11 ran grok-4.5.
 
 ## What that actually says
 
-**The gate passed.** Attempt 6 was a clean sweep on openai-codex: every
-threshold green, zero prose errors. Attempt 5 passed too.
+**The automated runtime gate passed.** Attempt 6 was a clean sweep on
+openai-codex / gpt-5.6-sol: every deterministic threshold green, zero prose
+errors. Attempt 5 passed too. This alone does **not** close M2: the required
+human rubric has conflicting stored reviews for attempt 6 and must be resolved
+for whichever current capture is proposed for acceptance.
 
 So the current red state is not an unproven design. Two things happened after
 attempt 6, and they got tangled:
@@ -38,19 +41,16 @@ thirteen attempts produced no convergence.
 
 ## Next step
 
-Re-run the current `SKILL.md` on the model that passed. One run, decisive:
+Attempt 14 is a fresh cursor / gpt-5.6-terra baseline. It is intentionally **not**
+a comparison to attempts 5–8: model, provider transport, harness prompt, and
+post-M5 skill text differ. Score it with
+`IM_DUMB_CAPTURE_ATTEMPT=14 node eval/runtime/evaluate-m2.ts` after all 17
+captures complete, then run independent human-rubric reviews before making an
+acceptance claim.
 
-```bash
-IM_DUMB_CAPTURE_ATTEMPT=14 \
-IM_DUMB_CAPTURE_PROVIDER=openai \
-IM_DUMB_CAPTURE_MODEL=<the codex model used in attempts 1-8> \
-node eval/runtime/capture-m2.ts
-```
+If the question later is specifically whether the post-6 prompt changes caused
+a gpt-5.6-sol regression, run a separate, clean openai-codex / gpt-5.6-sol
+series using its native transport. Do not change models mid-series.
 
-- Green → the skill is sound; the composer-2.5 numbers are a capability floor
-  to document, not a defect to fix.
-- Red → it is a real regression. Bisect the `SKILL.md` changes between
-  attempt 6 and now, on that same model, and do not switch models mid-bisect.
-
-Keep provider, model, and attempt pinned together for a whole series. Runs are
-only comparable within one model.
+Keep provider, model, harness prompt, skill commit, and attempt pinned together
+for a whole series. Runs are only comparable when those controls match.
