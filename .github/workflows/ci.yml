@@ -49,6 +49,7 @@ jobs:
       - run: npm test
       - run: npm run verify:golden
       - run: npm run verify:dist-sync
+      - run: npm run eval:smoke
       - name: Layer 1 skill check from dependency-free sandbox
         run: |
           sandbox="$(mktemp -d)"

@@ -27,6 +27,8 @@ test('package.json declares the M1 step-10 CI verification scripts', () => {
   assert.equal(pkg.scripts['check:skill'], 'node dist/check-cli.js --file skill/im-dumb/SKILL.md --skill-doc');
   assert.equal(pkg.scripts['verify:golden'], 'node --test test/golden-dataset.test.ts');
   assert.equal(pkg.scripts['verify:dist-sync'], 'diff -u dist/profile.js skill/im-dumb/scripts/profile.js');
+  assert.equal(pkg.scripts['eval:smoke'], 'node src/eval-runner.ts --dry-run');
+  assert.equal(pkg.scripts['eval:smoke:live'], 'node src/eval-runner.ts --live');
 });
 
 test('CI copies dist into an isolated ESM sandbox and runs Layer 1 from a separate empty directory', () => {
@@ -56,13 +58,33 @@ test('CI verifies dist/profile.js is byte-for-byte in sync with the committed sk
 
 test('the new CI verification steps run inside the existing node 24.x/26.x build job, not a separate job', () => {
   const ci = readText('.github/workflows/ci.yml');
-  const buildJobMatch = /^ {2}build:\s*\n[\s\S]*/mu.exec(ci);
-  assert.ok(buildJobMatch, 'expected a top-level "build:" job');
-  const buildJob = buildJobMatch[0];
+  const buildStart = ci.indexOf('\n  build:');
+  assert.ok(buildStart >= 0, 'expected a top-level "build:" job');
+  const buildJob = ci.slice(buildStart);
   assert.match(buildJob, /node: \[24\.x, 26\.x\]/);
-  for (const needle of ['verify:golden', 'verify:dist-sync', '--skill-doc']) {
+  for (const needle of ['verify:golden', 'verify:dist-sync', '--skill-doc', 'eval:smoke']) {
     assert.ok(buildJob.includes(needle), `expected build job to include "${needle}"`);
   }
+  assert.ok(!buildJob.includes('eval:smoke:live'), 'live smoke belongs in the gated workflow');
+});
+
+test('CI live smoke workflow is path-filtered and gated on JUDGE_SMOKE_ENABLED', () => {
+  const live = readText('.github/workflows/eval-smoke-live.yml');
+  assert.match(live, /vars\.JUDGE_SMOKE_ENABLED == 'true'/);
+  assert.match(live, /secrets\.JUDGE_API_KEY/);
+  assert.match(live, /npm run eval:smoke:live/);
+  assert.match(live, /paths:/);
+  assert.ok(live.includes("- 'src/**'"), 'expected path filter for src/**');
+  assert.ok(live.includes("- 'eval/**'"), 'expected path filter for eval/**');
+});
+
+test('Gate 4 nightly workflow is schedule + workflow_dispatch and warn-only for live', () => {
+  const nightly = readText('.github/workflows/eval-nightly.yml');
+  assert.match(nightly, /schedule:/);
+  assert.match(nightly, /workflow_dispatch:/);
+  assert.match(nightly, /npm run eval:smoke/);
+  assert.match(nightly, /continue-on-error:\s*true/);
+  assert.match(nightly, /npm run eval:smoke:live/);
 });
 
 test('CI still preserves SHA-pinned actions and the semantic PR-title check', () => {

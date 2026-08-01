@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "description": "Gate 2 curated smoke subset — one slice per golden category; keep small.",
+  "case_ids": [
+    "adhd-pair-compound-interest-on",
+    "adversarial-unsafe-oversimplification-acetaminophen-dosage",
+    "comprehension-gate-false-positive-quoted-code",
+    "comprehension-gate-marker-first-failure",
+    "jargon-decomposition-bft-consensus",
+    "persona-baseline-common-dns",
+    "profile-adaptation-second-failure-after-diagnosis",
+    "profile-adaptation-selection-and-resolution"
+  ]
+}

@@ -9,6 +9,9 @@ govern — do not duplicate them here.
 | Artifact | Role |
 |---|---|
 | [`golden/`](golden/README.md) | Fixed cases + expectations (schema, categories, edit rules) |
+| [`smoke-manifest.json`](smoke-manifest.json) | Gate 2 curated case ids (M3 runner) |
+| [`smoke-quarantine.json`](smoke-quarantine.json) | Flaky ids excluded from merge-blocking (still reported) |
+| [`quiz/`](quiz/README.md) | Human comprehension-quiz protocol (accuracy delta, not judge score) |
 | [`rubric.md`](rubric.md) | M1 semantic judge dimensions (factual fidelity, constraint compliance, safety) |
 | [`comprehension-rubric.md`](comprehension-rubric.md) | M2 semantic dimensions for diagnose / repair / rediagnose |
 | [`baselines/`](baselines/README.md) | M1 baseline/candidate captures + token-overhead protocol |
@@ -134,6 +137,34 @@ not a reason to weaken fixtures.
 
 Not yet a required PR check: full Layer 2 offline smoke suite with a pinned
 judge model (deliberately deferred to M3 in AGENTS.md).
+
+## M3 (Layer 2 / Gate 3–4)
+
+Plan: [`docs/plans/m3-eval-infrastructure.md`](../docs/plans/m3-eval-infrastructure.md).
+
+Shipped: `eval/smoke-manifest.json`, quarantine list, `src/eval-aggregate.ts`,
+`src/judge-client.ts` (mock + HTTP adapter), dry-run + live CLI:
+
+```bash
+npm run eval:smoke
+```
+
+Dry-run validates the smoke set, runs Layer 1 when a baseline candidate exists,
+and records `judge: skipped` — no secrets, no network. CI always runs dry-run.
+
+Live judge (injectable mock in tests; HTTP adapter when pinned):
+
+```bash
+# requires JUDGE_API_KEY, JUDGE_MODEL, JUDGE_MODEL_VERSION — see .eval.env.example
+npm run eval:smoke:live
+```
+
+CI live smoke (`.github/workflows/eval-smoke-live.yml`) is path-filtered and
+runs only when repo variable `JUDGE_SMOKE_ENABLED=true` and the judge
+secret/vars are set. Gate 4 nightly (`.github/workflows/eval-nightly.yml`)
+runs on a schedule / `workflow_dispatch` and treats live judge failures as
+warn-only. Gate 5 shadow/canary stays deferred. M2 runtime acceptance
+remains open.
 
 ## How to extend without rotting the gate
 
