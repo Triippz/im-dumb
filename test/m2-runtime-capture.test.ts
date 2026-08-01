@@ -15,8 +15,10 @@ test('M2 harness prompt supplies paths, not the diagnosis behavior being evaluat
   assert.doesNotMatch(prompt, /first line|Likely confusion points|Never start|Never narrate/i);
 });
 
-test('M2 capture provenance gives every run an id and links only scenario-specific infrastructure retries', () => {
-  assert.match(captureSource, /const captureRunId = randomUUID\(\)/);
+test('M2 capture provenance keeps an attempt id across resumes and links only scenario-specific infrastructure retries', () => {
+  assert.match(captureSource, /const captureRunIdFile = path\.join\(attemptDir, '\.capture-run-id'\)/);
+  assert.match(captureSource, /async function loadCaptureRunId\(\): Promise<string>/);
+  assert.match(captureSource, /const captureRunId = await loadCaptureRunId\(\)/);
   assert.match(captureSource, /function priorInfrastructureFailure\(scenario: string\)/);
   assert.match(captureSource, /fresh_run_id: captureRunId/);
   assert.match(captureSource, /fresh_capture_id: sessionId/);
