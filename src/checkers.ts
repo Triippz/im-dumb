@@ -53,7 +53,7 @@ export const DESCRIPTION_MAX_LENGTH = 1024;
 export const SKILL_BODY_WORD_WARN_THRESHOLD = 1000;
 
 /** D12: drafting target for SKILL.md body word count. */
-export const SKILL_BODY_WORD_TARGET = 930;
+export const SKILL_BODY_WORD_TARGET = 900;
 
 // ---------------------------------------------------------------------------
 // Shared text helpers

@@ -47,11 +47,16 @@ Revision 1 — post-M4 merge (`c0196ae`).
 
 ### Budget note
 
-The SKILL.md body target moved 900 → 930 words (`SKILL_BODY_WORD_TARGET`) to
-fit the asset trigger. The checker's warn threshold is unchanged at 1000, so
-D12 still holds: over-budget is a warning, never a hard error. Every pinned
-phrase assertion in `test/skill.test.ts` stayed intact — the budget moved,
-no fixture was weakened.
+The SKILL.md body target briefly moved 900 → 930 words (`SKILL_BODY_WORD_TARGET`) to
+fit the asset trigger, then went back to 900 once the comprehension
+non-trigger examples and no-snapshot fallback moved into
+`references/comprehension.md`. The checker's warn threshold is unchanged at
+1000, so D12 still holds: over-budget is a warning, never a hard error. Every
+pinned phrase assertion survived — the moved ones now assert against the
+reference file, so no fixture was weakened.
+
+Standing rule: when the body runs out of room, move prose into `references/`.
+Only rules needed on every turn belong in the always-loaded body.
 
 ## 3. Layout
 

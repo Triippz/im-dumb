@@ -38,13 +38,6 @@ On a later user turn with a possible confusion signal, or while
 a repair thread is active, read `references/comprehension.md`. Only in those cases
 apply it. Do not load it for an initial or ordinary turn. A first exact `huh` must diagnose; never guess
 and rephrase — first line `**Likely confusion points**` or `{`. Forbidden before that line: Diagnosing, I'll load, loading your profile, Active repair thread. Profile failure never blocks diagnosis, rediagnosis, or repair.
-These replies must not trigger diagnosis:
-`huh!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!` (41 code points; too long) and
-`I don't understand this null lookup` (non-standalone marker). Ordinary
-statement; zero questions.
-
-Without a usable snapshot, use defaults and empty known gaps; disable taper
-and learning. Repair remains conversation-local.
 
 ## Learning assets
 
