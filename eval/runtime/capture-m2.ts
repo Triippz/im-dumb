@@ -16,7 +16,9 @@ const attempt = Number(process.env.IM_DUMB_CAPTURE_ATTEMPT ?? 13);
 const outputDir = path.join(repo, 'eval', 'runtime', 'm2', 'attempts', `attempt-${attempt}`, 'captures');
 const provider = process.env.IM_DUMB_CAPTURE_PROVIDER ?? 'cursor';
 const model = process.env.IM_DUMB_CAPTURE_MODEL ?? 'composer-2.5';
-// Provider transport only; every other extension stays disabled.
+// Cursor needs its SDK transport; native providers must stay native so a
+// control run does not inherit Cursor auth, flags, or hidden settings.
+const cursorTransport = provider === 'cursor';
 const providerExtension = path.join(homedir(), '.pi/agent/npm/node_modules/pi-cursor-sdk');
 // Without this, Cursor loads ~1000 ambient rules and the harness hangs / contaminates.
 const CURSOR_SETTING_SOURCES = 'none';
@@ -193,13 +195,13 @@ async function capture(scenario: Scenario): Promise<void> {
   if (scenario.replaceLast !== undefined) prompts[prompts.length - 1] = scenario.replaceLast;
 
   const sessionId = randomUUID();
-  const apiKey = await cursorApiKey();
+  const apiKey = cursorTransport ? await cursorApiKey() : undefined;
   const baseArgs = [
     '--provider', provider, '--model', model,
     '--thinking', 'off', '--mode', 'json', '--print',
     '--session-id', sessionId, '--session-dir', sessionDir,
-    '--no-extensions', '--extension', providerExtension,
-    '--cursor-no-fast', '--cursor-no-local-resume',
+    '--no-extensions',
+    ...(cursorTransport ? ['--extension', providerExtension, '--cursor-no-fast', '--cursor-no-local-resume'] : []),
     '--no-prompt-templates', '--no-context-files', '--no-skills', '--tools', 'bash',
     '--skill', skillDir, '--system-prompt', systemPrompt,
     '--append-system-prompt', path.join(skillDir, 'SKILL.md'), '--append-system-prompt', harnessPrompt,
@@ -211,8 +213,7 @@ async function capture(scenario: Scenario): Promise<void> {
       const childEnv = {
         ...process.env,
         IM_DUMB_PROFILE: profilePath,
-        CURSOR_API_KEY: apiKey,
-        PI_CURSOR_SETTING_SOURCES: CURSOR_SETTING_SOURCES,
+        ...(cursorTransport ? { CURSOR_API_KEY: apiKey, PI_CURSOR_SETTING_SOURCES: CURSOR_SETTING_SOURCES } : {}),
       };
       delete childEnv.PI_SESSION_ID;
       delete childEnv.PI_SESSION_FILE;
@@ -246,8 +247,8 @@ async function capture(scenario: Scenario): Promise<void> {
         tools: ['bash'],
         ambient_skills_disabled: true,
         extensions_disabled: true,
-        provider_transport_extension: providerExtension,
-        cursor_setting_sources: CURSOR_SETTING_SOURCES,
+        provider_transport_extension: cursorTransport ? providerExtension : null,
+        cursor_setting_sources: cursorTransport ? CURSOR_SETTING_SOURCES : null,
         prompt_templates_disabled: true,
         context_files_disabled: true,
       },
