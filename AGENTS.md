@@ -18,7 +18,7 @@ The product-requirements §9.10 pre-code checklist is satisfied **per-milestone*
 
 ```
 docs/plans/         # public milestone requirements and implementation plans
-eval/               # eval stack map (README.md), golden dataset, rubrics, baselines, M2 runtime evidence
+eval/               # eval stack map (README.md), golden dataset, rubrics, baselines, M2 runtime evidence (cohorts are per-model evidence, not CI gates)
 src/                # profile module, deterministic checkers, CLIs
 test/               # node:test suites + fixtures
 skill/im-dumb/      # the skill package: SKILL.md + scripts/profile.js + references/
@@ -32,11 +32,11 @@ There is no separate `installer/` package directory — the CLI lives in `src/in
 ## Installer contract (v1 — implemented, unpublished)
 
 - Bin entry `im-dumb` → `dist/install-cli.js` (ready for `npx` after M6 publish).
-- Auto-detects harnesses: `~/.claude/`/`.claude/` (Claude Code), `~/.cursor/`/`.cursor/` (Cursor), `~/.codex/`/`.codex/` (Codex), and `~/.pi/agent/`/`~/.agents/`/`.pi/`/`.agents/` (Pi).
-- Interactive prompts when TTY and `--targets` omitted; one global/project `--scope` for the run.
+- Auto-detects harnesses: `~/.claude/`/`.claude/` (Claude Code), `~/.cursor/`/`.cursor/` (Cursor), `$CODEX_HOME` (defaults to `~/.codex/`) (Codex), and `~/.pi/agent/`/`~/.agents/`/`.pi/`/`.agents/` (Pi).
+- Interactive prompts when TTY and `--targets` omitted; one global/project `--scope` for the run, except Codex is global-only until it documents a project skill root.
 - Non-interactive mode: `im-dumb install --targets claude,cursor,codex,pi --scope global`.
-- Idempotent: detects existing install, diffs `metadata.version`, upgrades or skips — never duplicates.
-- Shared-directory aware: when `.agents/skills/` exists (or `--prefer-agents`), cursor+pi write once there; Claude still uses `.claude/skills/`.
+- Idempotent: detects existing install, diffs `metadata.version`, upgrades, repairs, or skips — never duplicates.
+- Shared-directory aware: when `.agents/skills/` exists (or `--prefer-agents`), cursor+pi write once there; Claude and Codex still use native roots.
 - Out of scope v1: automated upload to Claude API `/v1/skills` or OpenAI hosted skills (manual step, documented).
 
 ## Governance

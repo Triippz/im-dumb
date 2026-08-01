@@ -113,17 +113,13 @@ function installTree(sourceDir: string, destDir: string): void {
   }
 }
 
-const PROFILE_SCRIPT_TOKEN = '{{IM_DUMB_PROFILE_SCRIPT}}';
-
-/** Replace the package placeholder with a shell-safe executable path in each installed copy. */
+/** Replace relative profile commands with a shell-safe installed path. */
 function materializeSkillPaths(destDir: string): boolean {
   const script = shellQuote(path.join(destDir, 'scripts', 'profile.js'));
   let changed = false;
   for (const file of markdownFiles(destDir)) {
     const content = readFileSync(file, 'utf8');
-    const materialized = content
-      .replaceAll(PROFILE_SCRIPT_TOKEN, script)
-      .replaceAll('node scripts/profile.js', `node ${script}`);
+    const materialized = content.replaceAll('node scripts/profile.js', `node ${script}`);
     if (materialized === content) continue;
     writeFileSync(file, materialized);
     changed = true;

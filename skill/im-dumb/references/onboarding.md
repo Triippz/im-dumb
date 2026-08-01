@@ -33,10 +33,10 @@ in a value. Do not add unknown fields or save free-form notes.
 Show every user-visible value, including defaults and empty lists, in a short
 summary. Do not show hidden values. Ask for explicit confirmation. After
 confirmation, pass one complete JSON object on standard input to
-`node {{IM_DUMB_PROFILE_SCRIPT}} save`; never hand-edit the profile file. For example:
+`node scripts/profile.js save`; never hand-edit the profile file. For example:
 
 ```sh
-node {{IM_DUMB_PROFILE_SCRIPT}} save <<'JSON'
+node scripts/profile.js save <<'JSON'
 {
   "schema_version": 1,
   "vocabulary_level": "common",
@@ -62,4 +62,4 @@ If the script cannot run because no shell is available, output the same
 complete, schema-shaped JSON object—not free-form notes. Tell the user to save
 it at the exact path: `~/.im-dumb/profile.json`, or the `IM_DUMB_PROFILE` path
 when set. Do not claim it was saved. Tell them to run
-`node {{IM_DUMB_PROFILE_SCRIPT}} validate` when a shell becomes available.
+`node scripts/profile.js validate` when a shell becomes available.

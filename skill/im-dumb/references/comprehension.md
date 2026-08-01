@@ -221,7 +221,7 @@ Use only this taxonomy for runtime repair and learning:
 ## Learning after success
 
 Learn only after explicit user confirmation that a repair worked. Send closed
-JSON on stdin only to `node {{IM_DUMB_PROFILE_SCRIPT}} learn`. Retain the transient
+JSON on stdin only to `node scripts/profile.js learn`. Retain the transient
 profile confidence snapshot used when selecting that repair. Copy the primary
 `expectedConfidence` from that snapshot; use `null` when the type was absent.
 Never fresh-reload on the success turn.

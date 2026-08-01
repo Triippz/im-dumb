@@ -137,19 +137,30 @@ export function pairCaptures(rawCaptures: unknown[], expected: ExpectedCaptureSe
         const missing = baseline ? 'candidate' : 'baseline';
         throw new Error(`missing ${missing} capture for case "${caseId}"`);
       }
-      if (countCodePoints(baseline.response) === 0) {
-        throw new Error(`case "${caseId}": baseline response must not be empty`);
-      }
-      for (const field of ['model_id', 'model_version'] as const) {
-        if (baseline[field] !== candidate[field]) {
-          throw new Error(`case "${caseId}": baseline and candidate ${field} must match`);
-        }
-      }
-      if (!isDeepStrictEqual(baseline.settings, candidate.settings)) {
-        throw new Error(`case "${caseId}": baseline and candidate settings must match`);
-      }
-      return { caseId, baseline, candidate };
+      return validateCapturePair({ caseId, baseline, candidate });
     });
+}
+
+export function validateCapturePair(pair: CapturePair): CapturePair {
+  const { caseId, baseline, candidate } = pair;
+  if (baseline.case_id !== caseId || candidate.case_id !== caseId) {
+    throw new Error(`case "${caseId}": capture case_id must match pair id`);
+  }
+  if (baseline.kind !== 'baseline' || candidate.kind !== 'candidate') {
+    throw new Error(`case "${caseId}": capture kinds must be baseline and candidate`);
+  }
+  if (countCodePoints(baseline.response) === 0) {
+    throw new Error(`case "${caseId}": baseline response must not be empty`);
+  }
+  for (const field of ['model_id', 'model_version'] as const) {
+    if (baseline[field] !== candidate[field]) {
+      throw new Error(`case "${caseId}": baseline and candidate ${field} must match`);
+    }
+  }
+  if (!isDeepStrictEqual(baseline.settings, candidate.settings)) {
+    throw new Error(`case "${caseId}": baseline and candidate settings must match`);
+  }
+  return pair;
 }
 
 export function countCodePoints(text: string): number {
@@ -172,6 +183,7 @@ export function buildTokenOverheadReport(rawCaptures: unknown[], expected: Expec
 export function buildTokenOverheadReportFromPairs(pairs: readonly CapturePair[]): TokenOverheadReport {
   if (pairs.length === 0) throw new Error('capture pair set is empty');
   const cases = pairs.map(({ caseId, baseline, candidate }): CaseOverhead => {
+    validateCapturePair({ caseId, baseline, candidate });
     const baselineCodePoints = countCodePoints(baseline.response);
     const candidateCodePoints = countCodePoints(candidate.response);
     const percent = overheadPercent(baselineCodePoints, candidateCodePoints);

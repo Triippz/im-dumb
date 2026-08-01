@@ -1,8 +1,9 @@
 # cross-harness reset — research plan
 
-Status: **implementation started.** The first portability slice materializes
-installed script paths, verifies installed trees across the four native roots,
-and enables global Codex installation. Prompt-rule cleanup remains separate.
+Status: **implementation started.** The first portability slice rewrites
+relative script paths after install, verifies installed trees across the four
+native roots, and enables global Codex installation. Prompt-rule cleanup
+remains separate.
 
 Scope: answer the six questions in `/tmp/im-dumb-handoff-cross-harness.md` §3
 with local, citable evidence, and propose the compatibility matrix that §4
@@ -501,8 +502,8 @@ ships on the matrix.
 
 ## 7. Proposed sequence (not approved, not started)
 
-1. **Fix the script path** (§1.4, §4.1) — implemented by materializing a
-   shell-quoted installed path, including same-version legacy repairs.
+1. **Fix the script path** (§1.4, §4.1) — implemented by rewriting relative
+   commands to shell-quoted installed paths, including same-version repairs.
 2. **Land the compatibility matrix** (§6) as real tests against temporary
    Claude, Cursor, Codex, and Pi installs — implemented for discovery, script
    execution from project cwd, relative references, and core prompt presence.

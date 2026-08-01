@@ -36,7 +36,7 @@ test('installed skill is portable across Claude, Cursor, Codex, and Pi roots', (
     installSkill({ sourceDir: skillSource, destDir: destination.destDir });
     const skill = readFileSync(path.join(destination.destDir, 'SKILL.md'), 'utf8');
     assert.match(skill, /^name: im-dumb$/m, `${destination.harness}: discovery name`);
-    assert.doesNotMatch(skill, /\{\{IM_DUMB_PROFILE_SCRIPT\}\}/, `${destination.harness}: script path materialized`);
+    assert.doesNotMatch(skill, /node scripts\/profile\.js/, `${destination.harness}: script path materialized`);
     assert.match(skill, /## Load the profile/, `${destination.harness}: core prompt present`);
     for (const reference of ['references/onboarding.md', 'references/comprehension.md', 'references/learning-assets.md']) {
       assert.ok(skill.includes(`\`${reference}\``), `${destination.harness}: names ${reference}`);
@@ -59,7 +59,7 @@ test('installed skill is portable across Claude, Cursor, Codex, and Pi roots', (
 
     for (const file of markdownFiles(destination.destDir)) {
       const content = readFileSync(file, 'utf8');
-      assert.doesNotMatch(content, /\{\{IM_DUMB_PROFILE_SCRIPT\}\}/, `${file}: script path materialized`);
+      assert.doesNotMatch(content, /node scripts\/profile\.js/, `${file}: script path materialized`);
       for (const match of content.matchAll(/\]\(([^)#]+)(?:#[^)]+)?\)/g)) {
         const target = path.resolve(path.dirname(file), match[1]!);
         assert.ok(target.startsWith(`${destination.destDir}${path.sep}`), `${file}: reference stays in skill tree`);

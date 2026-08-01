@@ -100,7 +100,7 @@ test('SKILL.md body stays within the 900-word target and budget remains warning-
 // Profile load and trust boundary.
 test('load section covers ordinary success and both exact error groups without raw file access', () => {
   const load = section(body, 'Load the profile');
-  assert.match(load, /node \{\{IM_DUMB_PROFILE_SCRIPT\}\} load/);
+  assert.match(load, /node scripts\/profile\.js load/);
   assert.match(load, /never read, open, or\s+parse the profile file\s+directly/i);
   assert.match(load, /`success`[\s\S]{0,180}apply the returned profile/i);
   assert.match(load, /`missing`[^\n]*`unparseable`[\s\S]{0,180}offer onboarding/i);
@@ -204,7 +204,7 @@ test('onboarding confirmation shows every visible value and preserves hidden sta
 });
 
 test('save receives complete JSON on stdin and never writes free-form notes or profile files directly', () => {
-  assert.match(onboardingContent, /complete JSON object on standard input to\s+`node \{\{IM_DUMB_PROFILE_SCRIPT\}\} save`/i);
+  assert.match(onboardingContent, /complete JSON object on standard input to\s+`node scripts\/profile\.js save`/i);
   assert.match(onboardingContent, /never hand-edit the profile file/i);
   assert.match(onboardingContent, /Do not add unknown fields or save free-form notes/i);
 });
@@ -215,7 +215,7 @@ test('no-script fallback emits schema-shaped JSON at the exact path and requires
   assert.match(fallback, /~\/\.im-dumb\/profile\.json/);
   assert.match(fallback, /IM_DUMB_PROFILE/);
   assert.match(fallback, /Do not claim it was saved/i);
-  assert.match(fallback, /node \{\{IM_DUMB_PROFILE_SCRIPT\}\} validate/);
+  assert.match(fallback, /node scripts\/profile\.js validate/);
 });
 
 // Generation rules.
