@@ -28,7 +28,16 @@ import {
   resolveBlockingCaseIds,
   validateSmokeCaseIds,
 } from './smoke-manifest.ts';
-import { hashDatasetManifest, validateCapture } from './token-overhead.ts';
+import {
+  AGGREGATE_CEILING_PERCENT,
+  PER_CASE_CEILING_PERCENT,
+  countCodePoints,
+  hashDatasetManifest,
+  overheadPercent,
+  validateCapture,
+  type CaseOverhead,
+  type TokenOverheadReport,
+} from './token-overhead.ts';
 
 export interface EvalRunnerArgs {
   dryRun: boolean;
@@ -84,6 +93,8 @@ export interface EvalArtifact {
   blockingCaseIds: string[];
   failedBlockingCaseIds: string[];
   cases: CaseSmokeResult[];
+  /** Gate 3 signal for smoke ids that have both baseline+candidate captures. */
+  tokenOverhead: TokenOverheadReport | null;
 }
 
 export interface EvalSmokeResult {
@@ -219,6 +230,65 @@ function emptyArtifact(skillVersion: string, mode: EvalArtifact['mode']): EvalAr
     blockingCaseIds: [],
     failedBlockingCaseIds: [],
     cases: [],
+    tokenOverhead: null,
+  };
+}
+
+/** Gate 3 slice for smoke ids that already have both capture files. */
+export function buildTokenOverheadForSmoke(options: {
+  caseIds: readonly string[];
+  baselinesDir: string;
+}): TokenOverheadReport | null {
+  const cases: CaseOverhead[] = [];
+  for (const caseId of options.caseIds) {
+    const baselinePath = path.join(options.baselinesDir, `${caseId}.baseline.json`);
+    const candidatePath = path.join(options.baselinesDir, `${caseId}.candidate.json`);
+    let baselineRaw: unknown;
+    let candidateRaw: unknown;
+    try {
+      baselineRaw = JSON.parse(readFileSync(baselinePath, 'utf8')) as unknown;
+      candidateRaw = JSON.parse(readFileSync(candidatePath, 'utf8')) as unknown;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') continue;
+      throw error;
+    }
+    const baseline = validateCapture(baselineRaw, baselinePath);
+    const candidate = validateCapture(candidateRaw, candidatePath);
+    const baselineCodePoints = countCodePoints(baseline.response);
+    const candidateCodePoints = countCodePoints(candidate.response);
+    const percent = overheadPercent(baselineCodePoints, candidateCodePoints);
+    cases.push({
+      caseId,
+      baselineCodePoints,
+      candidateCodePoints,
+      baselineEstimatedTokens: baselineCodePoints / 4,
+      candidateEstimatedTokens: candidateCodePoints / 4,
+      overheadPercent: percent,
+      exceedsCeiling: percent > PER_CASE_CEILING_PERCENT,
+    });
+  }
+  if (cases.length === 0) return null;
+
+  const baselineCodePoints = cases.reduce((sum, item) => sum + item.baselineCodePoints, 0);
+  const candidateCodePoints = cases.reduce((sum, item) => sum + item.candidateCodePoints, 0);
+  const aggregatePercent = overheadPercent(baselineCodePoints, candidateCodePoints);
+  return {
+    approximateTokenMethod: 'Unicode code points / 4',
+    ceilings: {
+      aggregatePercent: AGGREGATE_CEILING_PERCENT,
+      perCasePercent: PER_CASE_CEILING_PERCENT,
+      // ponytail: still report-only until multi-trial captures + CI flip
+      reportOnly: true,
+    },
+    cases,
+    aggregate: {
+      baselineCodePoints,
+      candidateCodePoints,
+      baselineEstimatedTokens: baselineCodePoints / 4,
+      candidateEstimatedTokens: candidateCodePoints / 4,
+      overheadPercent: aggregatePercent,
+      exceedsCeiling: aggregatePercent > AGGREGATE_CEILING_PERCENT,
+    },
   };
 }
 
@@ -227,6 +297,7 @@ export function buildDryRunArtifact(input: {
   datasetHash: string;
   cases: Array<Omit<CaseSmokeResult, 'judge'>>;
   blockingCaseIds?: string[];
+  tokenOverhead?: TokenOverheadReport | null;
 }): EvalArtifact {
   const cases = input.cases.map((item) => ({ ...item, judge: null }));
   return {
@@ -237,6 +308,7 @@ export function buildDryRunArtifact(input: {
     blockingCaseIds: input.blockingCaseIds ?? cases.filter((c) => !c.quarantined).map((c) => c.caseId),
     failedBlockingCaseIds: [],
     cases,
+    tokenOverhead: input.tokenOverhead ?? null,
   };
 }
 
@@ -361,6 +433,10 @@ function runDrySmoke(options: EvalRunnerArgs): EvalSmokeResult {
         datasetHash,
         blockingCaseIds,
         cases,
+        tokenOverhead: buildTokenOverheadForSmoke({
+          caseIds: cases.map((item) => item.caseId),
+          baselinesDir: options.baselinesDir,
+        }),
       }),
     };
   } catch (error) {
@@ -470,6 +546,10 @@ export async function runEvalSmokeAsync(options: EvalRunnerArgs): Promise<EvalSm
         blockingCaseIds,
         failedBlockingCaseIds,
         cases,
+        tokenOverhead: buildTokenOverheadForSmoke({
+          caseIds: cases.map((item) => item.caseId),
+          baselinesDir: options.baselinesDir,
+        }),
       },
     };
   } catch (error) {
@@ -525,11 +605,16 @@ function formatHuman(artifact: EvalArtifact, error?: string): string {
     artifact.judge.status === 'skipped'
       ? 'judge: skipped'
       : `judge: ${artifact.judge.modelId}@${artifact.judge.modelVersion} temp=${artifact.judge.temperature} trials=${artifact.judge.trialsPerCase}`;
+  const tokenLine =
+    artifact.tokenOverhead === null
+      ? 'token_overhead: n/a'
+      : `token_overhead: aggregate ${artifact.tokenOverhead.aggregate.overheadPercent.toFixed(2)}% over ${artifact.tokenOverhead.cases.length} paired case(s)${artifact.tokenOverhead.aggregate.exceedsCeiling ? ' EXCEEDS' : ''} (report-only)`;
   const lines = [
     `mode: ${artifact.mode}`,
     `skill: ${artifact.skillVersion}`,
     `dataset_hash: ${artifact.datasetHash}`,
     judgeLine,
+    tokenLine,
     `cases: ${artifact.cases.length} (blocking ${artifact.blockingCaseIds.length}, failed ${artifact.failedBlockingCaseIds.length})`,
     ...artifact.cases.map((item) => {
       const judgeBit =

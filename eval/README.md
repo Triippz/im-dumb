@@ -11,6 +11,7 @@ govern — do not duplicate them here.
 | [`golden/`](golden/README.md) | Fixed cases + expectations (schema, categories, edit rules) |
 | [`smoke-manifest.json`](smoke-manifest.json) | Gate 2 curated case ids (M3 runner) |
 | [`smoke-quarantine.json`](smoke-quarantine.json) | Flaky ids excluded from merge-blocking (still reported) |
+| [`quiz/`](quiz/README.md) | Human comprehension-quiz protocol (accuracy delta, not judge score) |
 | [`rubric.md`](rubric.md) | M1 semantic judge dimensions (factual fidelity, constraint compliance, safety) |
 | [`comprehension-rubric.md`](comprehension-rubric.md) | M2 semantic dimensions for diagnose / repair / rediagnose |
 | [`baselines/`](baselines/README.md) | M1 baseline/candidate captures + token-overhead protocol |

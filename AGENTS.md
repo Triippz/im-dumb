@@ -12,7 +12,7 @@ Cross-harness agent skill (Claude Code, Cursor, OpenAI Codex, Pi) plus an npx in
 6. **Comprehension-gate hard constraints**: at most one clarifying question per turn; never a bare, unscoped "I don't understand" prompt back to the user; second consecutive failure always triggers full re-diagnosis (overrides confidence-based skips).
 7. **Evals before implementation**: eval design (golden dataset, deterministic checkers, judge rubric) is defined before the behavior it gates ships (product-requirements §9). Readability scores (Flesch-Kincaid) are supporting signals only, never standalone success measures. No ELO/ranking aggregation in judge scoring.
 
-The product-requirements §9.10 pre-code checklist is satisfied **per-milestone**: each item lands before the behavior it gates ships, not all-before-any-code. Gate-specific eval scaffolds and dataset categories 4–5 (§9.4) land at M2 start; the human comprehension-quiz protocol lands by M3. The "Layer 2 offline eval smoke suite" required PR check is aspirational until M3 delivers the runner — deferral deliberate, not drift.
+The product-requirements §9.10 pre-code checklist is satisfied **per-milestone**: each item lands before the behavior it gates ships, not all-before-any-code. Gate-specific eval scaffolds and dataset categories 4–5 (§9.4) land at M2 start; the human comprehension-quiz protocol lives under `eval/quiz/`. Layer 2 dry-run smoke (`npm run eval:smoke`) is a required CI step; live pinned-judge smoke runs only when `JUDGE_SMOKE_ENABLED` and judge secrets are configured.
 
 ## Repo layout (actual)
 

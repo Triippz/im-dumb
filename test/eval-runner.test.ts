@@ -82,6 +82,9 @@ test('runEvalSmoke --dry-run: green on repo smoke set without secrets or network
   assert.ok(result.artifact.cases.length >= 6);
   assert.ok(result.artifact.cases.some((c) => c.candidateStatus === 'present'));
   assert.ok(result.artifact.cases.some((c) => c.candidateStatus === 'missing'));
+  assert.ok(result.artifact.tokenOverhead !== null);
+  assert.ok((result.artifact.tokenOverhead?.cases.length ?? 0) >= 1);
+  assert.equal(result.artifact.tokenOverhead?.ceilings.reportOnly, true);
 });
 
 test('runEvalSmoke: invalid smoke manifest fails closed', () => {
