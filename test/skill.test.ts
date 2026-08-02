@@ -156,9 +156,7 @@ test('main skill loads comprehension detail only for a later possible signal or 
   assert.match(comprehension, /active repair thread/i);
   assert.match(comprehension, /read\s+`references\/comprehension\.md`/i);
   assert.match(comprehension, /Apply it only then, never for an initial or\s+ordinary\s+turn/i);
-  assert.match(comprehension, /first exact `huh` must diagnose; never guess\s+and rephrase/i);
-  assert.match(comprehension, /first line `\*\*Likely confusion points\*\*` or `\{`/i);
-  assert.match(comprehension, /Forbidden before that line[\s\S]{0,120}Diagnosing[\s\S]{0,80}I'll load[\s\S]{0,80}loading your profile[\s\S]{0,80}Active repair thread/i);
+  assert.match(comprehension, /Never guess and rephrase instead of diagnosing/i);
   assert.match(comprehension, /profile\s+failure never blocks diagnosis, rediagnosis, or\s+repair/i);
 });
 

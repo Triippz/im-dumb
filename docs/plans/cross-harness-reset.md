@@ -510,9 +510,10 @@ ships on the matrix.
 3. **Add Codex as installable** (§3.3) — implemented for `$CODEX_HOME` global
    installs. Project scope remains rejected because no documented project root
    was found.
-4. **Revert §5.1** in one reviewable PR, with `test/comprehension-reference.test.ts`
-   and `test/skill.test.ts` assertions relaxed to the generalized forms in
-   §5.2. Expect the shipped body and reference to shrink.
+4. **Revert §5.1** — implemented. The fixture literals are gone from `SKILL.md`
+   and `references/comprehension.md`; `test/comprehension-reference.test.ts` and
+   `test/skill.test.ts` assert the generalized forms from §5.2. Body is 871
+   words, reference down 37 lines.
 5. **Reframe the cohort** (§5.4) — code retained, policy and threshold changed,
    `eval/runtime/README.md` rewritten to call it per-model evidence.
 6. **Optional, later:** Pi extension for enhanced mode (§4.2), following
