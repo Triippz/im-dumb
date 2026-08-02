@@ -2,7 +2,6 @@
   "name": "im-dumb",
   "version": "0.2.0",
   "type": "module",
-  "private": true,
   "description": "Cross-harness Agent Skill: personalized communication profile + comprehension gate.",
   "bin": {
     "im-dumb": "./dist/install-cli.js"

@@ -37,11 +37,11 @@ test('README states the vocabulary_level field and its three exact enum values',
   assert.match(readme, /`expert`/);
 });
 
-test('README documents the M4 installer CLI and owner-gated unpublished npm status', () => {
+test('README documents the installer CLI and the owner-gated publish step', () => {
   const install = section(readme, '## Install');
   assert.match(install, /install-cli\.js/);
-  assert.match(install, /private:\s*true|not on npm/i);
-  assert.match(install, /owner-authorized npm publication/i);
+  assert.match(install, /npx im-dumb/i);
+  assert.match(install, /owner-authorized/i);
 });
 
 test('README qualifies npx download network use vs invocation-time no-network guarantee', () => {

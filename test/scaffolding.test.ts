@@ -19,7 +19,7 @@ test('package.json declares the M1 step-1 scaffolding contract', () => {
   assert.equal(pkg.name, 'im-dumb');
   assert.equal(pkg.version, '0.2.0');
   assert.equal(pkg.type, 'module');
-  assert.equal(pkg.private, true);
+  assert.equal(pkg.private, undefined);
   assert.equal(pkg.engines.node, '>=24');
   assert.equal(pkg.scripts.build, 'tsc -p tsconfig.build.json');
   assert.equal(pkg.scripts.typecheck, 'tsc --noEmit');

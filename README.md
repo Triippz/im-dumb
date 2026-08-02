@@ -74,19 +74,19 @@ The same profile is designed to travel across Claude Code, Cursor, OpenAI Codex/
 ## Install
 
 > [!IMPORTANT]
-> **Pre-release:** the package is not on npm yet (`private: true` until an owner-authorized npm publication). The installer CLI is implemented in-repo, build locally, then run `node dist/install-cli.js install …`. After publish, the same entrypoint is `npx im-dumb`.
+> **Not on npm yet.** The package is publishable, but no release run has been made, so `npx im-dumb` does not resolve until the first owner-authorized release. Until then, install from a clone.
 
-From a clone:
+```bash
+npx im-dumb install --targets claude,cursor,codex,pi --scope global
+```
+
+Each published version is cut by an owner-authorized manual release run, never on merge.
+
+From a clone, which needs no publish:
 
 ```bash
 npm run build
 node dist/install-cli.js install --targets claude,cursor,codex,pi --scope global
-```
-
-After owner-authorized npm publication:
-
-```bash
-npx im-dumb install --targets claude,cursor,codex,pi --scope global
 ```
 
 | Harness | Global target | Project target |
@@ -166,7 +166,7 @@ That is useful for a work profile and a personal profile on one machine, and for
 
 - Bundled skill scripts make **no outbound network calls** at invocation time.
 - Compiled JavaScript has **zero runtime dependencies**.
-- Running `npx im-dumb` (after owner-authorized npm publication) will need network access once, to download the package; after install, the skill's bundled scripts still make no outbound network calls when invoked. Local `node dist/install-cli.js` needs no network.
+- Running `npx im-dumb` will need network access once, to download the package; after install, the skill's bundled scripts still make no outbound network calls when invoked. Local `node dist/install-cli.js` needs no network.
 - The installer only writes local files that you can inspect.
 - Profile paths can be overridden with `IM_DUMB_PROFILE`; profile validation rejects unknown fields on save.
 
