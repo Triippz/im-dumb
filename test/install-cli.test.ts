@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdirSync, mkdtempSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
@@ -31,7 +31,7 @@ test('parseInstallCliArgs: rejects unknown flags', () => {
 });
 
 test('usage mentions non-interactive contract', () => {
-  assert.match(usage(), /--targets claude,cursor,pi/);
+  assert.match(usage(), /--targets claude,cursor,codex,pi/);
   assert.match(usage(), /Codex/);
 });
 
@@ -51,6 +51,29 @@ test('runInstallCli: non-interactive installs into temp home', async () => {
   assert.match(readFileSync(dest, 'utf8'), /name: im-dumb/);
   assert.ok(Array.isArray(results));
   assert.ok(lines.some((line) => line.includes('"action"')));
+});
+
+test('runInstallCli: installs Codex into its native root', async () => {
+  const home = tempDir();
+  const args = parseInstallCliArgs(
+    ['install', '--targets', 'codex', '--scope', 'global', '--home', home],
+    { homeDir: home, cwd: home, isTTY: false },
+  );
+  const { exitCode } = await runInstallCli(args, { log: () => {} });
+  assert.equal(exitCode, 0);
+  assert.match(readFileSync(path.join(home, '.codex', 'skills', 'im-dumb', 'SKILL.md'), 'utf8'), /name: im-dumb/);
+});
+
+test('runInstallCli: rejects a project-scope Codex target without partial installation', async () => {
+  const home = tempDir();
+  const project = tempDir();
+  mkdirSync(path.join(project, '.git'));
+  const args = parseInstallCliArgs(
+    ['install', '--targets', 'claude,codex', '--scope', 'project', '--home', home],
+    { homeDir: home, cwd: project, isTTY: false },
+  );
+  await assert.rejects(runInstallCli(args, { log: () => {} }), /global installation only/);
+  assert.equal(existsSync(path.join(project, '.claude', 'skills', 'im-dumb')), false);
 });
 
 test('runInstallCli: missing --targets without TTY fails closed', async () => {

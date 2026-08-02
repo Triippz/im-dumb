@@ -10,6 +10,7 @@ import {
   AGGREGATE_CEILING_PERCENT,
   PER_CASE_CEILING_PERCENT,
   buildTokenOverheadReport,
+  buildTokenOverheadReportFromPairs,
   countCodePoints,
   estimateTokens,
   formatHumanReport,
@@ -115,6 +116,17 @@ test('mismatched dataset, skill, model, model version, or settings are hard erro
   assert.throws(
     () => pairCaptures([baseline, capture('candidate', 'y', { settings: { temperature: 1 } })], EXPECTED),
     /settings/,
+  );
+});
+
+test('from-pairs report rejects mismatched pair metadata', () => {
+  assert.throws(
+    () => buildTokenOverheadReportFromPairs([{
+      caseId: 'case-a',
+      baseline: capture('candidate', 'base', { case_id: 'wrong' }),
+      candidate: capture('baseline', 'next'),
+    }]),
+    /case_id|kinds/,
   );
 });
 

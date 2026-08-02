@@ -112,10 +112,11 @@ export function parseInstallCliArgs(
 export function usage(): string {
   return [
     'Usage:',
-    '  im-dumb install [--targets claude,cursor,pi] [--scope global|project] [--prefer-agents]',
+    '  im-dumb install [--targets claude,cursor,codex,pi] [--scope global|project] [--prefer-agents] [--json]',
     '  im-dumb install   # interactive when TTY',
+    '  --home <path>       # test a different home directory',
     '',
-    'Codex is detected but not auto-installed (manual/local-shell only).',
+    'Codex installs into .codex/skills for local Codex sessions.',
     'Hosted Claude API / OpenAI uploads are out of scope for v1.',
   ].join('\n');
 }
@@ -136,6 +137,7 @@ export async function runInstallCli(
   const detected = detectHarnesses({
     homeDir: args.homeDir,
     projectRoot: args.projectRoot,
+    codexHome: process.env.CODEX_HOME,
   });
   let targets = args.targets;
   let scope = args.scope;
@@ -155,40 +157,27 @@ export async function runInstallCli(
     scope = selected.scope;
   }
 
-  const installable = targets.filter((id) => id !== 'codex');
-  if (installable.length === 0) {
-    return { exitCode: 2, results: { error: 'no installable targets selected' } };
-  }
-
   const destinations = resolveInstallDestinations({
-    targets: installable,
+    targets,
     scope,
     homeDir: args.homeDir,
     projectRoot: args.projectRoot,
     preferAgents: args.preferAgents,
+    codexHome: process.env.CODEX_HOME,
   });
 
   const sourceDir = resolveSkillPackageDir();
-  const seen = new Set<string>();
+  const installed = new Map<string, ReturnType<typeof installSkill>>();
   const results = [];
   for (const dest of destinations) {
-    if (seen.has(dest.destDir)) {
-      results.push({
-        harness: dest.harness,
-        destDir: dest.destDir,
-        viaSharedAgents: dest.viaSharedAgents,
-        action: 'skipped',
-        reason: 'shared destination already handled',
-      });
+    const prior = installed.get(dest.destDir);
+    if (prior) {
+      results.push({ ...dest, action: 'skipped', version: prior.version, reason: 'shared destination already handled' });
       continue;
     }
-    seen.add(dest.destDir);
     const outcome = installSkill({ sourceDir, destDir: dest.destDir });
-    results.push({
-      harness: dest.harness,
-      viaSharedAgents: dest.viaSharedAgents,
-      ...outcome,
-    });
+    installed.set(dest.destDir, outcome);
+    results.push({ ...dest, ...outcome });
   }
 
   if (args.json) {
@@ -229,26 +218,14 @@ async function promptTargets(
       }
     });
 
-  const installable = detected.filter((item) => item.installable);
-  if (installable.length === 0) {
-    throw new Error('no installable harnesses detected (looked for .claude, .cursor, .pi, .agents)');
+  if (!detected.length) {
+    throw new Error('no harnesses detected (looked for .claude, .cursor, .codex, .pi, .agents)');
   }
+  log(`Detected: ${detected.map(({ id }) => id).join(', ')}`);
 
-  if (detected.length === 0) log('Detected: (none)');
-  else {
-    log(
-      'Detected: ' +
-        detected
-          .map((item) => `${item.id}${item.installable ? '' : ' (manual only)'}`)
-          .join(', '),
-    );
-  }
-
-  const defaultIds = installable.map((item) => item.id).join(',');
+  const defaultIds = detected.map(({ id }) => id).join(',');
   const rawTargets = await ask(`Targets [${defaultIds}]: `);
-  const targets = parseTargets(rawTargets === '' ? defaultIds : rawTargets).filter(
-    (id) => id !== 'codex',
-  );
+  const targets = parseTargets(rawTargets === '' ? defaultIds : rawTargets);
   const rawScope = await ask('Scope [global]: ');
   const scope: InstallScope = rawScope === 'project' ? 'project' : 'global';
   return { targets, scope };

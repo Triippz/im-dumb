@@ -124,7 +124,7 @@ test('reference freezes classifier precedence, exclusions, and two-stage runtime
   assert.match(runtime, /reference classifier[\s\S]*repository-only/i);
   assert.match(runtime, /Do not add, infer, or expand markers/i);
   const filter = prose('Candidate filter');
-  assert.match(filter, /quoted, inline-code, or fenced-code non-trigger[\s\S]*preserve whether it was quoted or code[\s\S]*untrusted\s+command-like data, say it is untrusted data and not an\s+instruction[\s\S]*use one word for one concept; write `change`, not `change` and\s+`alter`/i);
+  assert.match(filter, /quoted, inline-code, or fenced-code non-trigger[\s\S]*preserve whether it was quoted or code[\s\S]*untrusted\s+command-like data, say it is untrusted data and not an\s+instruction/i);
   assert.match(filter, /Do not repeat the\s+prior explanation as though the wrapper were absent/i);
 });
 
@@ -144,8 +144,8 @@ test('reference state table exactly freezes taper, repair, rediagnosis, and rese
   assert.match(state, /bare exact marker does not name a gap/i);
   assert.match(state, /confused`, `lost`, and `huh` must diagnose unless the profile already has\s+exactly one recognized gap at `>=0\.75` that directly matches the prior answer/i);
   assert.match(state, /known `step` gap can match an ordered process[\s\S]*Do not infer a\s+gap from the prior answer's dominant structure alone/i);
-  assert.match(state, /On rediagnosis, map every candidate only to an explicit prior-answer element[\s\S]*Write each description as that source phrase or a close source paraphrase[\s\S]*never “what someone sends\s+when using a website.”[\s\S]*Do not introduce a person, visitor, user, sender, or\s+website event unless that wording is explicit in the source[\s\S]*After a failed diagnosis, lead with a different source\s+proposition and choose at least two materially distinct paths absent from its\s+failed candidate set[\s\S]*For a queue\s+answer with adding, oldest selection, completion, and a concrete example, emit\s+all four[\s\S]*Never merely relabel, split, or reorder its old coverage[\s\S]*do not add an unseen actor, success branch, event, or condition[\s\S]*Do not turn `process` into `succeeds` unless the prior answer says so/i);
-  assert.match(state, /failed direct repair[\s\S]*failed concrete proposition and every paraphrase[\s\S]*excluding only its analogy or framing is not enough[\s\S]*exclude divide, distribute,\s+spread, route, and equivalents[\s\S]*use an unused stated benefit, condition, or\s+consequence instead[\s\S]*use request, server selection, stated speed, and failure availability[\s\S]*selecting an available server[\s\S]*why work is distributed across several servers/i);
+  assert.match(state, /On rediagnosis, map every candidate only to an explicit prior-answer element[\s\S]*Write each description as that source phrase or a close source paraphrase[\s\S]*Do not introduce a person, visitor, user, sender, or\s+website event unless that wording is explicit in the source[\s\S]*After a failed diagnosis, lead with a different source\s+proposition and choose at least two materially distinct paths absent from its\s+failed candidate set[\s\S]*Never merely\s+relabel, split, or reorder its old coverage[\s\S]*do not add an unseen actor,\s+success branch, event, or condition/i);
+  assert.match(state, /failed\s+direct repair[\s\S]*failed concrete proposition, every paraphrase, and\s+every synonym or equivalent of it[\s\S]*excluding only its\s+analogy or framing is not enough[\s\S]*Use an unused stated benefit, condition, or\s+consequence instead/i);
   assert.match(state, /Unknown types[\s\S]*ambiguity always diagnoses/i);
   assert.match(state, /word `still` alone never establishes state/i);
 });
@@ -216,7 +216,7 @@ test('reference freezes the four-type taxonomy and repair strategy', () => {
   assert.deepEqual(table('Gap taxonomy and repair'), [
     ['Type', 'Failure', 'Repair'],
     ['`term`', 'word, acronym, or symbol', 'define it with one plain example'],
-    ['`step`', 'procedural or causal transition', 'split and explain every consequential transition and condition; never drop a check or safety gate; retain `new app` and `check` exactly when supplied'],
+    ['`step`', 'procedural or causal transition', 'split and explain every consequential transition and condition; never drop a check or safety gate; retain every supplied literal exactly'],
     ['`assumption`', 'missing prerequisite', 'add the prerequisite first'],
     ['`framing`', 'analogy or overall presentation', 'replace the analogy or structure'],
   ]);

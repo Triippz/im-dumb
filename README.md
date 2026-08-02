@@ -65,19 +65,20 @@ From a clone:
 
 ```bash
 npm run build
-node dist/install-cli.js install --targets claude,cursor,pi --scope global
+node dist/install-cli.js install --targets claude,cursor,codex,pi --scope global
 ```
 
 After owner-authorized npm publication:
 
 ```bash
-npx im-dumb install --targets claude,cursor,pi --scope global
+npx im-dumb install --targets claude,cursor,codex,pi --scope global
 ```
 
 | Harness | Global target | Project target |
 |---|---|---|
 | Claude Code | `~/.claude/skills/` | `.claude/skills/` |
 | Cursor | `~/.cursor/skills/` | `.cursor/skills/` or `.agents/skills/` |
+| Codex | `$CODEX_HOME/skills/` (defaults to `~/.codex/skills/`) | Not supported; Codex has no documented project skill root |
 | Pi | `~/.pi/agent/skills/` or `~/.agents/skills/` | `.pi/skills/` or `.agents/skills/` |
 | Claude API / claude.ai | Manual upload | — |
 | OpenAI hosted | Manual upload or local-shell path | — |
