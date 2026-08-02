@@ -19,6 +19,21 @@ You ask one question. It replies with jargon, hidden assumptions, and six paragr
 
 You are not dumb. The interface forgot who it was talking to.
 
+## Contents
+
+- [Before / after](#before--after)
+- [What it changes](#what-it-changes)
+- [How it works](#how-it-works)
+- [Install](#install)
+  - [Enhanced mode (always on, Pi only)](#enhanced-mode-always-on-pi-only)
+- [Use it](#use-it)
+- [Security](#security)
+- [Evaluation status](#evaluation-status)
+- [Development](#development)
+- [What is built](#what-is-built)
+- [Why “im-dumb”?](#why-im-dumb)
+- [Contributing](#contributing)
+
 ## Before / after
 
 You ask: **“How does a message queue work?”**
