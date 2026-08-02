@@ -130,6 +130,14 @@ Any of these also work as triggers: `view my im-dumb profile`, `change my im-dum
 
 **2. Confirm it is applying.** Ask a question in a domain you do not know. A working profile shows up as shorter sentences, defined jargon, and answer-first structure. If replies look unchanged, the usual cause is one of: no profile yet, the skill never loaded on that turn, or you are on a harness without enhanced mode.
 
+**Check whether it is actually applying.** The harnesses already write every session to disk, so this needs no proxy and no daemon:
+
+```bash
+npm run report:sessions
+```
+
+That runs the same deterministic checkers CI uses over the assistant turns in your Claude Code, Codex, and Pi session logs, and prints how many turns broke the profile and which rule they broke. Counts cover every turn in the log, including turns where the skill never loaded, so treat the rate as a floor rather than a verdict on the skill. Cursor is absent because it routes model traffic through its own backend and writes no comparable local usage record.
+
 **3. Teach it.** When an answer loses you, say so plainly (`huh`, `I don't understand`). The skill names its best guesses at what confused you and asks one question, rather than repeating the same explanation louder. Confirm when a repair works and it records the gap for later answers.
 
 Point at a different profile file with `IM_DUMB_PROFILE`:

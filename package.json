@@ -28,6 +28,7 @@
     "eval:smoke:live": "node src/eval-runner.ts --live",
     "eval:m2-cohort": "node eval/runtime/evaluate-m2-cohort.ts",
     "install:skill": "node src/install-cli.ts install",
+    "report:sessions": "node src/session-report.ts",
     "release:prepare": "node src/release-cli.ts"
   },
   "devDependencies": {
