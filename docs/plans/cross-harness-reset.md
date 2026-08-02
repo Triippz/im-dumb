@@ -1,9 +1,10 @@
 # cross-harness reset — research plan
 
-Status: **implementation started.** The first portability slice rewrites
-relative script paths after install, verifies installed trees across the four
-native roots, and enables global Codex installation. Prompt-rule cleanup
-remains separate.
+Status: **steps 1–5 shipped** (#42, #43). Script paths are rewritten after
+install, installed trees are verified across the four native roots, Codex
+installs globally, the fixture-specific prompt steering is reverted, and the
+cohort is per-model evidence behind a `k`-of-`n` threshold. Step 6 (Pi
+extension) is the remaining item.
 
 Scope: answer the six questions in `/tmp/im-dumb-handoff-cross-harness.md` §3
 with local, citable evidence, and propose the compatibility matrix that §4
@@ -518,23 +519,27 @@ ships on the matrix.
    `cleanTrials`/`meetsThreshold` at `M2_CLEAN_TRIALS_REQUIRED` of
    `M2_COHORT_SIZE`; `eval/runtime/README.md` calls it per-model evidence and
    names the compatibility matrix as the release gate.
-6. **Optional, later:** Pi extension for enhanced mode (§4.2), following
-   ponytail's `pi-extension/index.js` shape. Never a correctness prerequisite.
+6. **Next:** Pi extension for enhanced mode (§4.2), following ponytail's
+   `pi-extension/index.js` shape. Never a correctness prerequisite — the skill
+   must stay fully functional on every harness without it.
 
 Steps 1–3 are additive and do not touch shipped prompt semantics. Step 4 is the
 behavioral revert and wants explicit user sign-off, because it will change M2
 capture outcomes — which is the intended result, not a regression.
 
-## 8. Open questions for the user
+## 8. Answered questions
 
-1. **Is exact-output enforcement still a requirement?** §4.2 says no portable
-   mechanism delivers it and the two most-ported comparable skills do not
-   attempt it. If it stays a requirement, the answer is a Pi extension plus
-   accepting that Claude/Cursor/Codex get best-effort only.
-2. **Does Codex move from "detect-only" to installable now?** §3.3 evidence says
-   the platform supports it. This changes M4's stated scope.
-3. **Cohort: replace or delete?** §5.4 recommends retaining the code with a
-   threshold policy. Deleting it outright is also defensible — the matrix would
-   then be the sole gate.
-4. **Does the `.eduardo/` untracked tree matter here?** Left untouched per the
+1. **Is exact-output enforcement still a requirement?** **Yes, on Pi first.**
+   Pi gets real enforcement through its extension API; Claude, Cursor, and
+   Codex get a weaker best-effort form later. The skill must work on all four
+   without any extension — enforcement is an enhancement, never a dependency.
+2. **Does Codex move from "detect-only" to installable now?** **Yes**, global
+   `$CODEX_HOME/skills` only (#42). Project scope stays rejected — no
+   documented project skill root.
+3. **Cohort: replace or delete?** **Replaced** (#43). Code retained,
+   `k`-of-`n` threshold, scoped to per-model evidence.
+4. **AV (M5 phase 3)?** **Dropped from scope.** Generators need TTS/ffmpeg,
+   which collides with the no-network and dependency-free invariants. The skill
+   already declines audio and video plainly.
+5. **Does the `.eduardo/` untracked tree matter here?** Left untouched per the
    handoff freeze; not inspected.

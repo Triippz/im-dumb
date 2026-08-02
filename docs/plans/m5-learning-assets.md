@@ -18,10 +18,12 @@ Revision 1 — post-M4 merge (`c0196ae`).
 
 **In scope later in M5 (separate PR OK)**:
 - Phase 2: HTML slide decks (section-per-slide); no PowerPoint binary dependency in v1
-- Phase 3 stub only: document AV as future; no generators
 
 **Out of scope (M5)**:
 - npm publish / hosted upload (M6)
+- Phase 3 AV — **dropped**, not deferred. Generation needs TTS/ffmpeg, which
+  collides with the no-network and dependency-free invariants. The skill
+  declines audio and video and offers markdown or HTML instead.
 - Video/voice model calls
 - Post-generation rewrite or second model call
 - Changing profile schema
@@ -85,5 +87,5 @@ eval/golden/cases/learning-asset-*.json
 |---|---|
 | Phase 1 Markdown/HTML | reference + skill + checker + goldens |
 | Phase 2 slides | follow-up PR in M5 |
-| Phase 3 AV | stub in docs only |
+| Phase 3 AV | dropped from scope |
 | Same profile constraints | skill rules + existing Layer 1 language checkers on prose |

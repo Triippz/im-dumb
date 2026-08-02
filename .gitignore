@@ -17,3 +17,8 @@ eval/results/
 
 # Autopilot run ledgers (local orchestration state)
 .claude/autopilot/
+.agents/
+.ai-utilities/
+.claude/
+.cursor/
+ai-utilities.json
