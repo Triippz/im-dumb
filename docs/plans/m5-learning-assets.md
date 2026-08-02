@@ -21,9 +21,12 @@ Revision 1 — post-M4 merge (`c0196ae`).
 
 **Out of scope (M5)**:
 - npm publish / hosted upload (M6)
-- Phase 3 AV — **dropped**, not deferred. Generation needs TTS/ffmpeg, which
-  collides with the no-network and dependency-free invariants. The skill
-  declines audio and video and offers markdown or HTML instead.
+- Phase 3 AV — **dropped from scope**. Bundled generation needs TTS/ffmpeg,
+  which collides with the no-network and dependency-free invariants. The skill
+  declines audio and video and offers markdown or HTML instead. A host
+  integration (Pi extension or MCP server calling an external generator such as
+  Higgsfield) is the only shape that keeps the invariants, since the network
+  call lives outside the skill bundle. Stretch goal, not planned work.
 - Video/voice model calls
 - Post-generation rewrite or second model call
 - Changing profile schema
@@ -87,5 +90,5 @@ eval/golden/cases/learning-asset-*.json
 |---|---|
 | Phase 1 Markdown/HTML | reference + skill + checker + goldens |
 | Phase 2 slides | follow-up PR in M5 |
-| Phase 3 AV | dropped from scope |
+| Phase 3 AV | dropped from scope; host integration is a stretch goal |
 | Same profile constraints | skill rules + existing Layer 1 language checkers on prose |
