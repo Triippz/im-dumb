@@ -95,7 +95,7 @@ export function aggregateCaseTrials(options: {
   };
 }
 
-/** Approximate erf via Abramowitz & Stegun 7.1.26 — enough for gate p-values. */
+/** Approximate erf via Abramowitz & Stegun 7.1.26, enough for gate p-values. */
 function erf(x: number): number {
   const sign = x < 0 ? -1 : 1;
   const ax = Math.abs(x);

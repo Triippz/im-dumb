@@ -343,7 +343,7 @@ async function judgeCase(options: {
     trials,
     quarantined: false,
   });
-  // ponytail: no trailing baseline file yet — require a clean trial set.
+  // ponytail: no trailing baseline file yet, require a clean trial set.
   const passed = aggregate.overallPasses === aggregate.trialCount;
   return {
     trialCount: aggregate.trialCount,

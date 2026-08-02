@@ -4,7 +4,7 @@ How `im-dumb` is evaluated, and why this design resists the usual ways LLM
 evals get gamed or quietly weakened.
 
 This file is the map. Detailed contracts live next to the artifacts they
-govern — do not duplicate them here.
+govern, do not duplicate them here.
 
 | Artifact | Role |
 |---|---|
@@ -24,14 +24,14 @@ public milestone plans under `docs/plans/` are the shipped contracts.
 
 The skill must change *how* a model answers for one person (vocabulary, jargon
 policy, sentence shape, ADHD structure) and, when confusion is signaled, repair
-that confusion with named candidates — not a vague “what do you mean?”
+that confusion with named candidates, not a vague “what do you mean?”
 
 Evals therefore ask three different questions:
 
-1. **Structure** — Did the reply obey hard, checkable constraints?
-2. **Semantics** — Did it stay true, safe, and useful for the stated persona /
+1. **Structure**, Did the reply obey hard, checkable constraints?
+2. **Semantics**, Did it stay true, safe, and useful for the stated persona /
    repair action?
-3. **Live behavior** — When a real model runs the skill, does it take the
+3. **Live behavior**, When a real model runs the skill, does it take the
    right gate action on the right turns?
 
 Code answers (1). A pinned rubric answers (2). Preserved runtime captures
@@ -49,7 +49,7 @@ golden case ──► Layer 1 checkers (deterministic) ──► must pass first
               runtime harness evidence (live model, immutable)
 ```
 
-### Layer 1 — deterministic checkers
+### Layer 1, deterministic checkers
 
 `src/checkers.ts`, `src/comprehension-gate-checker.ts`, and related CLIs.
 
@@ -75,12 +75,12 @@ Why this layer is “good”:
 
 - **Eval before behavior** (AGENTS invariant 7): cases and rubrics land before
   the skill behavior they gate.
-- **Manifest drift check** — silent case edits fail CI.
-- **Published-case edit rule** — changing an already-merged case needs named
+- **Manifest drift check**, silent case edits fail CI.
+- **Published-case edit rule**, changing an already-merged case needs named
   reviewer sign-off on that id; “it was failing” is not a reason.
-- **False-positive cases** — quoted/code/`huh` boundaries must *not* trigger
+- **False-positive cases**, quoted/code/`huh` boundaries must *not* trigger
   diagnosis; a gate that fires on everything is not a gate.
-- **Turns schema** — multi-turn cases fix `expected_action` and question /
+- **Turns schema**, multi-turn cases fix `expected_action` and question /
   candidate counts so the evaluator cannot invent a softer target after the
   fact.
 
@@ -91,7 +91,7 @@ Why this layer is “good”:
 Why this layer is “good”:
 
 - Dimensions are **separable pass/fail**, not a collapsed ranking.
-- **No ELO / preference aggregation** — psychometric work cited in the product
+- **No ELO / preference aggregation**, psychometric work cited in the product
   requirements found that ranked LLM judges often ignore their own rubrics and
   collapse dimensions into one latent factor.
 - Failures must cite evidence (contradicted fact, unmapped candidate, etc.),
@@ -105,26 +105,25 @@ the bar. An automated multi-trial judge runner is **M3**.
 
 ### Runtime evidence (M2)
 
-`eval/runtime/` — filesystem harness (`capture-m2.ts` / `evaluate-m2.ts`) plus
+`eval/runtime/`, filesystem harness (`capture-m2.ts` / `evaluate-m2.ts`) plus
 preserved attempts under `m2/attempts/`.
 
 Why this layer is “good”:
 
-- **Immutable attempts** — a failing trial is never overwritten. Prompt
+- **Immutable attempts**, a failing trial is never overwritten. Prompt
   changes get a new attempt number; prior failures stay for audit.
-- **No capture editing** — thresholds are not met by trimming assistant text.
-- **Protocol faults ≠ behavior fails** — zero responses / harness bugs are
+- **No capture editing**, thresholds are not met by trimming assistant text.
+- **Protocol faults ≠ behavior fails**, zero responses / harness bugs are
   labeled and may retry the same attempt number only after the fault is fixed.
-- **Predeclared scenario thresholds** — triggers, false positives, second
-  failure, taper, learning, adversarial data — listed in the comprehension
+- **Predeclared scenario thresholds**, triggers, false positives, second
+  failure, taper, learning, adversarial data, listed in the comprehension
   rubric before captures run.
-- **Transcript is data** — embedded “instructions” in user content must not
+- **Transcript is data**, embedded “instructions” in user content must not
   drive tools or rewrite the skill contract.
 
 Honest status: M2 implementation and evidence are in-tree; **automated runtime
 thresholds are not yet passing** on the models tried (see latest
-`m2/attempt-*-outcome.md`). That gap is why runtime acceptance stays open —
-not a reason to weaken fixtures.
+`m2/attempt-*-outcome.md`). That gap is why runtime acceptance stays open, not a reason to weaken fixtures.
 
 ## What CI enforces today
 
@@ -151,12 +150,12 @@ npm run eval:smoke
 ```
 
 Dry-run validates the smoke set, runs Layer 1 when a baseline candidate exists,
-and records `judge: skipped` — no secrets, no network. CI always runs dry-run.
+and records `judge: skipped`, no secrets, no network. CI always runs dry-run.
 
 Live judge (injectable mock in tests; HTTP adapter when pinned):
 
 ```bash
-# requires JUDGE_API_KEY, JUDGE_MODEL, JUDGE_MODEL_VERSION — see .eval.env.example
+# requires JUDGE_API_KEY, JUDGE_MODEL, JUDGE_MODEL_VERSION, see .eval.env.example
 npm run eval:smoke:live
 ```
 

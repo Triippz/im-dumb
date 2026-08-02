@@ -22,7 +22,7 @@ function withProfile(overrides: Partial<Profile>): Profile {
 }
 
 // ---------------------------------------------------------------------------
-// checker id registry (D14: enum consumed by golden-schema.ts)
+// checker id registry
 // ---------------------------------------------------------------------------
 
 test('CHECKER_IDS covers the FR7 checker set', () => {
@@ -42,7 +42,7 @@ test('CHECKER_IDS covers the FR7 checker set', () => {
 });
 
 // ---------------------------------------------------------------------------
-// D7 — sentence cap: segmentation + exclusions
+// sentence cap: segmentation + exclusions
 // ---------------------------------------------------------------------------
 
 test('checkSentenceCap: compliant text (all sentences under cap) has no violations', () => {
@@ -221,7 +221,7 @@ test('checkForbiddenPhrases: reports one violation per distinct phrase, not per 
 });
 
 // ---------------------------------------------------------------------------
-// D5 — one term per concept (lexical, conservative)
+// one term per concept (lexical, conservative)
 // ---------------------------------------------------------------------------
 
 test('checkOneTermOneConcept: no violation when only one term from a concept set is used', () => {
@@ -268,7 +268,7 @@ test('checkOneTermOneConcept: word boundaries prevent a substring false match', 
 });
 
 // ---------------------------------------------------------------------------
-// D9 — output-shape markers + exemptions
+// output-shape markers + exemptions
 // ---------------------------------------------------------------------------
 
 const MULTI_PARAGRAPH_LEAD =
@@ -339,7 +339,7 @@ test('checkOutputShapeMarkers: a marker-shaped line inside a fenced code block d
 });
 
 // ---------------------------------------------------------------------------
-// D10 — ADHD structure heuristics (warn severity)
+// ADHD structure heuristics (warn severity)
 // ---------------------------------------------------------------------------
 
 test('checkAdhdStructure: adhd_mode off never produces violations', () => {
@@ -372,7 +372,7 @@ test('checkAdhdStructure: a multi-paragraph response with no headings or bold-li
   assert.ok(violations.some((v) => /headed segments/.test(v.message)));
 });
 
-test('checkAdhdStructure: D9 bold-line markers satisfy the D10 headed-segment requirement', () => {
+test('checkAdhdStructure: bold-line markers satisfy the headed-segment requirement', () => {
   const profile = withProfile({ adhd_mode: true, output_shape: 'answer-first' });
   const text = ['**Answer**', 'Direct answer up front here as plain prose.', '', '**Why**', 'Supporting detail as a second paragraph.'].join(
     '\n',
@@ -426,7 +426,7 @@ test('checkAdhdStructure: compliant structured response has no violations', () =
 });
 
 // ---------------------------------------------------------------------------
-// D13 — SKILL frontmatter subset checks
+// SKILL frontmatter subset checks
 // ---------------------------------------------------------------------------
 
 function frontmatterDoc(fields: string, body = 'Body text.'): string {

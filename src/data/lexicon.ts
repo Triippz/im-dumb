@@ -1,9 +1,8 @@
-// Curated language data for the deterministic checkers (D5, FR4/FR7).
-// Reviewed like golden data (D5) — additions/removals should be deliberate,
+// Curated language data for the deterministic checkers.
+// Reviewed like golden data, additions/removals should be deliberate,
 // not incidental to unrelated changes.
 
-// Built-in filler/hedging/marketing lexicon (prd.md §5.3: "no hype, filler,
-// marketing tone, or unnecessary hedging/disclaimers"). Overlaps deliberately
+// Built-in filler/hedging/marketing lexicon. Overlaps deliberately
 // with the repo's own caveman skill filler set (just/really/basically/
 // actually/simply) as prior art for what counts as filler in this project.
 export const FILLER_PHRASES: readonly string[] = [
@@ -41,10 +40,10 @@ export const FILLER_PHRASES: readonly string[] = [
   'utilize',
 ] as const;
 
-// Curated synonym sets for the one-term-one-concept checker (D5). Each set is
+// Curated synonym sets for the one-term-one-concept checker. Each set is
 // a group of everyday words that are genuinely interchangeable in general
-// prose — deliberately conservative, since semantic drift belongs to the
-// judge layer (M3), not this lexical check.
+// prose, deliberately conservative, since semantic drift belongs to the
+// judge layer, not this lexical check.
 export const CONCEPT_SYNONYM_SETS: readonly (readonly string[])[] = [
   ['use', 'utilize', 'employ'],
   ['delete', 'remove', 'erase'],

@@ -41,11 +41,11 @@ The model applies the profile while generating the answer. There is no second re
 
 ## What it changes
 
-- **Vocabulary level** (`vocabulary_level`) — `common` everyday words, `technical-ok` standard technical words with plain context, or `expert` established shorthand.
-- **Your structure** — answer first, short sections, controlled sentence length, and examples when they help.
-- **Your jargon policy** — avoid it, define it once, or allow it.
-- **ADHD mode** — restructures long answers into headed chunks with no more than three sibling items. It is a communication preference, not a medical feature.
-- **Comprehension repair** — when something still does not land, the skill names likely confusion points instead of asking a vague “what do you mean?”
+- **Vocabulary level** (`vocabulary_level`), `common` everyday words, `technical-ok` standard technical words with plain context, or `expert` established shorthand.
+- **Your structure**, answer first, short sections, controlled sentence length, and examples when they help.
+- **Your jargon policy**, avoid it, define it once, or allow it.
+- **ADHD mode**, restructures long answers into headed chunks with no more than three sibling items. It is a communication preference, not a medical feature.
+- **Comprehension repair**, when something still does not land, the skill names likely confusion points instead of asking a vague “what do you mean?”
 
 ## How it works
 
@@ -59,7 +59,7 @@ The same profile is designed to travel across Claude Code, Cursor, OpenAI Codex/
 ## Install
 
 > [!IMPORTANT]
-> **Pre-release:** the package is not on npm yet (`private: true` until an owner-authorized npm publication). The M4 installer CLI is implemented in-repo — build locally, then run `node dist/install-cli.js install …`. After publish, the same entrypoint is `npx im-dumb`.
+> **Pre-release:** the package is not on npm yet (`private: true` until an owner-authorized npm publication). The installer CLI is implemented in-repo, build locally, then run `node dist/install-cli.js install …`. After publish, the same entrypoint is `npx im-dumb`.
 
 From a clone:
 
@@ -80,14 +80,14 @@ npx im-dumb install --targets claude,cursor,codex,pi --scope global
 | Cursor | `~/.cursor/skills/` | `.cursor/skills/` or `.agents/skills/` |
 | Codex | `$CODEX_HOME/skills/` (defaults to `~/.codex/skills/`) | Not supported; Codex has no documented project skill root |
 | Pi | `~/.pi/agent/skills/` or `~/.agents/skills/` | `.pi/skills/` or `.agents/skills/` |
-| Claude API / claude.ai | Manual upload | — |
-| OpenAI hosted | Manual upload or local-shell path | — |
+| Claude API / claude.ai | Manual upload | n/a |
+| OpenAI hosted | Manual upload or local-shell path | n/a |
 
 Hosted upload automation is intentionally out of scope for v1 because it would require account credentials.
 
 ### Enhanced mode (optional, Pi only)
 
-Pi can load `dist/pi-extension.js` through the `pi.extensions` field. It appends your active profile to the system prompt on every turn, which keeps the rules from drifting as a conversation grows. It is optional: the skill works the same on every harness without it, and a missing or unreadable profile simply adds nothing. Claude Code, Cursor, and Codex get a weaker session-hook form later — their hooks run before generation, so they are the same class as prompt text.
+Pi can load `dist/pi-extension.js` through the `pi.extensions` field. It appends your active profile to the system prompt on every turn, which keeps the rules from drifting as a conversation grows. It is optional: the skill works the same on every harness without it, and a missing or unreadable profile simply adds nothing. Claude Code, Cursor, and Codex get a weaker session-hook form later, their hooks run before generation, so they are the same class as prompt text.
 
 ## Security
 
@@ -97,16 +97,16 @@ Pi can load `dist/pi-extension.js` through the `pi.extensions` field. It appends
 - The installer only writes local files that you can inspect.
 - Profile paths can be overridden with `IM_DUMB_PROFILE`; profile validation rejects unknown fields on save.
 
-## M1 evaluation status
+## Evaluation status
 
-M1's implementation and evidence-gathering are complete: the profile module and CLI, deterministic checkers, the golden dataset, the judge rubric, 54 manually captured baseline/candidate responses, and two evidence reports:
+The profile module and CLI, deterministic checkers, the golden dataset, and the judge rubric are in place, alongside 54 manually captured baseline/candidate responses and two evidence reports:
 
-- [Token-overhead report](eval/baselines/m1-token-overhead-report.md) — single-trial; corpus aggregate is **-12.56%** against the M1 report-only ceilings, but three individual cases exceed the +60% per-case ceiling.
-- [Live spot-check report](eval/baselines/m1-live-spot-check.md) — **0 of 5** golden cases passed the full judge rubric in a single-trial, manual run.
+- [Token-overhead report](eval/baselines/m1-token-overhead-report.md), single-trial; corpus aggregate is **-12.56%** against the report-only ceilings, but three individual cases exceed the +60% per-case ceiling.
+- [Live spot-check report](eval/baselines/m1-live-spot-check.md), **0 of 5** golden cases passed the full judge rubric in a single-trial, manual run.
 
-Both reports are single-trial and report-only in M1: they are recorded risk, not blocking gates, and not M3 ground truth. This evidence is not a production-readiness signal — M3 adds a multi-trial, variance-aware, blocking evaluation runner before model-scored behavior gates a release.
+Both reports are single-trial and report-only: they are recorded risk, not blocking gates, and not ground truth. This evidence is not a production-readiness signal. Model-scored behavior only gates a release once the multi-trial, variance-aware evaluation runner runs live, which needs judge credentials and is off by default.
 
-How the full stack fits together (Layer 1 checkers, golden dataset, rubrics, M2 runtime evidence) and why those gates are shaped the way they are: [eval/README.md](eval/README.md).
+How the full stack fits together (Layer 1 checkers, golden dataset, rubrics, comprehension-gate runtime evidence) and why those gates are shaped the way they are: [eval/README.md](eval/README.md).
 
 ## Development
 
@@ -121,14 +121,14 @@ npm test
 
 The project uses strict TypeScript, Node’s built-in test runner, Conventional Commit PR titles, and deterministic evaluation fixtures before behavior ships.
 
-## Roadmap
+## What is built
 
-- **M1 — implementation and evidence complete, gates report-only:** profile, language rules, deterministic checkers, golden dataset, and captured evidence (see [M1 evaluation status](#m1-evaluation-status))
-- **M2 — shipped (runtime acceptance open):** comprehension gate and learned gaps
-- **M3 — shipped:** Layer 2 smoke runner, Gate 3 report-only token signal, Gate 4 nightly warn
-- **M4 — shipped:** multi-harness packaging and installer CLI (unpublished until M6)
-- **M5 — phases 1–2 shipped:** profile-aware learning assets (markdown/HTML explainers, HTML slide decks); AV dropped from scope, host integration a stretch goal
-- **M6 — shipped:** release and governance hardening — manual `workflow_dispatch` release, SemVer derived from commit history, changelog generation. No package published yet; that needs an explicit owner-authorized run.
+- **Profile and language rules:** profile schema and CLI, deterministic checkers, golden dataset, captured evidence (see [evaluation status](#evaluation-status)). Prose gates stay report-only.
+- **Comprehension gate:** confusion diagnosis with named candidates, learned gaps. Runtime acceptance is still open: captures are per-model evidence, not a merge gate.
+- **Evaluation stack:** offline smoke runner, report-only token-overhead signal, nightly warn job.
+- **Packaging:** multi-harness installer CLI, unpublished until an owner-authorized npm run.
+- **Learning assets:** markdown and HTML explainers, HTML slide decks. Audio and video are out of scope; a host integration calling an external generator is a stretch goal.
+- **Release and governance:** manual `workflow_dispatch` release, SemVer derived from commit history, changelog generation. No package published yet.
 
 ## Why “im-dumb”?
 

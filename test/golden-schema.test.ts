@@ -33,7 +33,7 @@ function withCase(overrides: Record<string, unknown>): Record<string, unknown> {
 }
 
 // ---------------------------------------------------------------------------
-// D14 — golden case schema validation
+// golden case schema validation
 // ---------------------------------------------------------------------------
 
 test('validateGoldenCase: a fully-populated valid case is valid', () => {
@@ -120,7 +120,7 @@ test('validateGoldenCase: pair_id must be a non-empty string when present', () =
 });
 
 // ---------------------------------------------------------------------------
-// Golden schema v2 (M2 §3) — turns[], categories, action matrix
+// Golden schema v2, turns[], categories, action matrix
 // ---------------------------------------------------------------------------
 
 function userTurn(action: ExpectedAction, extra: Record<string, unknown> = {}): Record<string, unknown> {
@@ -189,13 +189,13 @@ test('golden schema v2: a minimal valid turns case is valid for every action', (
   }
 });
 
-test('golden schema v2: exactly one of prompt/turns is required — both present is invalid', () => {
+test('golden schema v2: exactly one of prompt/turns is required, both present is invalid', () => {
   const result = validateGoldenCase(turnsCase([userTurn('answer'), assistantTurn()], { prompt: 'also has a prompt' }));
   assert.equal(result.valid, false);
   assert.ok(result.errors.some((e) => e.includes('prompt') && e.includes('turns')));
 });
 
-test('golden schema v2: exactly one of prompt/turns is required — neither present is invalid', () => {
+test('golden schema v2: exactly one of prompt/turns is required, neither present is invalid', () => {
   const bad = turnsCase([userTurn('answer'), assistantTurn()]);
   delete (bad as Record<string, unknown>).turns;
   const result = validateGoldenCase(bad);
@@ -209,7 +209,7 @@ test('golden schema v2: turns-only categories reject a prompt-shaped case', () =
   assert.ok(result.errors.some((e) => e.includes('comprehension-gate')));
 });
 
-test('golden schema v2: prompt-only (M1) categories reject a turns-shaped case', () => {
+test('golden schema v2: prompt-only categories reject a turns-shaped case', () => {
   const result = validateGoldenCase(turnsCase([userTurn('answer'), assistantTurn()], { category: 'persona-baseline' }));
   assert.equal(result.valid, false);
   assert.ok(result.errors.some((e) => e.includes('persona-baseline')));
@@ -260,7 +260,7 @@ test('golden schema v2: turns must start with user and end with assistant', () =
   assert.ok(endsUser.errors.some((e) => e.includes('role')));
 });
 
-test('golden schema v2: turns must strictly alternate — two user turns in a row is invalid', () => {
+test('golden schema v2: turns must strictly alternate, two user turns in a row is invalid', () => {
   const result = validateGoldenCase(
     turnsCase([userTurn('answer'), userTurn('answer'), assistantTurn(), assistantTurn()]),
   );
@@ -291,7 +291,7 @@ test('golden schema v2: an unknown field on a turn is invalid', () => {
   assert.ok(result.errors.some((e) => e.includes('unexpected_field')));
 });
 
-// --- action matrix (M2 §3.2) ---------------------------------------------
+// --- action matrix ---------------------------------------------
 
 test('golden schema v2: expected_question_count must exactly match the action matrix', () => {
   const answerWrong = validateGoldenCase(turnsCase([userTurn('answer', { expected_question_count: 1 }), assistantTurn()]));
@@ -480,7 +480,7 @@ test('golden schema v2: v1 prompt-shaped cases remain valid and untouched by the
 });
 
 // ---------------------------------------------------------------------------
-// D14 — pair invariant + case-id uniqueness across a set
+// pair invariant + case-id uniqueness across a set
 // ---------------------------------------------------------------------------
 
 function pairCase(id: string, pairId: string, adhdMode: boolean, extra: Record<string, unknown> = {}): GoldenCase {
@@ -554,7 +554,7 @@ test('validateGoldenCaseSet: duplicate case ids across the set are invalid', () 
 });
 
 // ---------------------------------------------------------------------------
-// D14 — manifest generation + SHA-256 drift verification
+// manifest generation + SHA-256 drift verification
 // ---------------------------------------------------------------------------
 
 const FILE_A = { id: 'case-b', path: 'eval/golden/case-b.json', contents: '{"id":"case-b"}' };

@@ -40,7 +40,7 @@ function main(): void {
   const nextVersion = computeNextVersion(pkg.version, bump);
 
   if (bump === 'none') {
-    console.log(`bump: none (current ${pkg.version}) — nothing to release`);
+    console.log(`bump: none (current ${pkg.version}), nothing to release`);
     process.exitCode = 1;
     return;
   }

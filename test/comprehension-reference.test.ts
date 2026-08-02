@@ -197,7 +197,7 @@ test('reference freezes default and exact JSON diagnosis shapes plus deny sets',
   assert.match(output, /repair` and `direct-repair` contain zero `\?` outside fenced code, inline code, or blockquotes/i);
 });
 
-test('reference freezes output precedence and only the D9/D10 gate exemptions', () => {
+test('reference freezes output precedence and only the gate exemptions', () => {
   assert.deepEqual(lines('precedence'), [
     'explicit user output contract',
     'factual fidelity and safety',
@@ -207,7 +207,7 @@ test('reference freezes output precedence and only the D9/D10 gate exemptions', 
     'tone',
   ]);
   const output = prose('Output contract');
-  assert.match(output, /diagnose`, `rediagnose`, `repair`, and `direct-repair` are exempt from D9 output shape and D10 ADHD structure only/i);
+  assert.match(output, /diagnose`, `rediagnose`, `repair`, and `direct-repair` are exempt from the output-shape rule and the ADHD-structure\s+rule only/i);
   assert.match(output, /sentence cap, forbidden phrases, and one-term-per-concept still apply/i);
   assert.match(output, /format never authorizes false or unsafe content/i);
 });

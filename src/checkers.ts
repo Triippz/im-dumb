@@ -2,7 +2,7 @@ import type { Profile } from './profile.ts';
 import { FILLER_PHRASES, CONCEPT_SYNONYM_SETS } from './data/lexicon.ts';
 
 // ---------------------------------------------------------------------------
-// Checker registry (FR7) — consumed by src/golden-schema.ts (D14) for the
+// Checker registry (FR7), consumed by src/golden-schema.ts for the
 // `expected_checks[].checker` enum. Not every id below has an implementing
 // function in this file: `profile-schema` is src/profile.ts's validate(),
 // `golden-case-schema` is src/golden-schema.ts's validateGoldenCase(),
@@ -34,25 +34,25 @@ export interface Violation {
 }
 
 // ---------------------------------------------------------------------------
-// Tuning constants (D3 — exported typed constants, no config file)
+// Tuning constants
 // ---------------------------------------------------------------------------
 
-/** D7: >10% of prose sentences over the profile's word cap is an error. */
+/** >10% of prose sentences over the profile's word cap is an error. */
 export const SENTENCE_CAP_OVER_RATIO_THRESHOLD = 0.1;
 
-/** D10: at most this many sibling items per list/segment. */
+/** at most this many sibling items per list/segment. */
 export const ADHD_MAX_SIBLINGS = 3;
 
-/** D9/D10: a single paragraph of at most this many sentences is a "simple answer". */
+/** a single paragraph of at most this many sentences is a "simple answer". */
 export const SIMPLE_ANSWER_MAX_SENTENCES = 3;
 
 /** Invariant 4 / NFR3: description must stay strictly under this length. */
 export const DESCRIPTION_MAX_LENGTH = 1024;
 
-/** D12: SKILL.md body word count above this is a warn, never a block. */
+/** SKILL.md body word count above this is a warn, never a block. */
 export const SKILL_BODY_WORD_WARN_THRESHOLD = 1000;
 
-/** D12: drafting target for SKILL.md body word count. */
+/** drafting target for SKILL.md body word count. */
 export const SKILL_BODY_WORD_TARGET = 900;
 
 // ---------------------------------------------------------------------------
@@ -73,11 +73,11 @@ function wordCount(text: string): number {
 
 const LIST_MARKER_PREFIX_RE = /^(?:[-*+]\s+|\d+[.)]\s+)/;
 
-/** D7: prose used for sentence-cap purposes — strips fenced code, inline
+/** prose used for sentence-cap purposes, strips fenced code, inline
  * code, blockquote lines, and heading lines. List markers ("1. ", "- ") are
  * stripped per line (not excluded like headings) so a numbered/bulleted
  * item's own leading digit-period isn't segmented as its own one-word
- * "sentence" — that would dilute the over-cap ratio (D7) and mask real
+ * "sentence", that would dilute the over-cap ratio and mask real
  * violations inside exactly the Steps-style lists ADHD mode favors. */
 function extractProse(text: string): string {
   const withoutFences = text.replace(/```[\s\S]*?```/g, ' ');
@@ -159,7 +159,7 @@ const HEADING_RE = /^#{1,6}\s/;
 const BOLD_LINE_RE = /^\*\*[^*]+\*\*$/;
 const STRUCTURE_START_RE = /^(#{1,6}\s|[-*+]\s|\d+[.)]\s|>|```|\*\*[^*]+\*\*\s*$)/m;
 
-/** D9/D10 shared exemption: a single paragraph of <=3 sentences with no
+/** shared exemption: a single paragraph of <=3 sentences with no
  * heading/list/quote/fence/bold-marker structure. */
 function isSimpleAnswer(text: string): boolean {
   const trimmed = text.trim();
@@ -171,7 +171,7 @@ function isSimpleAnswer(text: string): boolean {
   return sentences.length <= SIMPLE_ANSWER_MAX_SENTENCES;
 }
 
-/** D9: lines inside fenced code blocks or blockquotes, by index. */
+/** lines inside fenced code blocks or blockquotes, by index. */
 function getFenceAndQuoteExcludedLineIndices(lines: string[]): Set<number> {
   const excluded = new Set<number>();
   let inFence = false;
@@ -198,7 +198,7 @@ function truncate(value: string, maxLength: number): string {
 }
 
 // ---------------------------------------------------------------------------
-// D7 — sentence cap
+// sentence cap
 // ---------------------------------------------------------------------------
 
 export function checkSentenceCap(text: string, profile: Profile): Violation[] {
@@ -246,7 +246,7 @@ export function checkForbiddenPhrases(text: string, profile: Profile): Violation
 }
 
 // ---------------------------------------------------------------------------
-// D5 — one term per concept (lexical, conservative)
+// one term per concept (lexical, conservative)
 // ---------------------------------------------------------------------------
 
 export function checkOneTermOneConcept(text: string): Violation[] {
@@ -266,7 +266,7 @@ export function checkOneTermOneConcept(text: string): Violation[] {
 }
 
 // ---------------------------------------------------------------------------
-// D9 — output-shape markers + exemptions
+// output-shape markers + exemptions
 // ---------------------------------------------------------------------------
 
 const MARKER_SEQUENCE = ['Answer', 'Why', 'Steps', 'Example'] as const;
@@ -328,7 +328,7 @@ export function checkOutputShapeMarkers(text: string, profile: Profile): Violati
 }
 
 // ---------------------------------------------------------------------------
-// D10 — ADHD structure heuristics (warn severity)
+// ADHD structure heuristics (warn severity)
 // ---------------------------------------------------------------------------
 
 export function checkAdhdStructure(text: string, profile: Profile): Violation[] {
@@ -389,7 +389,7 @@ export function checkAdhdStructure(text: string, profile: Profile): Violation[] 
 }
 
 // ---------------------------------------------------------------------------
-// D13 — SKILL.md frontmatter subset checks
+// SKILL.md frontmatter subset checks
 // ---------------------------------------------------------------------------
 
 export interface FrontmatterCheckOptions {
@@ -520,7 +520,7 @@ export function checkSkillFrontmatter(content: string, options: FrontmatterCheck
 }
 
 // ---------------------------------------------------------------------------
-// M5 — learning-asset structure (Layer 1, structural only; semantic quality
+// Learning-asset structure (Layer 1, structural only; semantic quality
 // stays with the Layer 2 judge)
 // ---------------------------------------------------------------------------
 
@@ -529,7 +529,7 @@ export type AssetFormat = 'markdown' | 'html' | 'slides';
 const PROFILE_APPLIED_RE = /profile applied/i;
 const SLIDE_SECTION_RE = /<section\b[^>]*class=["'][^"']*\bslide\b/gi;
 
-/** M5 phase 2: two slides is the minimum that makes a deck a deck. */
+/** Two slides is the minimum that makes a deck a deck. */
 export const MIN_DECK_SLIDES = 2;
 
 export function detectAssetFormat(asset: string): AssetFormat {

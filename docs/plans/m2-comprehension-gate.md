@@ -1,6 +1,6 @@
-# M2 implementation plan — comprehension gate
+# M2 implementation plan, comprehension gate
 
-Revision 2 — architecture and eval contract frozen before behavior.
+Revision 2, architecture and eval contract frozen before behavior.
 
 This plan implements `prd.md` §6 and §9.7 under ADR-001 and the invariants in
 `AGENTS.md`. It incorporates the independent Fable and Sol reviews of Revision
@@ -378,7 +378,7 @@ caller-owned lock or temp artifact may leak after success or failure.
 The lock serializes physical writers. `learn` additionally provides semantic
 CAS for learned-gap updates. Generic `save` remains an intentional whole
 profile replacement under its existing public contract; callers that save a
-stale full document can still replace newer logical values. M2 runtime gap
+stale full document can still replace newer logical values. comprehension-gate runtime gap
 learning never uses generic `save`, and this limitation is recorded rather
 than overstating distributed/exactly-once safety.
 
@@ -451,18 +451,18 @@ Before any `SKILL.md` gate behavior, add a versioned comprehension rubric
 (additive to `eval/rubric.md` or a linked `eval/comprehension-rubric.md`). It
 scores these raw dimensions independently:
 
-1. **Candidate specificity** — each option names a concrete term, step,
+1. **Candidate specificity**, each option names a concrete term, step,
    assumption, or framing from the prior answer.
-2. **Candidate relevance/coverage** — options are plausible and materially
+2. **Candidate relevance/coverage**, options are plausible and materially
    distinct, not generic labels or paraphrases of one guess.
-3. **Targeted repair correctness** — the selected/direct repair correctly
+3. **Targeted repair correctness**, the selected/direct repair correctly
    addresses the confirmed or selected gap rather than using a strategy for a
-   different gap. M1 factual fidelity and safety remain scored once under
+   different gap. Factual fidelity and safety remain scored once under
    `eval/rubric.md`; that independent result is a prerequisite and is not
    superseded or re-scored here.
-4. **Widened rediagnosis** — after a second failure, the search changes or
+4. **Widened rediagnosis**, after a second failure, the search changes or
    broadens rather than leading with the failed guess again.
-5. **Hard-constraint compliance** — 2–4 candidates where required, question
+5. **Hard-constraint compliance**, 2–4 candidates where required, question
    count, no bare re-ask, second-failure override, and requested format.
 
 Use the existing judge scale conventions, pinned distinct judge model,
@@ -490,7 +490,7 @@ fixtures cover:
 Existing v1 case files and hashes remain byte-identical unless the documented
 reviewer sign-off process explicitly approves a correction.
 
-## 8. Fixed M2 runtime capture protocol
+## 8. Fixed comprehension-gate runtime capture protocol
 
 Before M2 exit, capture one fresh, uninterrupted run for each named scenario
 through one supported filesystem harness. Do not reroll model failures;
@@ -647,5 +647,5 @@ without explicit approval.
 
 Residual risk remains explicit: model-driven trigger application, semantic
 same-topic judgment, gap matching, and repair quality are probabilistic. The
-M2 captures are a blocking smoke protocol, not statistical proof; M3 supplies
+runtime captures are a blocking smoke protocol, not statistical proof; M3 supplies
 multi-trial judge and held-out evaluation.

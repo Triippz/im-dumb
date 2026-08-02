@@ -37,7 +37,7 @@ const CLEAN_TEXT = 'Restart the service. It picks up the new config right away.'
 const FORBIDDEN_TEXT = 'Just restart the service and it will pick up the new config.';
 
 // ---------------------------------------------------------------------------
-// parseArgs — minimal CLI contract
+// parseArgs, minimal CLI contract
 // ---------------------------------------------------------------------------
 
 test('parseArgs: no arguments parses to defaults', () => {
@@ -69,7 +69,7 @@ test('parseArgs: unrecognized flag is a parse error', () => {
 });
 
 // ---------------------------------------------------------------------------
-// runChecks dispatch — D8 severity downgrade in --skill-doc mode
+// runChecks dispatch, severity downgrade in --skill-doc mode
 // ---------------------------------------------------------------------------
 
 test('runChecks: default mode dispatches language checkers as errors, never runs frontmatter', () => {
@@ -96,7 +96,7 @@ test('runChecks: --skill-doc mode keeps structural frontmatter errors blocking e
 });
 
 // ---------------------------------------------------------------------------
-// Output formatting — deterministic JSON and human modes
+// Output formatting, deterministic JSON and human modes
 // ---------------------------------------------------------------------------
 
 test('formatJson: no violations', () => {
@@ -255,7 +255,7 @@ test('CLI: --profile with an unsupported future schema_version is a bad invocati
 
 // ---------------------------------------------------------------------------
 // Direct execution of the compiled dist/check-cli.js, from a directory with
-// no node_modules -- the dependency-free smoke test (D4 / plan acceptance).
+// no node_modules -- the dependency-free smoke test.
 // ---------------------------------------------------------------------------
 
 describe('compiled dist/check-cli.js execution', () => {
@@ -297,7 +297,7 @@ describe('compiled dist/check-cli.js execution', () => {
     assert.equal(result.status, 0, `stderr: ${result.stderr}`);
   });
 
-  // Step 10 (M1 plan) — Layer 1 SKILL.md structural check, run against the
+  // Step 10, Layer 1 SKILL.md structural check, run against the
   // real, committed skill/im-dumb/SKILL.md via the compiled CLI, from a
   // directory with no node_modules (dependency-free + Layer 1 in one test).
   test('runs --file --skill-doc against the real, committed SKILL.md from a directory with no node_modules, zero blocking errors', () => {

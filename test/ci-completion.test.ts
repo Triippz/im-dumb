@@ -15,8 +15,7 @@ function readText(relPath: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// M1 Step 10 — CI completion (docs/plans/m1-profile-and-language-rules.md,
-// Step 10 / D4 / D8 / D14 / D15). These are contract tests over package.json
+// M1 Step 10, CI completion. These are contract tests over package.json
 // and .github/workflows/ci.yml text, not re-tests of checker/golden logic
 // (covered elsewhere) -- they exist so the CI wiring itself can't silently
 // drift or get deleted without a test failing.

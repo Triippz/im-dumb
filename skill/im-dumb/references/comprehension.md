@@ -194,7 +194,8 @@ Exact JSON keeps the strict schema above. Under any other explicit format, keep
 2–4 named candidates and at most one question; only Markdown structure is
 exempt. `repair` and `direct-repair` contain zero `?` outside fenced code,
 inline code, or blockquotes. `diagnose`, `rediagnose`, `repair`, and
-`direct-repair` are exempt from D9 output shape and D10 ADHD structure only.
+`direct-repair` are exempt from the output-shape rule and the ADHD-structure
+rule only.
 The sentence cap, forbidden phrases,
 and one-term-per-concept still apply.
 

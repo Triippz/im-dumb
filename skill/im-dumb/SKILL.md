@@ -78,8 +78,8 @@ Apply these using the loaded profile or schema defaults in memory:
 
 When `adhd_mode` is true, restructure the response; do not merely shorten it.
 Lead with the direct answer, group detail into headed segments, and keep at
-most 3 sibling items in any list or segment. A simple answer—a single
-paragraph of 3 sentences or fewer—is exempt.
+most 3 sibling items in any list or segment. A simple answer, a single
+paragraph of 3 sentences or fewer, is exempt.
 
 ## Output shape
 
@@ -95,8 +95,8 @@ code-only. That format request outranks the skill's shape. With
 `output_shape: narrative`, use no markers unless ADHD mode overrides narrative
 as described below.
 
-For a complex topic—3 or more new terms needing definition, a multi-step
-causal chain, or a decision with trade-offs—put `Plain:` first and
+For a complex topic, meaning 3 or more new terms needing definition, a
+multi-step causal chain, or a decision with trade-offs, put `Plain:` first and
 `Technical:` second inside the same outer marker sequence. Never create a separate outer sequence for each version. 
 ## Conflict precedence
 

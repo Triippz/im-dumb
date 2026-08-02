@@ -13,7 +13,7 @@ import {
 import { DEFAULT_PROFILE, validate, type Profile } from './profile.ts';
 
 // ---------------------------------------------------------------------------
-// Step 4 (M1 plan) — checker CLI. Minimal contract:
+// Step 4, checker CLI. Minimal contract:
 //   input:  --file <path> or stdin
 //   flags:  --profile <path>, --skill-doc, --json
 //   output: stdout = human text, or JSON with --json (machine-safe, one line)
@@ -107,7 +107,7 @@ function readProfileArg(profilePath: string | undefined): ReadProfileResult {
   return { ok: true, profile, warnings };
 }
 
-// D8: structural frontmatter errors always block; language-checker errors
+// structural frontmatter errors always block; language-checker errors
 // downgrade to warn in --skill-doc mode (mention-vs-use), never the reverse.
 export function runChecks(text: string, profile: Profile, skillDoc: boolean): Violation[] {
   const languageViolations: Violation[] = [

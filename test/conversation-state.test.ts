@@ -50,7 +50,7 @@ test('taper threshold is exported as the frozen prompt/runtime value', () => {
 });
 
 // ---------------------------------------------------------------------------
-// §5 row 1 — normal + first confusion, no clear >=0.75 type -> diagnose/diagnosed
+// §5 row 1, normal + first confusion, no clear >=0.75 type -> diagnose/diagnosed
 // ---------------------------------------------------------------------------
 
 test('normal + confusion with no known gaps -> diagnose/diagnosed', () => {
@@ -82,7 +82,7 @@ test('normal + confusion with all four recognized types qualifying -> diagnose (
 });
 
 // ---------------------------------------------------------------------------
-// §5 row 2 — normal + first confusion, exactly one clear type at >=0.75 ->
+// §5 row 2, normal + first confusion, exactly one clear type at >=0.75 ->
 // direct-repair/repaired with gap
 // ---------------------------------------------------------------------------
 
@@ -158,7 +158,7 @@ test('invalid confidence and unknown clear mappings never qualify for taper', ()
 });
 
 // ---------------------------------------------------------------------------
-// §5 row 3 — diagnosed + candidate selection -> repair/repaired with selected gap
+// §5 row 3, diagnosed + candidate selection -> repair/repaired with selected gap
 // ---------------------------------------------------------------------------
 
 test('diagnosed + candidate-selected -> repair/repaired with the selected gap', () => {
@@ -185,7 +185,7 @@ test('candidate-selected outside diagnosed is rejected, not invented, from norma
 });
 
 // ---------------------------------------------------------------------------
-// §5 row 4 — diagnosed + another confusion signal -> full wider rediagnosis
+// §5 row 4, diagnosed + another confusion signal -> full wider rediagnosis
 // ---------------------------------------------------------------------------
 
 test('diagnosed + confusion -> rediagnose/diagnosed, with no gap and no failed gap to expose', () => {
@@ -199,7 +199,7 @@ test('diagnosed + confusion never tapers into direct-repair, even when a type wo
 });
 
 // ---------------------------------------------------------------------------
-// §5 row 5 — repaired + another confusion signal -> full wider rediagnosis,
+// §5 row 5, repaired + another confusion signal -> full wider rediagnosis,
 // even at confidence 1.0, exposing the failed gap for a later paired update
 // ---------------------------------------------------------------------------
 
@@ -249,7 +249,7 @@ test('failed gap survives rediagnosis, candidate selection, and repair success f
 });
 
 // ---------------------------------------------------------------------------
-// §5 row 6 — any active state + explicit repair success -> record-resolution,
+// §5 row 6, any active state + explicit repair success -> record-resolution,
 // then normal
 // ---------------------------------------------------------------------------
 
@@ -279,7 +279,7 @@ test('repair-success cannot resolve a gap different from the one just repaired',
 });
 
 // ---------------------------------------------------------------------------
-// §5 row 7 — new-task/topic-change/session-reset from any state -> answer/normal
+// §5 row 7, new-task/topic-change/session-reset from any state -> answer/normal
 // ---------------------------------------------------------------------------
 
 test('reset from any phase, for every reset source, returns answer/normal with no leftover active gap', () => {
@@ -342,12 +342,12 @@ test('every phase/event combination is total: always returns ok:true or ok:false
 });
 
 // ---------------------------------------------------------------------------
-// Fixture replay — the module reproduces the exact expected_action/
+// Fixture replay, the module reproduces the exact expected_action/
 // expected_gap_type sequence committed in eval/golden/cases for every
 // comprehension-gate/profile-adaptation case that exercises the gate. Each
 // replay supplies the event a model would have decided (confusion/reset/
 // ordinary/selection/success); it does not re-derive that decision from raw
-// text, since that classification is the reference classifier's job (§2),
+// text, since that classification is the reference classifier's job,
 // not this module's.
 // ---------------------------------------------------------------------------
 
@@ -529,7 +529,7 @@ test('fixture replay: profile-adaptation-success-reset -> direct-repair, resolut
   assert.equal(resolutionResult.action, resolution!.expected_action);
   assert.deepEqual(resolutionResult.state, { phase: 'normal' });
 
-  // Simulates the profile after learn recorded the +0.25 confirmation (§4.1):
+  // Simulates the profile after learn recorded the +0.25 confirmation:
   // term now sits at confidence 1, so the very next confusion signal tapers
   // again instead of re-diagnosing.
   const secondResult = expectOk(

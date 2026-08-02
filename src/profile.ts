@@ -15,7 +15,7 @@ import { randomUUID } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 
 // ---------------------------------------------------------------------------
-// Types (prd.md / m1-profile-and-language-rules.md §3 — profile schema v1)
+// Types
 // ---------------------------------------------------------------------------
 
 export type VocabularyLevel = 'common' | 'technical-ok' | 'expert';
@@ -154,7 +154,7 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 }
 
 // ---------------------------------------------------------------------------
-// Field validators — each returns the value to use, pushing a warning (load)
+// Field validators, each returns the value to use, pushing a warning (load)
 // or an error (save) when the supplied value is present but invalid. A
 // *missing* field always warns and defaults, in both modes (FR3).
 // ---------------------------------------------------------------------------
@@ -342,8 +342,8 @@ function readLearningAssetPreferences(
 }
 
 // ---------------------------------------------------------------------------
-// validate() — single entry point for both lenient load-time and strict
-// save-time validation (D15).
+// validate(), single entry point for both lenient load-time and strict
+// save-time validation.
 // ---------------------------------------------------------------------------
 
 export function validate(raw: unknown, mode: ValidationMode): ValidateOutcome {
@@ -406,7 +406,7 @@ export function validate(raw: unknown, mode: ValidationMode): ValidateOutcome {
 }
 
 // ---------------------------------------------------------------------------
-// Path resolution (D15 — IM_DUMB_PROFILE is a filesystem path only)
+// Path resolution: IM_DUMB_PROFILE is a filesystem path only
 // ---------------------------------------------------------------------------
 
 function resolveProfilePath(): { profilePath: string; fromEnv: boolean } {
@@ -444,7 +444,7 @@ function readProfileFile(): ReadProfileFileOutcome {
 }
 
 // ---------------------------------------------------------------------------
-// Shared profile-writer lock + atomic replacement (M2 §4.3)
+// Shared profile-writer lock + atomic replacement
 // ---------------------------------------------------------------------------
 
 interface LockRecord {
@@ -968,7 +968,7 @@ export function learn(input: unknown): LearnGapOutcome {
 }
 
 // ---------------------------------------------------------------------------
-// CLI entry (D15 stream/exit contract): stdout = JSON only, stderr = warnings.
+// CLI entry: stdout = JSON only, stderr = warnings.
 // load  -> exit 0 {profile, warnings} | exit 1 {error}
 // validate -> exit 0 {valid: true, profile, warnings} | exit 1 {valid: false, ...}
 // save  -> exit 0 {profile, warnings} | exit 1 {error, ...}

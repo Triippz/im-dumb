@@ -59,7 +59,7 @@ hidden sample values with the values returned by `load` before saving.
 ## No-script fallback
 
 If the script cannot run because no shell is available, output the same
-complete, schema-shaped JSON object—not free-form notes. Tell the user to save
+complete, schema-shaped JSON object, not free-form notes. Tell the user to save
 it at the exact path: `~/.im-dumb/profile.json`, or the `IM_DUMB_PROFILE` path
 when set. Do not claim it was saved. Tell them to run
 `node scripts/profile.js validate` when a shell becomes available.

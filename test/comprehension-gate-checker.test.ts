@@ -46,7 +46,7 @@ test('CHECKER_IDS includes versioned comprehension-gate', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Frozen deny sets (§3.3) — exact contract
+// Frozen deny sets, exact contract
 // ---------------------------------------------------------------------------
 
 test('frozen generic-label deny set is exactly the three specified labels', () => {
@@ -65,7 +65,7 @@ test('DIAGNOSIS_HEADING is the exact frozen heading line', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Golden path — default format diagnose/rediagnose
+// Golden path, default format diagnose/rediagnose
 // ---------------------------------------------------------------------------
 
 test('checkComprehensionGate: compliant default diagnosis (3 candidates) has zero violations', () => {
@@ -445,12 +445,12 @@ test('checkComprehensionGate: leading, trailing, and indented structural whitesp
 });
 
 // ---------------------------------------------------------------------------
-// D9/D10 exemption is out of scope for this checker — no assertions needed
+// output-shape and ADHD exemption is out of scope for this checker, no assertions needed
 // here since this slice only implements the comprehension-gate checker.
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
-// Machine (exact JSON) format — diagnose/rediagnose
+// Machine (exact JSON) format, diagnose/rediagnose
 // ---------------------------------------------------------------------------
 
 test('checkComprehensionGate: compliant machine-format diagnosis has zero violations', () => {
@@ -602,7 +602,7 @@ test('checkComprehensionGate: machine format markdown heading/bullets are exempt
 });
 
 // ---------------------------------------------------------------------------
-// repair / direct-repair — zero questions, no diagnosis structure required
+// repair / direct-repair, zero questions, no diagnosis structure required
 // ---------------------------------------------------------------------------
 
 test('checkComprehensionGate: repair with zero "?" and no diagnosis structure has zero violations', () => {
@@ -656,7 +656,7 @@ test('checkComprehensionGate: direct-repair is exempt from candidate/heading str
 });
 
 // ---------------------------------------------------------------------------
-// Violation shape — checker id + severity
+// Violation shape, checker id + severity
 // ---------------------------------------------------------------------------
 
 test('checkComprehensionGate: every violation reports checker "comprehension-gate" and severity "error"', () => {
@@ -672,14 +672,14 @@ test('checkComprehensionGate: every violation reports checker "comprehension-gat
 });
 
 // ---------------------------------------------------------------------------
-// False positives — realistic well-formed inputs across all four actions
+// False positives, realistic well-formed inputs across all four actions
 // ---------------------------------------------------------------------------
 
-test('checkComprehensionGate: false positive check — realistic diagnose response is clean', () => {
+test('checkComprehensionGate: false positive check, realistic diagnose response is clean', () => {
   assert.deepEqual(checkComprehensionGate(goodDiagnosis(), opts({ action: 'diagnose' })), []);
 });
 
-test('checkComprehensionGate: false positive check — realistic rediagnose response is clean', () => {
+test('checkComprehensionGate: false positive check, realistic rediagnose response is clean', () => {
   const text = [
     '**Likely confusion points**',
     '- **event ordering**: whether the handler fires before or after the commit',
@@ -690,13 +690,13 @@ test('checkComprehensionGate: false positive check — realistic rediagnose resp
   assert.deepEqual(checkComprehensionGate(text, opts({ action: 'rediagnose' })), []);
 });
 
-test('checkComprehensionGate: false positive check — realistic repair response with rhetorical-free prose is clean', () => {
+test('checkComprehensionGate: false positive check, realistic repair response with rhetorical-free prose is clean', () => {
   const text =
     'A cache invalidation happens the moment the write commits, not on a timer. That is why you saw the old value for zero seconds instead of the 30 you expected.';
   assert.deepEqual(checkComprehensionGate(text, opts({ action: 'repair' })), []);
 });
 
-test('checkComprehensionGate: false positive check — realistic direct-repair response is clean', () => {
+test('checkComprehensionGate: false positive check, realistic direct-repair response is clean', () => {
   const text =
     'The `retries` flag counts total attempts, including the first one. Setting it to 3 means at most 2 retries after the initial call.';
   assert.deepEqual(checkComprehensionGate(text, opts({ action: 'direct-repair' })), []);

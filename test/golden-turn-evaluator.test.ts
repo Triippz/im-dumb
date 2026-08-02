@@ -233,7 +233,7 @@ test('golden-turn evaluator: a declared gate checker is exempt on non-gate pairs
   assert.equal(report.exemptionCounts['comprehension-gate'], 1);
 });
 
-test('golden-turn evaluator: D9/D10 are exempt for gate actions or machine format only', () => {
+test('golden-turn evaluator: output shape and ADHD structure are exempt for gate actions or machine format only', () => {
   const checks = [
     { checker: 'output-shape', expect: 'pass' },
     { checker: 'adhd-structure', expect: 'pass' },
