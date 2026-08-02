@@ -1,10 +1,10 @@
 # cross-harness reset — research plan
 
-Status: **steps 1–6 shipped** (#42, #43, #44). Script paths are rewritten after
-install, installed trees are verified across the four native roots, Codex
-installs globally, the fixture-specific prompt steering is reverted, and the
-cohort is per-model evidence behind a `k`-of-`n` threshold, and Pi has an
-optional enhanced mode.
+Status: **steps 1–6 shipped** (#42, #43, #44, #46). Script paths are rewritten
+after install, installed trees are verified across the four native roots, Codex
+installs globally, the fixture-specific prompt steering is reverted, the cohort
+is per-model evidence behind a `k`-of-`n` threshold, and Pi has an optional
+enhanced mode.
 
 Scope: answer the six questions in `/tmp/im-dumb-handoff-cross-harness.md` §3
 with local, citable evidence, and propose the compatibility matrix that §4
