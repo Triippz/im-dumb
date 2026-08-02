@@ -100,6 +100,20 @@ npx im-dumb install --targets claude,cursor,codex,pi --scope global
 
 Hosted upload automation is intentionally out of scope for v1 because it would require account credentials.
 
+### Turn it on for a repo
+
+Installing puts the skill in a skill root, and every harness decides per turn whether to load a skill from its description. On a plain question it may never load, which reads as the skill doing nothing. Rule files do not work that way: they are in context on every turn.
+
+```bash
+im-dumb init                 # writes into the current repo
+im-dumb init --dry-run       # show what it would write
+im-dumb init --only agents   # or --only cursor
+```
+
+That writes `.cursor/rules/im-dumb.mdc` with `alwaysApply: true`, and appends a short block to `AGENTS.md`, which Claude Code, Codex, and Pi all read. The block points at `profile.js load` rather than copying your profile values in, so it never goes stale when the profile changes.
+
+Re-running is safe. A file that already carries the block is left alone, and a rule file you edited yourself is skipped unless you pass `--force`.
+
 ### Enhanced mode (always on, Pi only)
 
 Installing the skill copies files into a skill root. That makes the skill *available*, not *active*: every harness loads a skill only when the model decides the request matches its description, so on a plain question it may never load at all.
