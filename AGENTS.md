@@ -38,6 +38,7 @@ There is no separate `installer/` package directory, the CLI lives in `src/insta
 - Idempotent: detects existing install, diffs `metadata.version`, upgrades, repairs, or skips, never duplicates.
 - Shared-directory aware: when `.agents/skills/` exists (or `--prefer-agents`), cursor+pi write once there; Claude and Codex still use native roots.
 - Out of scope v1: automated upload to Claude API `/v1/skills` or OpenAI hosted skills (manual step, documented).
+- `im-dumb init` writes per-repo always-on rule files (`.cursor/rules/im-dumb.mdc` with `alwaysApply: true`, plus an appended block in `AGENTS.md`). Skills load per turn at the model's discretion; rule files do not, so this is what makes the profile apply without the skill being selected. The rule body points at `profile.js load` and never materializes profile values, so it cannot go stale. Idempotent by a sentinel string, and a user-edited rule file is skipped without `--force`.
 
 ## Enhanced mode (optional, Pi only)
 

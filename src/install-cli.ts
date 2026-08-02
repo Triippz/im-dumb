@@ -13,11 +13,15 @@ import {
   type HarnessId,
   type InstallScope,
 } from './harness-detect.ts';
+import { initRules, parseRuleTargets, type RuleTargetId } from './init-rules.ts';
 import { installSkill, resolveSkillPackageDir } from './install.ts';
 import { load as loadProfile } from './profile.ts';
 
 export interface InstallCliArgs {
-  command: 'install' | 'help';
+  command: 'install' | 'init' | 'help';
+  dryRun: boolean;
+  force: boolean;
+  only: RuleTargetId[] | null;
   targets: HarnessId[] | null;
   scope: InstallScope;
   preferAgents: boolean;
@@ -47,15 +51,18 @@ export function parseInstallCliArgs(
   const isTTY = defaults.isTTY ?? Boolean(process.stdin.isTTY);
 
   let command: InstallCliArgs['command'] = 'install';
+  let dryRun = false;
+  let force = false;
+  let only: RuleTargetId[] | null = null;
   let targets: HarnessId[] | null = null;
   let scope: InstallScope = 'global';
   let preferAgents = false;
   let json = false;
 
   const args = [...argv];
-  if (args[0] === 'install' || args[0] === 'help' || args[0] === '--help' || args[0] === '-h') {
+  if (args[0] === 'install' || args[0] === 'init' || args[0] === 'help' || args[0] === '--help' || args[0] === '-h') {
     const head = args.shift()!;
-    command = head === 'install' ? 'install' : 'help';
+    command = head === 'install' || head === 'init' ? head : 'help';
   }
   if (args.includes('--help') || args.includes('-h')) {
     command = 'help';
@@ -73,6 +80,20 @@ export function parseInstallCliArgs(
     }
     if (arg === '--prefer-agents') {
       preferAgents = true;
+      continue;
+    }
+    if (arg === '--dry-run') {
+      dryRun = true;
+      continue;
+    }
+    if (arg === '--force') {
+      force = true;
+      continue;
+    }
+    if (arg === '--only') {
+      const value = args[++i];
+      if (!value) throw new Error('--only requires a value');
+      only = parseRuleTargets(value);
       continue;
     }
     if (arg === '--scope') {
@@ -100,6 +121,9 @@ export function parseInstallCliArgs(
 
   return {
     command,
+    dryRun,
+    force,
+    only,
     targets,
     scope,
     preferAgents,
@@ -115,6 +139,10 @@ export function usage(): string {
     'Usage:',
     '  im-dumb install [--targets claude,cursor,codex,pi] [--scope global|project] [--prefer-agents] [--json]',
     '  im-dumb install   # interactive when TTY',
+    '  im-dumb init [--only cursor,agents] [--dry-run] [--force] [--json]',
+    '',
+    'init writes always-on rule files into the current repo, so the profile applies',
+    'without waiting for the skill to be selected for a turn.',
     '  --home <path>       # test a different home directory',
     '',
     'Codex installs into .codex/skills for local Codex sessions.',
@@ -133,6 +161,25 @@ export async function runInstallCli(
   if (args.command === 'help') {
     log(usage());
     return { exitCode: 0, results: null };
+  }
+
+  if (args.command === 'init') {
+    const results = initRules({
+      projectRoot: args.projectRoot,
+      profileScript: path.join(resolveSkillPackageDir(), 'scripts', 'profile.js'),
+      dryRun: args.dryRun,
+      force: args.force,
+      only: args.only ?? undefined,
+    });
+    if (args.json) {
+      log(JSON.stringify({ projectRoot: args.projectRoot, results }, null, 2));
+    } else {
+      for (const item of results) log(`${item.id}: ${item.action} → ${item.file}`);
+      if (!loadProfile().ok) {
+        log('no profile yet, so answers stay unchanged: ask your agent to "set up im-dumb"');
+      }
+    }
+    return { exitCode: 0, results };
   }
 
   const detected = detectHarnesses({
