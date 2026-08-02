@@ -514,8 +514,10 @@ ships on the matrix.
    and `references/comprehension.md`; `test/comprehension-reference.test.ts` and
    `test/skill.test.ts` assert the generalized forms from §5.2. Body is 871
    words, reference down 37 lines.
-5. **Reframe the cohort** (§5.4) — code retained, policy and threshold changed,
-   `eval/runtime/README.md` rewritten to call it per-model evidence.
+5. **Reframe the cohort** (§5.4) — implemented. `hardPass` is now
+   `cleanTrials`/`meetsThreshold` at `M2_CLEAN_TRIALS_REQUIRED` of
+   `M2_COHORT_SIZE`; `eval/runtime/README.md` calls it per-model evidence and
+   names the compatibility matrix as the release gate.
 6. **Optional, later:** Pi extension for enhanced mode (§4.2), following
    ponytail's `pi-extension/index.js` shape. Never a correctness prerequisite.
 

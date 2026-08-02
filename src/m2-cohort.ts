@@ -1,4 +1,5 @@
 export const M2_COHORT_SIZE = 5;
+export const M2_CLEAN_TRIALS_REQUIRED = 4;
 export const M2_SEMANTIC_PASSES_REQUIRED = 4;
 
 export interface M2CohortTrial {
@@ -11,9 +12,9 @@ export interface M2CohortTrial {
 
 export interface M2CohortResult {
   attempts: number[];
-  hardPass: boolean;
+  cleanTrials: number;
   semanticPasses: number;
-  accepted: boolean;
+  meetsThreshold: boolean;
 }
 
 /** Aggregates a predeclared, immutable five-attempt cohort; no sample selection. */
@@ -26,14 +27,14 @@ export function evaluateM2Cohort(trials: readonly M2CohortTrial[]): M2CohortResu
     throw new Error('M2 cohort attempts must be unique integers');
   }
 
-  const hardPass = trials.every((trial) =>
+  const cleanTrials = trials.filter((trial) =>
     trial.allThresholdsPass && trial.proseErrorCount === 0 && trial.suspiciousAttemptCount === 0,
-  );
+  ).length;
   const semanticPasses = trials.filter((trial) => trial.semanticPass).length;
   return {
     attempts,
-    hardPass,
+    cleanTrials,
     semanticPasses,
-    accepted: hardPass && semanticPasses >= M2_SEMANTIC_PASSES_REQUIRED,
+    meetsThreshold: cleanTrials >= M2_CLEAN_TRIALS_REQUIRED && semanticPasses >= M2_SEMANTIC_PASSES_REQUIRED,
   };
 }

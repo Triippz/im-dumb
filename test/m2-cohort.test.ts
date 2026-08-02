@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { evaluateM2Cohort } from '../src/m2-cohort.ts';
+import { M2_CLEAN_TRIALS_REQUIRED, M2_COHORT_SIZE, evaluateM2Cohort } from '../src/m2-cohort.ts';
 
 const passing = (attempt: number, semanticPass = true) => ({
   attempt,
@@ -11,21 +11,34 @@ const passing = (attempt: number, semanticPass = true) => ({
   semanticPass,
 });
 
-test('M2 cohort accepts five hard passes with four semantic passes', () => {
+test('M2 cohort meets the threshold with four clean trials and four semantic passes', () => {
   const result = evaluateM2Cohort([passing(40), passing(41), passing(42), passing(43), passing(44, false)]);
-  assert.equal(result.hardPass, true);
+  assert.equal(result.cleanTrials, 5);
   assert.equal(result.semanticPasses, 4);
-  assert.equal(result.accepted, true);
+  assert.equal(result.meetsThreshold, true);
 });
 
-test('M2 cohort rejects a hard failure or fewer than four semantic passes', () => {
-  assert.equal(evaluateM2Cohort([
-    passing(40), passing(41), passing(42), passing(43, false), passing(44, false),
-  ]).accepted, false);
-  assert.equal(evaluateM2Cohort([
+test('M2 cohort tolerates one unclean trial but not two', () => {
+  assert.equal(M2_CLEAN_TRIALS_REQUIRED, 4);
+  assert.equal(M2_COHORT_SIZE, 5);
+  const oneUnclean = evaluateM2Cohort([
     passing(40), passing(41), passing(42), passing(43),
     { ...passing(44), proseErrorCount: 1 },
-  ]).accepted, false);
+  ]);
+  assert.equal(oneUnclean.cleanTrials, 4);
+  assert.equal(oneUnclean.meetsThreshold, true);
+
+  assert.equal(evaluateM2Cohort([
+    passing(40), passing(41), passing(42),
+    { ...passing(43), allThresholdsPass: false },
+    { ...passing(44), suspiciousAttemptCount: 1 },
+  ]).meetsThreshold, false);
+});
+
+test('M2 cohort rejects fewer than four semantic passes', () => {
+  assert.equal(evaluateM2Cohort([
+    passing(40), passing(41), passing(42), passing(43, false), passing(44, false),
+  ]).meetsThreshold, false);
 });
 
 test('M2 cohort rejects a malformed trial set', () => {
