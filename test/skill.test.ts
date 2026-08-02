@@ -69,7 +69,7 @@ function assertOrder(text: string, needles: readonly string[], label: string): v
 
 const { frontmatterText, body } = splitFrontmatterAndBody(skillMdContent);
 
-// Frontmatter and D12.
+// Frontmatter and the body word budget.
 test('skill directory, frontmatter name, description, and version satisfy the shared contract', () => {
   assert.equal(extractTopLevel(frontmatterText, 'name'), path.basename(skillDir));
   const description = extractTopLevel(frontmatterText, 'description');
@@ -88,7 +88,7 @@ test('skill directory, frontmatter name, description, and version satisfy the sh
   );
 });
 
-test('SKILL.md body stays within the 900-word target and budget remains warning-only above 1000 (D12)', () => {
+test('SKILL.md body stays within the 900-word target and budget remains warning-only above 1000', () => {
   assert.ok((body.match(/\S+/gu) ?? []).length <= 900, "SKILL.md body must stay within the 900-word target");
   const oversized = `${skillMdContent}\n${'word '.repeat(1100)}`;
   const budget = checkSkillFrontmatter(oversized, { expectedName: 'im-dumb' })
@@ -161,7 +161,7 @@ test('main skill loads comprehension detail only for a later possible signal or 
 });
 
 // Non-trigger examples and the no-snapshot fallback live in the reference, not
-// the always-loaded body — they are only needed once repair is in play.
+// the always-loaded body, they are only needed once repair is in play.
 test('comprehension reference carries the non-trigger examples and no-snapshot fallback', () => {
   assert.match(comprehensionContent, /replies must not trigger diagnosis[\s\S]*huh!{38}[\s\S]{0,80}41 code points; too long/i);
   assert.match(comprehensionContent, /I don't understand this null lookup[\s\S]{0,60}non-standalone marker/i);
@@ -209,7 +209,7 @@ test('save receives complete JSON on stdin and never writes free-form notes or p
 
 test('no-script fallback emits schema-shaped JSON at the exact path and requires later validation', () => {
   const fallback = section(onboardingContent, 'No-script fallback');
-  assert.match(fallback, /complete, schema-shaped JSON object—not free-form notes/i);
+  assert.match(fallback, /complete, schema-shaped JSON object, not free-form notes/i);
   assert.match(fallback, /~\/\.im-dumb\/profile\.json/);
   assert.match(fallback, /IM_DUMB_PROFILE/);
   assert.match(fallback, /Do not claim it was saved/i);
@@ -251,7 +251,7 @@ test('jargon avoidance preserves a user term once as an inline source label, the
   assert.match(language, /Never simplify[\s\S]{0,30}away\s+quantities, conditions, warnings, or safety-critical facts/i);
 });
 
-test('ADHD mode restructures with the D10 simple-answer exemption', () => {
+test('ADHD mode restructures with the simple-answer exemption', () => {
   const adhd = section(body, 'ADHD mode');
   assert.match(adhd, /do not merely shorten/i);
   assert.match(adhd, /direct answer/i);
@@ -260,9 +260,9 @@ test('ADHD mode restructures with the D10 simple-answer exemption', () => {
   assert.match(adhd, /single\s+paragraph of 3 sentences or fewer/i);
 });
 
-test('D9 defines one exact outer marker sequence and all exemptions', () => {
+test('defines one exact outer marker sequence and all exemptions', () => {
   const output = section(body, 'Output shape');
-  assertOrder(output, ['`**Answer**`', '`**Why**`', '`**Steps**`', '`**Example**`'], 'D9 marker sequence');
+  assertOrder(output, ['`**Answer**`', '`**Why**`', '`**Steps**`', '`**Example**`'], 'marker sequence');
   assert.match(output, /one outer marker\s+sequence/i);
   assert.match(output, /exactly once as its own full line/i);
   assert.match(output, /outside code\s+fences and\s+blockquotes/i);
@@ -283,7 +283,7 @@ test('complex output places Plain before Technical inside the same outer sequenc
   assert.match(output, /trade-offs/i);
 });
 
-test('D11 preserves approved response-shaping order without overriding truth or higher instructions', () => {
+test('preserves approved response-shaping order without overriding truth or higher instructions', () => {
   const precedence = section(body, 'Conflict precedence');
   assert.match(precedence, /response-shaping conflicts/i);
   assert.match(precedence, /system and developer\s+instructions, which always apply/i);
@@ -294,7 +294,7 @@ test('D11 preserves approved response-shaping order without overriding truth or 
     'then ADHD structure',
     'then output shape',
     'then tone',
-  ], 'D11 precedence');
+  ], 'precedence');
   assert.match(precedence, /format contract controls format; it never authorizes false or unsafe content/i);
   assert.match(precedence, /adhd_mode: true[\s\S]{0,40}overrides `output_shape: narrative`/i);
 });

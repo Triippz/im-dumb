@@ -62,8 +62,8 @@ test('README links the eval stack map', () => {
   assert.match(readme, /\(eval\/README\.md\)/);
 });
 
-test('README discloses the M1 spot-check and token-overhead results honestly', () => {
-  const status = section(readme, '## M1 evaluation status');
+test('README discloses the spot-check and token-overhead results honestly', () => {
+  const status = section(readme, '## Evaluation status');
   assert.match(status, /0 of 5/);
   assert.match(status, /single-trial/i);
   assert.match(status, /-12\.56%/);
@@ -71,13 +71,22 @@ test('README discloses the M1 spot-check and token-overhead results honestly', (
   assert.doesNotMatch(readme, /production[- ]ready/i);
 });
 
-test('README roadmap records shipped milestones and keeps unpublished status honest', () => {
-  const roadmap = section(readme, '## Roadmap');
-  assert.match(roadmap, /\*\*M4[^*]*\*\*/);
-  assert.match(roadmap, /\*\*M5[^*]*\*\*/);
-  assert.match(roadmap, /\*\*M6[^*]*\*\*/);
-  assert.match(roadmap, /AV dropped from scope/i);
-  assert.match(roadmap, /No package published yet/i);
+test('README records what is built and keeps unpublished status honest', () => {
+  const built = section(readme, '## What is built');
+  assert.match(built, /\*\*Packaging:\*\*/);
+  assert.match(built, /\*\*Learning assets:\*\*/);
+  assert.match(built, /\*\*Release and governance:\*\*/);
+  assert.match(built, /unpublished until an owner-authorized npm run/i);
+  assert.match(built, /Audio and video are out of scope/i);
+  assert.match(built, /No package published yet/i);
+});
+
+test('shipped docs cite no planning coordinates', () => {
+  for (const [name, text] of [['README.md', readme], ['AGENTS.md', agents]] as const) {
+    assert.doesNotMatch(text, /\bM[1-6]\b/u, `${name} should not cite milestone ids`);
+    assert.doesNotMatch(text, /(?:^|\s)#\d+\b/u, `${name} should not cite PR or issue numbers`);
+    assert.doesNotMatch(text, /\u2014/u, `${name} should not use em dashes`);
+  }
 });
 
 test('AGENTS repo layout is labeled actual and omits a separate installer/ directory', () => {
@@ -94,7 +103,7 @@ test('AGENTS repo layout is labeled actual and omits a separate installer/ direc
 });
 
 test('AGENTS installer contract section is marked implemented but unpublished', () => {
-  assert.match(agents, /## Installer contract \(v1 — implemented, unpublished\)/);
+  assert.match(agents, /## Installer contract \(v1, implemented, unpublished\)/);
 });
 
 test('CLAUDE.md remains exactly the AGENTS.md import', () => {

@@ -92,7 +92,7 @@ function questionCountOutsideExclusions(value: string): number {
 }
 
 // ---------------------------------------------------------------------------
-// Every case file loads and is individually schema-valid (D14)
+// Every case file loads and is individually schema-valid
 // ---------------------------------------------------------------------------
 
 test('golden dataset: every case file parses as JSON and passes validateGoldenCase', () => {
@@ -112,7 +112,7 @@ test('golden dataset: each case file is named "<id>.json" (stable, discoverable 
 });
 
 // ---------------------------------------------------------------------------
-// Set-level invariants: unique ids, pair invariant (D14)
+// Set-level invariants: unique ids, pair invariant
 // ---------------------------------------------------------------------------
 
 test('golden dataset: the full case set passes validateGoldenCaseSet (unique ids, pair invariant)', () => {
@@ -121,7 +121,7 @@ test('golden dataset: the full case set passes validateGoldenCaseSet (unique ids
 });
 
 // ---------------------------------------------------------------------------
-// Count + category coverage (prd.md §9.4 / D14 enum)
+// Count + category coverage
 // ---------------------------------------------------------------------------
 
 test(`golden dataset: total case count is within the milestone range [${MIN_CASES}, ${MAX_CASES}]`, () => {
@@ -522,7 +522,7 @@ test('golden dataset: every declared runnable text checker passes every assistan
 });
 
 // ---------------------------------------------------------------------------
-// Manifest drift (D14 — sorted case ids + per-file SHA-256)
+// Manifest drift
 // ---------------------------------------------------------------------------
 
 test('golden dataset: manifest.json has no drift against the on-disk case files', () => {
@@ -543,10 +543,10 @@ test('golden dataset: manifest.json records a 64-char hex sha256 per case', () =
 });
 
 // ---------------------------------------------------------------------------
-// README.md is the normative dataset document (D14)
+// README.md is the normative dataset document
 // ---------------------------------------------------------------------------
 
-test('golden dataset README documents category mapping, D14 schema, v2 forward-note, and the edit sign-off rule', () => {
+test('golden dataset README documents category mapping, schema, v2 forward-note, and the edit sign-off rule', () => {
   const readme = readFileSync(path.join(goldenDir, 'README.md'), 'utf8');
   for (const category of GOLDEN_CATEGORIES) {
     assert.ok(readme.includes(category), `README should mention category "${category}"`);

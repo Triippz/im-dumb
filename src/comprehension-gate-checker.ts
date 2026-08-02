@@ -2,7 +2,7 @@ import type { Violation } from './checkers.ts';
 import { normalizeReply } from './reference-classifier.ts';
 
 // ---------------------------------------------------------------------------
-// M2 §3.3 — comprehension-gate deterministic hard-constraint checker.
+// comprehension-gate deterministic hard-constraint checker.
 // Pure, dependency-free. Structural/format enforcement only; candidate
 // specificity, relevance, and repair correctness remain semantic review
 // (eval/comprehension-rubric.md dimensions 1-4).
@@ -19,10 +19,10 @@ export interface ComprehensionGateCheckOptions {
   expectedCandidateCount?: 2 | 3 | 4;
 }
 
-// §3.3 — frozen normalized generic-label deny set.
+// frozen normalized generic-label deny set.
 export const GENERIC_LABEL_DENY_SET: readonly string[] = ['something', 'other', 'not sure'];
 
-// §3.3 — frozen normalized bare-re-ask deny set.
+// frozen normalized bare-re-ask deny set.
 export const BARE_REASK_DENY_SET: readonly string[] = [
   "what didn't you understand?",
   'what part was confusing?',
@@ -30,7 +30,7 @@ export const BARE_REASK_DENY_SET: readonly string[] = [
   'can you be more specific?',
 ];
 
-// §3.3 — exact frozen heading full line.
+// exact frozen heading full line.
 export const DIAGNOSIS_HEADING = '**Likely confusion points**';
 
 const GENERIC_LABEL_DENY_NORMALIZED = new Set(GENERIC_LABEL_DENY_SET.map((label) => normalizeReply(label)));
@@ -67,7 +67,7 @@ function truncateForMessage(value: string, maxLength = 60): string {
 }
 
 // ---------------------------------------------------------------------------
-// repair / direct-repair — zero user-directed questions, no diagnosis
+// repair / direct-repair, zero user-directed questions, no diagnosis
 // structure requirement, identical behavior regardless of format.
 // ---------------------------------------------------------------------------
 
@@ -84,7 +84,7 @@ function checkRepair(text: string): Violation[] {
 }
 
 // ---------------------------------------------------------------------------
-// diagnose / rediagnose — default format frozen structure (§3.3)
+// diagnose / rediagnose, default format frozen structure
 // ---------------------------------------------------------------------------
 
 function checkDefaultDiagnosis(text: string, expectedCandidateCount: 2 | 3 | 4 | undefined): Violation[] {
@@ -177,7 +177,7 @@ function checkDefaultDiagnosis(text: string, expectedCandidateCount: 2 | 3 | 4 |
 }
 
 // ---------------------------------------------------------------------------
-// diagnose / rediagnose — exact machine (JSON) format (§3.3)
+// diagnose / rediagnose, exact machine (JSON) format
 // ---------------------------------------------------------------------------
 
 type RawCandidate = Record<string, unknown>;

@@ -8,7 +8,7 @@ The PRD originally called the M1 deliverable an "STE-inspired rule engine," word
 
 ## Decision
 
-The language rules are written instructions in `SKILL.md`, loaded into the model's context before generation. The model applies the user's profile (vocabulary, sentence caps, jargon policy, ADHD mode) while producing its response — first pass, one shot. Scripts never touch the response path. The only script bundled inside the skill directory is the compiled profile CLI (load/validate/save). Deterministic checkers (sentence caps, forbidden phrases, structure) live repo-side and run in evals and CI only.
+The language rules are written instructions in `SKILL.md`, loaded into the model's context before generation. The model applies the user's profile (vocabulary, sentence caps, jargon policy, ADHD mode) while producing its response, first pass, one shot. Scripts never touch the response path. The only script bundled inside the skill directory is the compiled profile CLI (load/validate/save). Deterministic checkers (sentence caps, forbidden phrases, structure) live repo-side and run in evals and CI only.
 
 The comprehension gate (M2) runs on a later conversational turn after new user input: when the user signals confusion, the model re-diagnoses with named candidates and generates a targeted repair. That path is also model-driven, not mechanical rewriting, and its resolved confusions feed `known_gap_types` so future first-pass responses need less repair.
 
@@ -16,21 +16,21 @@ PRD wording amended: "rule engine" → "rule layer" (3 occurrences).
 
 ## Alternatives Considered
 
-- **Deterministic rewrite engine**: a program that transforms non-compliant prose into compliant prose. Rejected — rewriting arbitrary English *is* the problem LLMs solve; infeasible without an LLM call, and the dependency-free-scripts invariant rules out NLP libraries. Also structurally requires the intercept-fix-resend loop the user explicitly rejected.
-- **LLM-based post-processing pass**: send the response to a second model call for simplification. Rejected — doubles token cost and latency, violates single-pass requirement, and hosted harnesses (Claude API, OpenAI) disallow network calls from skill scripts.
+- **Deterministic rewrite engine**: a program that transforms non-compliant prose into compliant prose. Rejected, rewriting arbitrary English *is* the problem LLMs solve; infeasible without an LLM call, and the dependency-free-scripts invariant rules out NLP libraries. Also structurally requires the intercept-fix-resend loop the user explicitly rejected.
+- **LLM-based post-processing pass**: send the response to a second model call for simplification. Rejected, doubles token cost and latency, violates single-pass requirement, and hosted harnesses (Claude API, OpenAI) disallow network calls from skill scripts.
 
 ## Consequences
 
-- Rule compliance is probabilistic, not guaranteed — the model can drift. Mitigated by deterministic checkers gating evals/CI (Layer 1) and judge-scored suites (M3).
+- Rule compliance is probabilistic, not guaranteed, the model can drift. Mitigated by deterministic checkers gating evals/CI (Layer 1) and judge-scored suites (M3).
 - Every eval, the golden dataset, and the SKILL.md structure assume this architecture; reversing it later means rebuilding the product.
-- Token overhead stays near zero on the response path — no second call, no injected rewrite step.
+- Token overhead stays near zero on the response path, no second call, no injected rewrite step.
 
 ## Amendment (M2 planning, 2026-07-31)
 
 `prd.md` §6.2 describes the comprehension-gate lexical pre-filter as
 "deterministic" and "using no model call," which read as a runtime guarantee
 conflicts with this ADR's "only `profile.js` is bundled, the gate is
-model-driven" decision above — no bundled script can intercept a user's
+model-driven" decision above, no bundled script can intercept a user's
 message before the model's turn under the open Agent Skills convention this
 product targets; there is no portable pre-response hook. Bundling a second
 script (`gate.js`) would not fix this: the model would still have to

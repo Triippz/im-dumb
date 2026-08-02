@@ -1,8 +1,7 @@
 // ---------------------------------------------------------------------------
-// M2 §2 — pure deterministic reference classifier
-// (docs/plans/m2-comprehension-gate.md §2). Lexical candidate filter only:
+// Pure deterministic reference classifier. Lexical candidate filter only:
 // no IO, no fixture labels, no model/runtime behavior. Semantic confirmation,
-// candidate relevance, and repair quality remain model behavior (§8).
+// candidate relevance, and repair quality remain model behavior.
 // ---------------------------------------------------------------------------
 
 export type ReferenceContext = 'same-topic' | 'new-task' | 'topic-change' | 'session-reset';
@@ -28,7 +27,7 @@ export interface ReferenceResult {
   normalized: string;
 }
 
-// M2 §2.3 — frozen marker families. Adding a phrase requires a plan/eval
+// frozen marker families. Adding a phrase requires a plan/eval
 // revision; do not extend opportunistically to make a live capture pass.
 export const MARKER_PHRASES: readonly string[] = [
   // short
@@ -62,18 +61,18 @@ const CONTEXT_RESET_VALUES = new Set<ReferenceContext>(['new-task', 'topic-chang
 
 const MAX_CODE_POINTS = 40;
 
-// M2 §2.2 steps 1-3 — NFKC, curly apostrophe to ASCII, lowercase, trim,
+// NFKC, curly apostrophe to ASCII, lowercase, trim,
 // collapse Unicode whitespace to one ASCII space.
 export function normalizeReply(reply: string): string {
   return reply.normalize('NFKC').replace(/[‘’]/gu, "'").toLowerCase().trim().replace(/\s+/gu, ' ');
 }
 
-// M2 §2.2 step 5 — for exact-marker comparison only.
+// For exact-marker comparison only.
 function stripTerminalPunctuation(normalized: string): string {
   return normalized.replace(/[.!?…]+$/u, '').trim();
 }
 
-// M2 §2.4 rule 4 — whole reply wrapped in matching backticks (inline or
+// Whole reply wrapped in matching backticks (inline or
 // fenced), or matching single/double quotation marks.
 function isWholeReplyWrapped(normalized: string): boolean {
   if (normalized.length < 2) return false;
@@ -103,7 +102,7 @@ function containsMarkerText(value: string): boolean {
   return false;
 }
 
-// M2 §2.4 — rule precedence, checked in order; the first matching rule wins.
+// Rule precedence, checked in order; the first matching rule wins.
 export function classifyComprehensionReply(input: ReferenceInput): ReferenceResult {
   const normalized = normalizeReply(input.reply);
 

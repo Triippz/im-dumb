@@ -12,7 +12,7 @@ function readText(relPath: string): string {
 
 const release = readText('.github/workflows/release.yml');
 
-test('release runs on workflow_dispatch only — never on push or pull_request', () => {
+test('release runs on workflow_dispatch only, never on push or pull_request', () => {
   assert.match(release, /on:\s*\n\s*workflow_dispatch:/);
   assert.ok(!/^\s{2}push:/m.test(release), 'release must not trigger on push');
   assert.ok(!/^\s{2}pull_request:/m.test(release), 'release must not trigger on pull_request');

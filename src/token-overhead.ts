@@ -86,7 +86,7 @@ export function validateCapture(raw: unknown, source = 'capture'): Capture {
     throw new Error(`${source}: "settings" must be an object`);
   }
   if (!Number.isInteger(raw.trial_count) || raw.trial_count !== REQUIRED_TRIAL_COUNT) {
-    throw new Error(`${source}: "trial_count" must be ${REQUIRED_TRIAL_COUNT} in M1`);
+    throw new Error(`${source}: "trial_count" must be ${REQUIRED_TRIAL_COUNT}`);
   }
   if (typeof raw.response !== 'string') {
     throw new Error(`${source}: "response" must be a string`);
@@ -330,7 +330,7 @@ export function formatHumanReport(report: TokenOverheadReport): string {
         `${item.caseId}: ${item.overheadPercent.toFixed(2)}% (${item.baselineEstimatedTokens} -> ${item.candidateEstimatedTokens})${item.exceedsCeiling ? ` EXCEEDS +${report.ceilings.perCasePercent}%` : ''}`,
     ),
     `Aggregate: ${report.aggregate.overheadPercent.toFixed(2)}% (${report.aggregate.baselineEstimatedTokens} -> ${report.aggregate.candidateEstimatedTokens})${report.aggregate.exceedsCeiling ? ` EXCEEDS +${report.ceilings.aggregatePercent}%` : ''}`,
-    'Ceilings are report-only in M1.',
+    'Ceilings are report-only.',
   ];
   return `${lines.join('\n')}\n`;
 }

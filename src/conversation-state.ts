@@ -1,8 +1,8 @@
 import { GAP_TYPES, type GapType } from './golden-schema.ts';
 
 // ---------------------------------------------------------------------------
-// M2 §5 — pure conversation-state transition helper. Transient dialogue
-// phase only (docs/plans/m2-comprehension-gate.md §5): never read from or
+// pure conversation-state transition helper. Transient dialogue
+// phase only: never read from or
 // written to the profile. Confidence/taper thresholds mirror §4.1 but this
 // module performs no persistence and no `learn` call; callers apply
 // `LearnGapInput` separately using the gap types this module surfaces.
@@ -19,7 +19,7 @@ export type ResetSource = 'new-task' | 'topic-change' | 'session-reset';
 
 // A snapshot of recognized-taxonomy confidence as currently known to the
 // caller (e.g. read from the profile before this turn). `type` is `string`,
-// mirroring `KnownGap.type` (§4.1): unrecognized/unknown stored types must be
+// mirroring `KnownGap.type`: unrecognized/unknown stored types must be
 // passed through here too so this module can prove it never lets them
 // qualify for taper, exactly like the runtime taxonomy bound.
 export interface KnownGapSnapshot {
@@ -85,12 +85,12 @@ export interface ConversationTransitionErrorResult {
 
 export type ConversationTransitionResult = ConversationTransitionOk | ConversationTransitionErrorResult;
 
-// §4.1 — diagnosis may be skipped only at confidence >=0.75.
+// diagnosis may be skipped only at confidence >=0.75.
 export const TAPER_CONFIDENCE_THRESHOLD = 0.75;
 
 const RECOGNIZED_GAP_TYPES = new Set<string>(GAP_TYPES);
 
-// §4.1/§5 — recognized types at >=0.75. Unknown types never qualify.
+// §4.1/§5, recognized types at >=0.75. Unknown types never qualify.
 // Any recognized duplicate makes the snapshot ambiguous, so taper is
 // disabled rather than silently choosing an entry.
 function qualifyingGapTypes(knownGaps: readonly KnownGapSnapshot[]): GapType[] {
@@ -126,7 +126,7 @@ function err(error: ConversationTransitionError): ConversationTransitionResult {
   return { ok: false, error };
 }
 
-// M2 §5 — the entire transition table. Total: every (state, event) pair
+// the entire transition table. Total: every (state, event) pair
 // returns a result, never throws.
 export function transitionConversationState(
   state: ConversationState,
@@ -140,7 +140,7 @@ export function transitionConversationState(
 
     case 'ordinary':
       // Ordinary same-topic input is answered without fabricating a failure.
-      // Only explicit success or a context reset clears active state (§5).
+      // Only explicit success or a context reset clears active state.
       return ok('answer', state);
 
     case 'candidate-selected':

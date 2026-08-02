@@ -4,7 +4,7 @@ description: >-
   gate stack in order (tests, test-health, lint, static-analysis, types, code-review
   to convergence, spec-coverage), then a human checkpoint before the MR. Absorbs the
   autopilot skill's native-mode loop (select→implement→gate→mark-done→finalize) as a
-  conductor workflow. Never merges — hooks/block-merge.sh still governs.
+  conductor workflow. Never merges, hooks/block-merge.sh still governs.
 
 inputs:
   feature:
@@ -24,7 +24,7 @@ steps:
     type: agent
     prompt: prompts/autopilot-implement.md
     # Implementation step is creative/probabilistic (autopilot SKILL.md's own
-    # deterministic-vs-probabilistic split) — everything after this is a gate.
+    # deterministic-vs-probabilistic split), everything after this is a gate.
 
   - id: tests
     type: shell
@@ -33,13 +33,13 @@ steps:
     on_fail: { then: escalate }
 
   # DEFECT-1 (2026-07): an `agent` step must never own a bare pass/fail marker for "did
-  # the work succeed" — a model that simply forgets to write it fails the run even when
+  # the work succeed", a model that simply forgets to write it fails the run even when
   # the real work is fine, and a resume then RE-RUNS the step, redoing already-finished
   # work. test-health/static-analysis/spec-coverage below report their judgment
   # narratively instead; the deterministic shell gates around them (tests, lint, types)
   # plus the human open-mr-gate are the run's real success signal. Only a step whose
-  # output is a genuine content artifact a later step actually consumes — code-review's
-  # review.json, parsed by `loop_until` below — declares `artifacts`.
+  # output is a genuine content artifact a later step actually consumes, code-review's
+  # review.json, parsed by `loop_until` below, declares `artifacts`.
   - id: test-health
     type: agent
     needs: [tests]
@@ -56,7 +56,7 @@ steps:
     type: agent
     needs: [lint]
     prompt: prompts/autopilot-static-analysis.md
-    # No artifacts marker — see the DEFECT-1 comment above `test-health`. Findings are
+    # No artifacts marker, see the DEFECT-1 comment above `test-health`. Findings are
     # reported narratively; `types` below and the human gate are the real signal.
     on_fail: { then: escalate }
 
@@ -72,9 +72,9 @@ steps:
     prompt: prompts/autopilot-code-review.md
     artifacts: [.conductor/artifacts/review.json]
     # Review → fix convergence (gate-stack.md). max: 3 mirrors autopilot's
-    # --max-review-rounds default — edit this copy directly if a run needs a
+    # --max-review-rounds default, edit this copy directly if a run needs a
     # different cap; workflows are repo-owned, no reference drift.
-    # DEFECT-2: `findings` must hold only OPEN items — a resolved finding left in the
+    # DEFECT-2: `findings` must hold only OPEN items, a resolved finding left in the
     # array (even annotated "RESOLVED") keeps this count > 0 forever and never converges.
     loop_until:
       shell: >-
@@ -86,7 +86,7 @@ steps:
     type: agent
     needs: [code-review]
     prompt: prompts/autopilot-spec-coverage.md
-    # No artifacts marker — see the DEFECT-1 comment above `test-health`. Gaps are
+    # No artifacts marker, see the DEFECT-1 comment above `test-health`. Gaps are
     # reported narratively; open-mr-gate below is the human's chance to catch them.
     on_fail: { then: escalate }
 
@@ -95,11 +95,11 @@ steps:
     needs: [spec-coverage]
     message: >-
       All gates green for {{inputs.feature}}. Approve MR creation? Conductor opens
-      the MR; it never merges — a human merges out of band.
+      the MR; it never merges, a human merges out of band.
 
 # The gate IS the approval (a rejection escalates and never reaches this step). Provider
 # comes from ai-utilities.json's vcs.platform when the repo declares one, else the origin
-# remote's HOSTNAME only (never the whole URL — a repo path containing "gitlab" or
+# remote's HOSTNAME only (never the whole URL, a repo path containing "gitlab" or
 # "github", e.g. a GitHub repo named gitlab-migration, must not misclassify); never
 # guessed by falling through a failed glab call to gh (an unrelated glab auth/network
 # failure must not open the wrong host's PR). An unrecognized host with no configured

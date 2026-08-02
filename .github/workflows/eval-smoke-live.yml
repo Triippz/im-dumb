@@ -1,4 +1,4 @@
-# Gate 2 live judge — path-filtered; blocks only when JUDGE_SMOKE_ENABLED=true.
+# Gate 2 live judge, path-filtered; blocks only when JUDGE_SMOKE_ENABLED=true.
 name: eval-smoke-live
 
 on:

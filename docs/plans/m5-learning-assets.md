@@ -1,16 +1,16 @@
-# m5 implementation plan — learning asset generation
+# m5 implementation plan, learning asset generation
 
-Revision 1 — post-M4 merge (`c0196ae`).
+Revision 1, prior merge (`c0196ae`).
 
 ## 1. Overview
 
 **Problem**: Chat answers can apply the profile, but users cannot yet ask im-dumb for a durable explainer (Markdown/HTML) that uses the **same** vocabulary/chunking rules. Slides and AV come later.
 
-**Approach**: Prompt-driven generation (ADR-001 — one-shot, no rewrite loop). Add a skill reference that defines asset shapes and when to emit them. Add a small deterministic Layer 1 checker for structural markers. No new runtime deps; no media APIs in Phase 1.
+**Approach**: Prompt-driven generation (ADR-001, one-shot, no rewrite loop). Add a skill reference that defines asset shapes and when to emit them. Add a small deterministic Layer 1 checker for structural markers. No new runtime deps; no media APIs in Phase 1.
 
 **In scope (M5 Phase 1)**:
 - Public plan (this file)
-- `skill/im-dumb/references/learning-assets.md` — Markdown + HTML explainer contracts
+- `skill/im-dumb/references/learning-assets.md`, Markdown + HTML explainer contracts
 - SKILL.md trigger + load rules for learning-asset requests
 - Deterministic structure checks (title, sections, profile-respect note)
 - Golden cases for “export explainer” turns
@@ -20,8 +20,8 @@ Revision 1 — post-M4 merge (`c0196ae`).
 - Phase 2: HTML slide decks (section-per-slide); no PowerPoint binary dependency in v1
 
 **Out of scope (M5)**:
-- npm publish / hosted upload (M6)
-- Phase 3 AV — **dropped from scope**. Bundled generation needs TTS/ffmpeg,
+- npm publish / hosted upload
+- Phase 3 AV, **dropped from scope**. Bundled generation needs TTS/ffmpeg,
   which collides with the no-network and dependency-free invariants. The skill
   declines audio and video and offers markdown or HTML instead. A host
   integration (Pi extension or MCP server calling an external generator such as
@@ -57,7 +57,7 @@ fit the asset trigger, then went back to 900 once the comprehension
 non-trigger examples and no-snapshot fallback moved into
 `references/comprehension.md`. The checker's warn threshold is unchanged at
 1000, so D12 still holds: over-budget is a warning, never a hard error. Every
-pinned phrase assertion survived — the moved ones now assert against the
+pinned phrase assertion survived, the moved ones now assert against the
 reference file, so no fixture was weakened.
 
 Standing rule: when the body runs out of room, move prose into `references/`.
@@ -82,7 +82,7 @@ eval/golden/cases/learning-asset-*.json
 | D3 | Checker stays structural; semantic quality stays Layer 2 judge later. |
 | D4 | No new npm dependencies. |
 | D5 | Assets honor `learning_asset_preferences.formats` (already in the M1 profile schema); an empty list turns assets off. |
-| D6 | `learning-asset` is golden category 7, prompt-shaped — an asset request is one turn, so it reuses the v1 prompt shape. |
+| D6 | `learning-asset` is golden category 7, prompt-shaped, an asset request is one turn, so it reuses the v1 prompt shape. |
 
 ## 5. Traceability
 

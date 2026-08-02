@@ -1,12 +1,12 @@
-# m4 implementation plan — multi-harness packaging + installer
+# m4 implementation plan, multi-harness packaging + installer
 
-Revision 1 — post-M3 merge (`d5ad12b`); no npm publish in this milestone.
+Revision 1, prior merge (`d5ad12b`); no npm publish here.
 
 ## 1. Overview
 
 **Problem**: The skill package lives in-repo under `skill/im-dumb/`, but users cannot yet install it into Claude Code, Cursor, or Pi via a documented `npx` flow. AGENTS.md still marks `installer/` as planned.
 
-**Approach**: Ship a **dependency-free TypeScript installer CLI** that copies the bundled skill tree into harness skill directories. Prefer the shared `.agents/skills/im-dumb/` write-once path when that convention is already in use. Keep the package `private: true` until M6 release approval — local/`npm link`/`node dist/install-cli.js` verify the contract without publishing.
+**Approach**: Ship a **dependency-free TypeScript installer CLI** that copies the bundled skill tree into harness skill directories. Prefer the shared `.agents/skills/im-dumb/` write-once path when that convention is already in use. Keep the package `private: true` until release approval, local/`npm link`/`node dist/install-cli.js` verify the contract without publishing.
 
 **In scope (M4)**:
 - Public plan (this file)
@@ -19,10 +19,10 @@ Revision 1 — post-M3 merge (`d5ad12b`); no npm publish in this milestone.
 - Docs: README/AGENTS installer section marked implemented (still unpublished)
 
 **Out of scope (M4)**:
-- npm publish / tags / GitHub release (M6 + explicit approval)
+- npm publish / tags / GitHub release (the release path plus explicit approval)
 - Hosted Claude API / OpenAI skill upload automation
 - Changing skill behavior / profile schema
-- M5 learning assets
+- learning assets
 
 ## 2. Requirements
 
@@ -65,7 +65,7 @@ test/install.test.ts
 test/install-cli.test.ts
 ```
 
-`installer/` directory name from early notes is **not** required — CLI lives in `src/` like other tools (ponytail: one tree).
+`installer/` directory name from early notes is **not** required, CLI lives in `src/` like other tools (ponytail: one tree).
 
 ## 4. Decisions
 

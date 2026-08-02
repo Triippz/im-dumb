@@ -23,7 +23,7 @@ sentences.
 ## Markdown shape
 
 1. `#` H1 title naming the thing being explained.
-2. One short overview paragraph — what it is and why the reader cares.
+2. One short overview paragraph, what it is and why the reader cares.
 3. A numbered list for a process, or a bulleted list for parts. At least one
    list is required.
 4. Optional `## Glossary` with each defined term on its own line, only for

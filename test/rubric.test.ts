@@ -44,7 +44,7 @@ function section(markdown: string, headingText: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// Exactly three separable dimensions (prd.md §9.6, D14 traceability matrix)
+// Exactly three separable dimensions
 // ---------------------------------------------------------------------------
 
 test('rubric: defines exactly three dimensions', () => {
@@ -75,8 +75,8 @@ test('rubric: the three dimensions are factual fidelity, constraint compliance, 
 test('rubric: factual fidelity dimension is scoped to reference_facts and must_preserve', () => {
   const rubric = readRubric();
   const body = section(rubric, 'Factual fidelity').toLowerCase();
-  assert.ok(body.includes('reference_facts'), 'factual fidelity should reference the D14 reference_facts field');
-  assert.ok(body.includes('must_preserve'), 'factual fidelity should reference the D14 must_preserve field');
+  assert.ok(body.includes('reference_facts'), 'factual fidelity should reference the reference_facts field');
+  assert.ok(body.includes('must_preserve'), 'factual fidelity should reference the must_preserve field');
 });
 
 test('rubric: reader follow-up need dimension requires enumerated blocking questions, pass means zero', () => {
@@ -88,7 +88,7 @@ test('rubric: reader follow-up need dimension requires enumerated blocking quest
 });
 
 // ---------------------------------------------------------------------------
-// Independent pass/fail, raw reporting, no ELO/ranking aggregation (prd.md §9.6)
+// Independent pass/fail, raw reporting, no ELO/ranking aggregation
 // ---------------------------------------------------------------------------
 
 test('rubric: scoring contract requires independent per-dimension pass/fail with raw reporting', () => {
@@ -119,7 +119,7 @@ test('rubric: no heading anywhere frames scoring as an aggregate/ranking/ELO sco
 });
 
 // ---------------------------------------------------------------------------
-// Judge model pinning, temp 0, differs from production model (prd.md §9.5, §9.6)
+// Judge model pinning, temp 0, differs from production model
 // ---------------------------------------------------------------------------
 
 test('rubric: judge model is pinned by version at temperature 0', () => {
@@ -143,7 +143,7 @@ test('rubric: judge model must differ from the production response model', () =>
 });
 
 // ---------------------------------------------------------------------------
-// Rubric-adherence audit, judge-version re-baselining, dataset-change handling (prd.md §9.6, §9.10)
+// Rubric-adherence audit, judge-version re-baselining, dataset-change handling
 // ---------------------------------------------------------------------------
 
 test('rubric: documents a periodic rubric-adherence audit with a concrete cadence', () => {
@@ -198,10 +198,10 @@ test('rubric: documents manual review and disagreement handling to keep judge dr
 });
 
 // ---------------------------------------------------------------------------
-// D12 provisional token-overhead ceilings: report-only in M1, blocking no earlier than M3 Gate 3
+// Provisional token-overhead ceilings: report-only until the blocking token gate ships
 // ---------------------------------------------------------------------------
 
-test('rubric: records D12 provisional token-overhead ceilings as report-only until M3 Gate 3', () => {
+test('rubric: records provisional token-overhead ceilings as report-only until the token gate blocks', () => {
   const rubric = readRubric();
   const body = section(rubric, 'Token-overhead ceilings').toLowerCase();
   assert.ok(body.includes('30%'), 'should record the aggregate +30% ceiling');

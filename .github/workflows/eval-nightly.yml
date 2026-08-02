@@ -1,4 +1,4 @@
-# Gate 4 — full offline suite (warn-only). Does not block PRs.
+# Gate 4, full offline suite (warn-only). Does not block PRs.
 name: eval-nightly
 
 on:
@@ -37,7 +37,7 @@ jobs:
           GENERATOR_MODEL: ${{ vars.GENERATOR_MODEL }}
         run: |
           if [ -z "$JUDGE_API_KEY" ] || [ -z "$JUDGE_MODEL" ] || [ -z "$JUDGE_MODEL_VERSION" ]; then
-            echo "JUDGE_SMOKE_ENABLED=true but judge pin/secret incomplete — warn only" >&2
+            echo "JUDGE_SMOKE_ENABLED=true but judge pin/secret incomplete, warn only" >&2
             exit 1
           fi
           npm run eval:smoke:live

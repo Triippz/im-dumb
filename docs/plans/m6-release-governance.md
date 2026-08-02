@@ -1,6 +1,6 @@
-# m6 implementation plan — release and governance hardening
+# m6 implementation plan, release and governance hardening
 
-Revision 1 — post-M5 merge (`8fbbbbd`). No package is published by this milestone.
+Revision 1, prior merge (`8fbbbbd`). No package is published by this milestone.
 
 ## 1. Overview
 
@@ -10,9 +10,9 @@ Revision 1 — post-M5 merge (`8fbbbbd`). No package is published by this milest
 
 **In scope (M6)**:
 - Public plan (this file)
-- `src/release-version.ts` — bump derivation, SemVer math, changelog rendering
-- `src/release-cli.ts` — dry-run by default, `--write` applies version + changelog
-- `.github/workflows/release.yml` — `workflow_dispatch` only, gated, dry-run default
+- `src/release-version.ts`, bump derivation, SemVer math, changelog rendering
+- `src/release-cli.ts`, dry-run by default, `--write` applies version + changelog
+- `.github/workflows/release.yml`, `workflow_dispatch` only, gated, dry-run default
 - `CHANGELOG.md` seeded on first real release
 - Documented override path for a red gate
 
@@ -20,7 +20,7 @@ Revision 1 — post-M5 merge (`8fbbbbd`). No package is published by this milest
 - Actually publishing to npm, tagging, or cutting a GitHub release
 - Flipping `private: true` to public
 - Hosted Claude API / OpenAI skill upload automation
-- Gate 5 shadow/canary — needs live traffic to shadow; unbuilt until the skill has users
+- Gate 5 shadow/canary, needs live traffic to shadow; unbuilt until the skill has users
 
 ## 2. Requirements
 
@@ -41,7 +41,7 @@ Revision 1 — post-M5 merge (`8fbbbbd`). No package is published by this milest
 - [x] Release workflow is `workflow_dispatch` only and never triggers on merge.
 - [x] Publishing requires both `dry_run: false` and `publish_npm: true`.
 - [x] Governance docs describe the override path.
-- [ ] A real release is cut (deliberately deferred — needs owner approval).
+- [ ] A real release is cut (deliberately deferred, needs owner approval).
 
 ## 3. Override path
 
@@ -52,7 +52,7 @@ CI gate and the eval gate:
    check and why shipping is safer than waiting.
 2. Get a second approving review from someone who did not write the change.
 3. The override is per-PR. It never carries forward, and it never applies to a
-   release run — a red release gate is always a stop.
+   release run, a red release gate is always a stop.
 
 ## 4. Decisions
 

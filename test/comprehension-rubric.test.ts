@@ -125,10 +125,10 @@ test('scoring keeps M1 fidelity separate and defines the M2/M3 lifecycle without
   ]);
 });
 
-test('plan dimension 3 delegates M1 factual fidelity instead of duplicating it', () => {
+test('plan repair-correctness dimension delegates factual fidelity instead of duplicating it', () => {
   assertIncludesAll(section(plan, 'Gate-specific rubric slice'), [
     '3. **Targeted repair correctness**',
-    'M1 factual fidelity and safety remain scored once',
+    'Factual fidelity and safety remain scored once',
     'not superseded or re-scored here',
   ]);
 });

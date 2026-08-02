@@ -3,11 +3,10 @@ import { createHash } from 'node:crypto';
 import { CHECKER_IDS, type CheckerId } from './checkers.ts';
 
 // ---------------------------------------------------------------------------
-// D14 — golden case schema (hand-rolled validator, no ajv)
+// golden case schema (hand-rolled validator, no ajv)
 // ---------------------------------------------------------------------------
 
-// prd.md §9.4 categories 1/2/3/6 (M1, prompt-only) and 4/5 (M2, turns-only — see
-// docs/plans/m2-comprehension-gate.md §3).
+// Prompt-shaped categories carry a single prompt; gate categories carry turns.
 export const GOLDEN_CATEGORIES = [
   'persona-baseline',
   'jargon-decomposition',
@@ -33,11 +32,11 @@ export interface ExpectedCheck {
   expect: ExpectedResult;
 }
 
-// M2 §3 — closed runtime-write gap taxonomy (docs/plans/m2-comprehension-gate.md §4.1).
+// closed runtime-write gap taxonomy.
 export const GAP_TYPES = ['term', 'step', 'assumption', 'framing'] as const;
 export type GapType = (typeof GAP_TYPES)[number];
 
-// M2 §3 — dispatcher actions a golden turn can expect.
+// dispatcher actions a golden turn can expect.
 export const EXPECTED_ACTIONS = [
   'answer',
   'diagnose',
@@ -51,7 +50,7 @@ export type ExpectedAction = (typeof EXPECTED_ACTIONS)[number];
 export const EXPECTED_FORMATS = ['default', 'machine'] as const;
 export type ExpectedFormat = (typeof EXPECTED_FORMATS)[number];
 
-// M2 §3.2 — confidence is finite, in [0,1], and a quarter step.
+// confidence is finite, in [0,1], and a quarter step.
 const QUARTER_STEP_CONFIDENCES = new Set<number>([0, 0.25, 0.5, 0.75, 1]);
 
 export interface ExpectedKnownGap {
@@ -63,7 +62,7 @@ export interface GoldenTurn {
   role: 'user' | 'assistant';
   content: string;
   // The fields below are allowed only on user turns and describe the
-  // immediately following assistant turn (M2 §3.1-§3.2).
+  // immediately following assistant turn.
   expected_action?: ExpectedAction;
   expected_gap_type?: GapType;
   expected_question_count?: 0 | 1;
@@ -76,7 +75,7 @@ export interface GoldenCase {
   id: string;
   category: GoldenCategory;
   // Exactly one of "prompt" (v1, prompt-only categories) or "turns" (v2,
-  // turns-only categories) is present — enforced by validateGoldenCase().
+  // turns-only categories) is present, enforced by validateGoldenCase().
   prompt?: string;
   turns?: GoldenTurn[];
   profile: Record<string, unknown>;
@@ -192,7 +191,7 @@ export function validateGoldenCase(raw: unknown): GoldenValidationResult {
 }
 
 // ---------------------------------------------------------------------------
-// M2 §3.1-§3.2 — turns[] shape, strict alternation, action matrix
+// turns[] shape, strict alternation, action matrix
 // ---------------------------------------------------------------------------
 
 const MIN_TURNS = 2;
@@ -209,7 +208,7 @@ const TURN_EXPECTATION_FIELDS = [
 
 const TURN_ALLOWED_FIELDS = new Set<string>(['role', 'content', ...TURN_EXPECTATION_FIELDS]);
 
-// M2 §3.2 action matrix.
+// action matrix.
 const QUESTION_COUNT_BY_ACTION: Record<ExpectedAction, 0 | 1> = {
   answer: 0,
   diagnose: 1,
@@ -377,7 +376,7 @@ function validateKnownGaps(rawGaps: unknown, turnIndex: number, errors: string[]
 }
 
 // ---------------------------------------------------------------------------
-// D14 — pair invariant + case-id uniqueness across a validated set
+// pair invariant + case-id uniqueness across a validated set
 // ---------------------------------------------------------------------------
 
 function deepEqual(a: unknown, b: unknown): boolean {
@@ -435,7 +434,7 @@ export function validateGoldenCaseSet(cases: GoldenCase[]): GoldenValidationResu
 }
 
 // ---------------------------------------------------------------------------
-// D14 — manifest: sorted case ids + per-file SHA-256, generator + verifier
+// manifest: sorted case ids + per-file SHA-256, generator + verifier
 // ---------------------------------------------------------------------------
 
 export interface GoldenCaseFile {

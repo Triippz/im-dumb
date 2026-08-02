@@ -4,7 +4,7 @@ Normative reference for the LLM-as-judge layer (prd.md §9.6, Gate 2 offline
 smoke suite and Gate 4 nightly full suite, prd.md §9.2). This document is
 drafted in M1 per AGENTS.md invariant 7 and prd.md §9.10 ("judge rubric
 drafted with non-redundant dimensions; ELO aggregation explicitly
-excluded"); the judge is not executed against any model in M1 — that
+excluded"); the judge is not executed against any model in M1, that
 runner ships at M3. Until then this file is the fixed, pre-agreed meaning
 of "pass" that a real judge implementation must be built against, not
 redefined after the fact to match whatever a candidate skill happens to
@@ -14,8 +14,7 @@ output (prd.md §9).
 
 The judge scores a single golden case (`eval/golden/cases/*.json`, D14
 schema) plus one candidate response against this rubric. It runs after the
-deterministic Layer 1 checkers (`src/checkers.ts`) have already passed —
-the judge is never asked to re-verify what code can verify for free, and it
+deterministic Layer 1 checkers (`src/checkers.ts`) have already passed, the judge is never asked to re-verify what code can verify for free, and it
 never overrides a Layer 1 error.
 
 ## Design rationale (ELO exclusion)
@@ -54,7 +53,7 @@ contradicting the case's `reference_facts`, and avoid dropping any item in
 
 Does the candidate response honor the case's `profile` (vocabulary level,
 jargon policy, tone, output shape, ADHD mode) in ways the deterministic
-checkers can't verify lexically — e.g. whether wording is genuinely common
+checkers can't verify lexically, e.g. whether wording is genuinely common
 vocabulary for the stated persona, not just free of specific forbidden
 phrases?
 
@@ -71,7 +70,7 @@ Would the persona described by the case's `profile` need a follow-up
 question before they could understand or act on this response? The judge
 role-plays that reader, reads the candidate response cold, and enumerates
 every concrete, specific blocking question that reader would need
-answered — "blocking" meaning it prevents comprehension or action, not
+answered, "blocking" meaning it prevents comprehension or action, not
 idle curiosity.
 
 - **Pass** means the judge enumerates zero blocking questions.
@@ -90,7 +89,7 @@ idle curiosity.
   questions). No weighted sum and no single collapsed score are computed
   from the three results.
 - **No ELO, no ranking aggregation.** ELO/Bradley-Terry-style ranking
-  aggregation is never used anywhere in this pipeline — im-dumb evaluation
+  aggregation is never used anywhere in this pipeline, im-dumb evaluation
   is pass/fail-against-a-rubric, not comparative preference ranking
   between models or runs (prd.md §9.6).
 - A case's overall gate status (all three dimensions pass) is a
@@ -148,7 +147,7 @@ tweak, and requires re-baselining before the new judge is trusted:
 4. Only after that diff is documented does the incoming judge model/version
    become the new pinned judge (Judge model pinning, above).
 
-Silent judge-version upgrades are never permitted — a version bump is
+Silent judge-version upgrades are never permitted, a version bump is
 recorded and reviewed like any other pinned-dependency bump, because a
 silent judge upgrade is otherwise indistinguishable from an actual skill
 regression (prd.md §9.5).
@@ -159,7 +158,7 @@ Golden dataset changes are governed primarily by `eval/golden/README.md`'s
 reviewer sign-off rule for editing published cases; this section covers
 what that means for judge results specifically:
 
-- A **new** golden case has no prior judge history — its first judged
+- A **new** golden case has no prior judge history, its first judged
   result is a fresh baseline point, not compared against anything.
 - An **edited, published** case (subject to the golden README's sign-off
   rule) invalidates prior judge history for that case id: post-edit
@@ -197,14 +196,14 @@ Judge drift is kept visible between scheduled audits, not just caught at
 them:
 
 - Any case where a human reviewer disagrees with the judge's per-dimension
-  verdict — during a spot-check, a rubric-adherence audit, or ad hoc review
-  of a nightly (Gate 4) result — is logged: case id, dimension, judge
+  verdict, during a spot-check, a rubric-adherence audit, or ad hoc review
+  of a nightly (Gate 4) result, is logged: case id, dimension, judge
   verdict, human verdict, and a one-line rationale for the disagreement.
 - The disagreement log's rate over time is itself a judge-drift signal: a
   rising disagreement rate on a dimension is treated as an early warning
   and pulled into the next rubric-adherence audit even if that audit isn't
   due on its regular cadence yet.
-- A logged disagreement does not by itself block a merge — broader
+- A logged disagreement does not by itself block a merge, broader
   judge-scored suites warn and route to human review rather than
   hard-blocking (prd.md §9.9), and the existing audited override path
   (required label + second approver) covers genuine urgent exceptions. The

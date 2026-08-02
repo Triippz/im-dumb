@@ -1,12 +1,12 @@
-# m3 implementation plan — eval infrastructure
+# m3 implementation plan, eval infrastructure
 
-Revision 1 — post-#7/#8; M2 runtime acceptance left open; no further capture loops unless asked.
+Revision 1. Comprehension-gate runtime acceptance left open; no further capture loops unless asked.
 
 ## 1. Overview
 
 **Problem**: Layer 1 checkers, golden cases, and rubrics exist, but there is still no multi-trial LLM-judge runner, no Gate 3 token-budget merge gate, and no path-filtered Layer 2 PR smoke. AGENTS.md still marks the Layer 2 offline smoke suite as aspirational until this milestone ships.
 
-**Approach**: Reuse what already works (checkers, golden schema/turns, rubrics, token-overhead math, M2 evaluate harness patterns). Ship a **local-first Layer 2 CLI** that can dry-run without secrets, then wire the **same runner into CI** when a pinned judge secret is present. Expensive nightly (Gate 4) warns; shadow/canary (Gate 5) stays deferred.
+**Approach**: Reuse what already works (checkers, golden schema/turns, rubrics, token-overhead math, the runtime evaluate harness patterns). Ship a **local-first Layer 2 CLI** that can dry-run without secrets, then wire the **same runner into CI** when a pinned judge secret is present. Expensive nightly (Gate 4) warns; shadow/canary (Gate 5) stays deferred.
 
 **In scope (M3)**:
 - Layer 2 offline smoke runner (local CLI + CI when secret exists)
@@ -17,33 +17,33 @@ Revision 1 — post-#7/#8; M2 runtime acceptance left open; no further capture l
 - Path-filtered CI triggers for expensive steps
 - Human comprehension-quiz protocol (documented + runnable checklist; not a product UI)
 - Quarantine path for flaky judge cases (out of blocking set)
-- Audited override path docs (label + second approver) — wiring may share M6 release workflow
+- Audited override path docs (label + second approver), wiring may share the release workflow
 
 **Out of scope (M3)**:
 - Gate 5 shadow/canary on live traffic
-- npm publish / tags / hosted skill upload (M6 + explicit approval)
-- M4 installer / multi-harness packaging
-- M5 learning assets
-- More M2 runtime capture loops (open acceptance; resume only if asked)
+- npm publish / tags / hosted skill upload (the release path plus explicit approval)
+- installer and multi-harness packaging
+- learning assets
+- More runtime capture loops (open acceptance; resume only if asked)
 - Editing golden cases or captures to make scores pass
 
 ## 2. Requirements
 
 ### Functional
 
-1. **Layer 1 always first** — judge never re-scores what `src/checkers.ts` / comprehension-gate checkers already verify; Layer 1 failure short-circuits.
-2. **Local CLI** — `npm run eval:smoke` (name TBD in impl) runs curated smoke set against candidate responses (fixtures and/or fresh generations when a generation key exists).
-3. **Dry-run without secrets** — without judge credentials: validate cases, run Layer 1, emit a “judge skipped” report, exit 0 for structural readiness; do not fake judge passes.
-4. **Live judge when configured** — env/config pins `JUDGE_MODEL` + version; temperature 0; provider adapter behind a tiny interface (OpenAI-compatible first; Cursor/Codex optional later).
-5. **CI dual path** — if secret missing: run dry-run job (or skip live judge with explicit notice). If secret present: run live smoke and **block on regression**.
-6. **Multi-trial** — 3–5 trials per judged case; report raw per-dimension pass/fail; no ELO/ranking aggregation (`eval/rubric.md`, `eval/comprehension-rubric.md`).
-7. **Gate 3** — token-overhead remains report-only until repeated paired generation captures and an explicit CI enforcement path land. Set the product floor only then; the current `REQUIRED_TRIAL_COUNT = 1` validates the historical single-trial report shape and is not an enforcement threshold.
-8. **Quiz protocol** — finalize human A/B comprehension-quiz procedure under `eval/` (materials, scoring sheet, pass criteria = quiz-accuracy delta, not judge score).
-9. **Artifacts** — JSON + short markdown summary per run, gitignored or under `eval/results/` with clear “not golden” policy.
+1. **Layer 1 always first**, judge never re-scores what `src/checkers.ts` / comprehension-gate checkers already verify; Layer 1 failure short-circuits.
+2. **Local CLI**, `npm run eval:smoke` (name TBD in impl) runs curated smoke set against candidate responses (fixtures and/or fresh generations when a generation key exists).
+3. **Dry-run without secrets**, without judge credentials: validate cases, run Layer 1, emit a “judge skipped” report, exit 0 for structural readiness; do not fake judge passes.
+4. **Live judge when configured**, env/config pins `JUDGE_MODEL` + version; temperature 0; provider adapter behind a tiny interface (OpenAI-compatible first; Cursor/Codex optional later).
+5. **CI dual path**, if secret missing: run dry-run job (or skip live judge with explicit notice). If secret present: run live smoke and **block on regression**.
+6. **Multi-trial**, 3–5 trials per judged case; report raw per-dimension pass/fail; no ELO/ranking aggregation (`eval/rubric.md`, `eval/comprehension-rubric.md`).
+7. **Gate 3**, token-overhead remains report-only until repeated paired generation captures and an explicit CI enforcement path land. Set the product floor only then; the current `REQUIRED_TRIAL_COUNT = 1` validates the historical single-trial report shape and is not an enforcement threshold.
+8. **Quiz protocol**, finalize human A/B comprehension-quiz procedure under `eval/` (materials, scoring sheet, pass criteria = quiz-accuracy delta, not judge score).
+9. **Artifacts**, JSON + short markdown summary per run, gitignored or under `eval/results/` with clear “not golden” policy.
 
 ### Non-functional
 
-- No new runtime deps in bundled `skill/im-dumb/scripts/` (eval runner may use Node + optional env API key; keep deps minimal — prefer `fetch` to hosted APIs).
+- No new runtime deps in bundled `skill/im-dumb/scripts/` (eval runner may use Node + optional env API key; keep deps minimal, prefer `fetch` to hosted APIs).
 - Judge spend must be path-filtered and skippable; spend alerting documented (webhook/log stub OK).
 - Deterministic unit tests cover scoring math, artifact schema, dry-run behavior without network.
 
@@ -67,11 +67,11 @@ Revision 1 — post-#7/#8; M2 runtime acceptance left open; no further capture l
 | Gate 2 offline PR smoke | New runner + CI when secret present |
 | Gate 3 cost/token budget | Enforce via `src/token-overhead.ts` |
 | Gate 4 nightly full suite | Workflow `workflow_dispatch` / schedule; warn-only |
-| Gate 5 shadow/canary | Unbuilt on purpose — nothing to shadow until the skill has users |
+| Gate 5 shadow/canary | Unbuilt on purpose, nothing to shadow until the skill has users |
 | §9.5 multi-trial + significance | Runner scoring module |
 | §9.6 separable dimensions / no ELO | Rubrics already; runner must not collapse |
 | §9.8 human quiz | Protocol doc + materials checklist |
-| §9.9 path filter + override | CI paths + docs; label override with M6 if needed |
+| §9.9 path filter + override | CI paths + docs; label override with the release path if needed |
 | §9.10 remaining checklist | Judge pin, re-baseline, quiz protocol, CI tiers |
 
 ## 3. Technical Design
@@ -95,15 +95,15 @@ src/eval-aggregate.ts                  # multi-trial thresholds, Welch / two-pro
 
 | ID | Decision |
 |---|---|
-| D1 | **Local-first, CI-when-secret** — one runner; two invocation modes (`--dry-run` / live). |
-| D2 | **Smoke ≠ full** — Gate 2 uses `eval/smoke-manifest.json` (small curated set). Gate 4 uses full golden + comprehension sequences. |
-| D3 | **Candidates from fixtures first** — smoke can score checked-in `eval/baselines/*.candidate.json` + M2 capture texts without regenerating; optional `--generate` later. |
-| D4 | **Judge input** — case JSON + candidate text + rubric excerpt; judge returns structured JSON matching rubric dimensions; invalid JSON = trial fail, not silent pass. |
-| D5 | **Separate judge model** — config rejects judge model id equal to generator model id when both set. |
-| D6 | **Significance** — binary dimensions: two-proportion z-test vs trailing baseline rates; continuous (if any): Welch’s t-test. Blocking uses tolerance band + significance, not a single absolute cutoff. |
-| D7 | **Quarantine** — `eval/smoke-quarantine.json` lists case ids excluded from merge-blocking; still reported. |
-| D8 | **No capture mutation** — M2 attempt history stays immutable; M3 does not rewrite attempts to pass. |
-| D9 | **Secrets** — `JUDGE_API_KEY` (or provider-specific) only via env / GitHub Actions secret; never committed. |
+| D1 | **Local-first, CI-when-secret**, one runner; two invocation modes (`--dry-run` / live). |
+| D2 | **Smoke ≠ full**, Gate 2 uses `eval/smoke-manifest.json` (small curated set). Gate 4 uses full golden + comprehension sequences. |
+| D3 | **Candidates from fixtures first**, smoke can score checked-in `eval/baselines/*.candidate.json` + runtime capture texts without regenerating; optional `--generate` later. |
+| D4 | **Judge input**, case JSON + candidate text + rubric excerpt; judge returns structured JSON matching rubric dimensions; invalid JSON = trial fail, not silent pass. |
+| D5 | **Separate judge model**, config rejects judge model id equal to generator model id when both set. |
+| D6 | **Significance**, binary dimensions: two-proportion z-test vs trailing baseline rates; continuous (if any): Welch’s t-test. Blocking uses tolerance band + significance, not a single absolute cutoff. |
+| D7 | **Quarantine**, `eval/smoke-quarantine.json` lists case ids excluded from merge-blocking; still reported. |
+| D8 | **No capture mutation**, M2 attempt history stays immutable; M3 does not rewrite attempts to pass. |
+| D9 | **Secrets**, `JUDGE_API_KEY` (or provider-specific) only via env / GitHub Actions secret; never committed. |
 
 ### Pipeline
 
@@ -142,11 +142,11 @@ golden / smoke-manifest
 - `src/golden-turn-evaluator.ts`, `src/golden-schema.ts`
 - `src/token-overhead.ts` (ceilings, pairing, report)
 - `eval/rubric.md`, `eval/comprehension-rubric.md`
-- Patterns from `eval/runtime/evaluate-m2.ts` (thresholds, report shapes) — extract shared bits only when duplication hits 3+
+- Patterns from `eval/runtime/evaluate-m2.ts` (thresholds, report shapes), extract shared bits only when duplication hits 3+
 
 ## 4. Testing Strategy (before / with impl)
 
-Eval-before-behavior: tests and fixtures for the runner land before (or in the same PR as) the behavior they gate — never after “greenwashing.”
+Eval-before-behavior: tests and fixtures for the runner land before (or in the same PR as) the behavior they gate, never after “greenwashing.”
 
 1. **Unit**: aggregate math (pass rates, quarantine exclusion, significance edge cases with fixed tables).
 2. **Unit**: dry-run produces `judge_skipped` and never calls network (inject failing client).
@@ -155,22 +155,22 @@ Eval-before-behavior: tests and fixtures for the runner land before (or in the s
 5. **Doc-sync**: `eval/README.md` links runner + quiz protocol once those files exist.
 6. **CI contract test** (optional lightweight): workflow YAML contains dry-run step and conditional secret check string.
 
-No weakening of golden hashes or M2 captures to pass.
+No weakening of golden hashes or runtime captures to pass.
 
 ## 5. Implementation Steps
 
 Ordered; each step should be one focused PR when possible.
 
-1. **Plan + stack map** — this doc; link from `eval/README.md` under “M3 (planned)”.
-2. **Smoke manifest + quarantine files** — curated ids; schema tests.
-3. **`eval-aggregate` + artifact types** — pure TS, no network; tests with fixed tables.
-4. **`judge-client` interface + mock** — live HTTP adapter behind flag; pin fields required.
-5. **`eval-runner` CLI** — Layer 1 → dry-run/live → artifacts; `package.json` script.
-6. **Wire Gate 3** — call `buildTokenOverheadReport` from runner/CI; flip from report-only when multi-trial policy met (document interim).
-7. **CI dual path** — dry-run always; live when secret present; path filters on expensive job.
-8. **Quiz protocol** — `eval/quiz/README.md` (+ minimal score sheet template).
-9. **Nightly warn workflow** — full suite schedule / `workflow_dispatch`; does not block PRs.
-10. **Docs sync** — AGENTS “aspirational” → real when live check exists; README roadmap honesty pass only with user OK (M2 status language still sensitive).
+1. **Plan + stack map**, this doc; link from `eval/README.md` under “M3 (planned)”.
+2. **Smoke manifest + quarantine files**, curated ids; schema tests.
+3. **`eval-aggregate` + artifact types**, pure TS, no network; tests with fixed tables.
+4. **`judge-client` interface + mock**, live HTTP adapter behind flag; pin fields required.
+5. **`eval-runner` CLI**, Layer 1 → dry-run/live → artifacts; `package.json` script.
+6. **Wire Gate 3**, call `buildTokenOverheadReport` from runner/CI; flip from report-only when multi-trial policy met (document interim).
+7. **CI dual path**, dry-run always; live when secret present; path filters on expensive job.
+8. **Quiz protocol**, `eval/quiz/README.md` (+ minimal score sheet template).
+9. **Nightly warn workflow**, full suite schedule / `workflow_dispatch`; does not block PRs.
+10. **Docs sync**, AGENTS “aspirational” → real when live check exists; README roadmap honesty pass only with user OK (M2 status language still sensitive).
 
 ## 6. Rollout Plan
 
@@ -183,7 +183,7 @@ Ordered; each step should be one focused PR when possible.
 
 - M2 automated runtime thresholds still FAIL (attempt 13); acceptance open.
 - Prefer `openai-codex` for any future recapture; no Cursor forbid-list churn unless asked.
-- Large `eval/runtime/m2/attempts/` tree may later be gitignored or slimmed — separate chore.
+- Large `eval/runtime/m2/attempts/` tree may later be gitignored or slimmed, separate chore.
 
 ## 8. Rollback
 

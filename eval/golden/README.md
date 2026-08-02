@@ -3,7 +3,7 @@
 Normative reference for `eval/golden/`. This is the source of truth for the
 golden case schema (D14, `src/golden-schema.ts`), the category mapping back
 to prd.md §9.4, and the rules for editing this dataset. If code and this
-document disagree, treat the disagreement as a bug — file it, don't silently
+document disagree, treat the disagreement as a bug, file it, don't silently
 follow whichever one is more convenient.
 
 ## Layout
@@ -50,10 +50,10 @@ separate schema field, since v1 has no subtype field: an id containing
 containing `unsafe-oversimplification` targets its unsafe-simplification
 failure mode.
 
-## D14 golden case schema — shared fields (v1 and v2)
+## D14 golden case schema, shared fields (v1 and v2)
 
 Hand-rolled validator: `validateGoldenCase()` in `src/golden-schema.ts`. No
-ajv, no JSON Schema — the validator function *is* the schema. Every case,
+ajv, no JSON Schema, the validator function *is* the schema. Every case,
 whatever its category, carries these fields:
 
 | Field | Type | Required | Bounds / policy |
@@ -62,13 +62,13 @@ whatever its category, carries these fields:
 | `category` | enum | yes | `persona-baseline \| jargon-decomposition \| adhd-pair \| adversarial \| comprehension-gate \| profile-adaptation \| learning-asset` |
 | `prompt` | string | exactly one of `prompt`/`turns` | non-empty; required and only allowed for `PROMPT_ONLY_CATEGORIES` (1/2/3/6) |
 | `turns` | `GoldenTurn[]` | exactly one of `prompt`/`turns` | required and only allowed for `TURNS_ONLY_CATEGORIES` (4/5); see "Schema v2" below |
-| `profile` | object | yes | arbitrary plain object — a partial `Profile` (src/profile.ts) overlay merged onto defaults by the eval runner; not validated against the full profile schema here |
+| `profile` | object | yes | arbitrary plain object, a partial `Profile` (src/profile.ts) overlay merged onto defaults by the eval runner; not validated against the full profile schema here |
 | `reference_facts` | string[] | yes | at most 20 items, each at most 200 chars; must be true statements about the prompt's subject matter |
 | `must_preserve` | string[] | yes | at most 20 items, each at most 200 chars; terms/facts a compliant response must not drop |
 | `expected_checks` | `{checker, expect}[]` | yes | non-empty; `checker` ∈ `CHECKER_IDS` (src/checkers.ts): `sentence-cap \| forbidden-phrases \| one-term-one-concept \| output-shape \| adhd-structure \| frontmatter \| profile-schema \| golden-case-schema`; `expect` ∈ `pass \| fail \| warn` |
 | `pair_id` | string | no | non-empty when present; forbidden when `turns` is present; see pair invariant below |
 
-A case has **exactly one** of `prompt` or `turns` — never both, never
+A case has **exactly one** of `prompt` or `turns`, never both, never
 neither. Which one is required is fixed by `category`: `validateGoldenCase()`
 rejects a `PROMPT_ONLY_CATEGORIES` case that supplies `turns`, and rejects a
 `TURNS_ONLY_CATEGORIES` case that supplies `prompt`.
@@ -85,7 +85,7 @@ must:
 
 ### Case ids
 
-Case `id` is stable and never reused — once a case ships, its id is a
+Case `id` is stable and never reused, once a case ships, its id is a
 permanent handle for trend tracking across runs. Each case file is named
 `<id>.json` so the id is discoverable from the filesystem without opening the
 file.
@@ -96,14 +96,14 @@ file.
 `path`, and a SHA-256 hex digest of the file's exact on-disk contents,
 sorted by `id`. `generateManifest()` produces this shape; `verifyManifest()`
 diffs it against the current `cases/` directory and reports drift (added,
-removed, or content-changed cases) — CI runs this to block silent dataset
+removed, or content-changed cases), CI runs this to block silent dataset
 edits from slipping past review.
 
-## Schema v2 — `turns[]` (M2 §3)
+## Schema v2, `turns[]` (M2 §3)
 
 Schema v2 adds a `turns[]` shape for `comprehension-gate` and
 `profile-adaptation` cases, alongside the existing single-`prompt` shape used
-by all M1 categories. **v1 cases remain valid under v2 unchanged** — a case
+by all M1 categories. **v1 cases remain valid under v2 unchanged**, a case
 with a bare `prompt` (no `turns`) validates exactly as it did under schema
 v1, and manifest hashing is unaffected by the schema change since it hashes
 file bytes, not schema version. M2 slice 3 ships the schema and validator; slice 4 ships the turns-only
@@ -128,8 +128,7 @@ Turn objects reject any field name outside this table (both cases). A
 `GoldenCase`'s `turns` array:
 
 - has **2–8** entries, an **even** count;
-- **starts with `user`, ends with `assistant`, and strictly alternates** —
-  every user turn is immediately followed by the assistant turn it
+- **starts with `user`, ends with `assistant`, and strictly alternates**, every user turn is immediately followed by the assistant turn it
   describes, so every expectation is dispatched against exactly one reply;
   and
 - forbids `pair_id` on the case entirely (the v1 `adhd-pair` pairing
@@ -159,23 +158,23 @@ post-state in `expected_known_gaps`. Its assistant reply stays user-facing;
 the exact tool outcome and stderr diagnostic belong to profile `learn` tests
 and fixed runtime evidence.
 
-### `GapType` — closed taxonomy (M2 §4.1)
+### `GapType`, closed taxonomy (M2 §4.1)
 
 `GapType` ∈ `term | step | assumption | framing` (taxonomy order, used below
 for sorting). This is the same closed set the runtime `learn` operation
 writes; `expected_gap_type` and every `expected_known_gaps[].type` must be
 one of these four values.
 
-### `expected_known_gaps` — confidence and ordering
+### `expected_known_gaps`, confidence and ordering
 
 Each entry is exactly `{ type: GapType, confidence: number }` (no other
 keys). `confidence` must be a finite number in `[0, 1]` **and** a quarter
-step — one of `0, 0.25, 0.5, 0.75, 1`; any other value (including `NaN` and
+step, one of `0, 0.25, 0.5, 0.75, 1`; any other value (including `NaN` and
 `±Infinity`) is rejected. Within one `expected_known_gaps` array:
 
 - no two entries may share the same `type` (rejected as a duplicate), and
 - entries must appear **sorted by `type` in taxonomy order**
-  (`term, step, assumption, framing`) — this is the exact recognized-state
+  (`term, step, assumption, framing`), this is the exact recognized-state
   comparison order the golden-turn evaluator will use, not a subset or
   any-order assertion.
 
@@ -186,12 +185,12 @@ same PR) requires **explicit reviewer sign-off**, noted by name in the PR
 description, on that specific edit. This is the failure mode prd.md §9.4
 warns about directly: quietly loosening a failing case is how an eval gate
 gets weakened without anyone deciding to weaken it. A reviewer approving the
-PR in general is not sufficient — the sign-off must call out the edited
+PR in general is not sufficient, the sign-off must call out the edited
 case(s) by id and state why the edit is correct (e.g. a fact was wrong, not
 "this case was failing so I changed the expectation").
 
 Adding new cases, or deleting a case entirely with a stated reason, doesn't
-require this extra sign-off — only in-place edits to a case's `prompt`,
+require this extra sign-off, only in-place edits to a case's `prompt`,
 `turns`, `profile`, `reference_facts`, `must_preserve`, or `expected_checks`
 do.
 

@@ -209,7 +209,7 @@ await writeFile(outputJson, `${JSON.stringify(result, null, 2)}\n`);
 const rows = scenarioResults.map((item) =>
   `| ${item.scenario} | ${item.expected_actions.at(-1)} | ${item.target_pass ? 'pass' : 'fail'} | ${item.target_question_count} | ${item.suspicious_attempt_count} |`,
 ).join('\n');
-const markdown = `# M2 runtime evidence — attempt ${attempt}\n\n` +
+const markdown = `# M2 runtime evidence, attempt ${attempt}\n\n` +
   `Fresh single-trial filesystem-harness captures. Raw responses were not edited. Earlier attempts are retained because behavior failures led to prompt changes; this is not rerolling an unchanged build.\n\n` +
   `- Semantic instrument: **${result.semantic_review.rubric.id} ${result.semantic_review.rubric.version}**\n` +
   `- Layer 1: **${result.layer1.gate_checker.id} ${result.layer1.gate_checker.version}; ${result.layer1.runtime_evaluator.id} ${result.layer1.runtime_evaluator.version}**\n` +

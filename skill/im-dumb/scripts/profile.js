@@ -57,7 +57,7 @@ function isPlainObject(value) {
     return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 // ---------------------------------------------------------------------------
-// Field validators — each returns the value to use, pushing a warning (load)
+// Field validators, each returns the value to use, pushing a warning (load)
 // or an error (save) when the supplied value is present but invalid. A
 // *missing* field always warns and defaults, in both modes (FR3).
 // ---------------------------------------------------------------------------
@@ -133,8 +133,8 @@ function readLearningAssetPreferences(obj, key, mode, warnings, errors) {
     return value;
 }
 // ---------------------------------------------------------------------------
-// validate() — single entry point for both lenient load-time and strict
-// save-time validation (D15).
+// validate(), single entry point for both lenient load-time and strict
+// save-time validation.
 // ---------------------------------------------------------------------------
 export function validate(raw, mode) {
     const warnings = [];
@@ -194,7 +194,7 @@ export function validate(raw, mode) {
     return { profile, warnings, errors, unsupportedSchemaVersion };
 }
 // ---------------------------------------------------------------------------
-// Path resolution (D15 — IM_DUMB_PROFILE is a filesystem path only)
+// Path resolution: IM_DUMB_PROFILE is a filesystem path only
 // ---------------------------------------------------------------------------
 function resolveProfilePath() {
     const envPath = process.env.IM_DUMB_PROFILE;
@@ -714,7 +714,7 @@ export function learn(input) {
     }
 }
 // ---------------------------------------------------------------------------
-// CLI entry (D15 stream/exit contract): stdout = JSON only, stderr = warnings.
+// CLI entry: stdout = JSON only, stderr = warnings.
 // load  -> exit 0 {profile, warnings} | exit 1 {error}
 // validate -> exit 0 {valid: true, profile, warnings} | exit 1 {valid: false, ...}
 // save  -> exit 0 {profile, warnings} | exit 1 {error, ...}

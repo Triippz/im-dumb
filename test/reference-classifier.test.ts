@@ -21,7 +21,7 @@ function input(reply: string, overrides: Partial<ReferenceInput> = {}): Referenc
 }
 
 // ---------------------------------------------------------------------------
-// normalizeReply — M2 §2.2 steps 1-3 (NFKC, curly apostrophe, lowercase,
+// normalizeReply, M2 §2.2 steps 1-3 (NFKC, curly apostrophe, lowercase,
 // trim/collapse Unicode whitespace)
 // ---------------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ test('normalizeReply: collapses non-ASCII Unicode whitespace (e.g. ideographic s
 });
 
 // ---------------------------------------------------------------------------
-// classifyComprehensionReply — every frozen marker family variant
+// classifyComprehensionReply, every frozen marker family variant
 // ---------------------------------------------------------------------------
 
 test('classifyComprehensionReply: every frozen marker phrase is an exact candidate', () => {
@@ -212,7 +212,7 @@ test('classifyComprehensionReply: a whitespace-only reply is no-marker', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Rule precedence and exclusion collisions (M2 §2.4 order)
+// Rule precedence and exclusion collisions
 // ---------------------------------------------------------------------------
 
 test('precedence: no-prior-answer beats every other rule, including context-reset', () => {

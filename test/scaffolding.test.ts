@@ -29,7 +29,7 @@ test('package.json declares the M1 step-1 scaffolding contract', () => {
 
   assert.deepEqual(Object.keys(pkg.devDependencies).sort(), ['@types/node', 'typescript']);
   assert.equal(pkg.devDependencies.typescript, '6.0.3');
-  // exact-pinned (no ^ or ~ range) per D4's toolchain-pin policy
+  // exact-pinned (no ^ or ~ range) per the toolchain-pin policy
   assert.match(pkg.devDependencies['@types/node'], /^\d+\.\d+\.\d+$/);
 });
 
