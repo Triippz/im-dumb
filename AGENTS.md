@@ -58,10 +58,10 @@ The SKILL.md body target is 900 words. The comprehension non-trigger examples an
 
 ## Writing rules
 
-**No planning coordinates.** Never cite internal planning coordinates in repo content: milestone IDs, phase numbers, task or step numbers, decision IDs, PR numbers, GitHub issue numbers. They are positions in a plan, not facts about the software, and they go stale the moment the plan moves. Describe the behavior, the constraint, or the reason instead. "The installer is unpublished" survives; "the next milestone publishes it" does not. This covers shipped skill text, `README.md`, this file, source comments, test names, and commit and PR bodies. Files under `docs/plans/` may describe their own scope in their own words, but still cite no PR number, no issue number, and no other plan's numbering.
+**No planning coordinates.** Never cite internal planning coordinates in repo content: milestone IDs, phase numbers, task or step numbers, decision IDs, PR numbers, GitHub issue numbers. They are positions in a plan, not facts about the software, and they go stale the moment the plan moves. Describe the behavior, the constraint, or the reason instead. "The installer is unpublished" survives; "the next milestone publishes it" does not. This covers shipped skill text, `README.md`, this file, source comments, test names, and commit and PR bodies. `docs/plans/` is the single exception: those files are the planning record, so they keep their own numbering. Nothing outside them may cite it, and nothing anywhere may cite a PR or issue number.
 
 **No em dashes.** Use a comma, a colon, or two sentences. This applies to prose you write in this repo and to prose the skill tells a model to produce.
 
 ## Doc sync rule
 
-`CLAUDE.md` contains only `@AGENTS.md`. All agent-facing instruction changes go here, never there. Keep `README.md`, this file, and the public milestone plans consistent when contracts change; update the private `prd.md` too when it is available locally.
+`CLAUDE.md` contains only `@AGENTS.md`. All agent-facing instruction changes go here, never there. Keep `README.md`, this file, and the public plans consistent when contracts change; update the private `prd.md` too when it is available locally.
