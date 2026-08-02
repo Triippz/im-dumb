@@ -1,10 +1,10 @@
 # cross-harness reset — research plan
 
-Status: **steps 1–5 shipped** (#42, #43). Script paths are rewritten after
+Status: **steps 1–6 shipped** (#42, #43, #44). Script paths are rewritten after
 install, installed trees are verified across the four native roots, Codex
 installs globally, the fixture-specific prompt steering is reverted, and the
-cohort is per-model evidence behind a `k`-of-`n` threshold. Step 6 (Pi
-extension) is the remaining item.
+cohort is per-model evidence behind a `k`-of-`n` threshold, and Pi has an
+optional enhanced mode.
 
 Scope: answer the six questions in `/tmp/im-dumb-handoff-cross-harness.md` §3
 with local, citable evidence, and propose the compatibility matrix that §4
@@ -519,9 +519,11 @@ ships on the matrix.
    `cleanTrials`/`meetsThreshold` at `M2_CLEAN_TRIALS_REQUIRED` of
    `M2_COHORT_SIZE`; `eval/runtime/README.md` calls it per-model evidence and
    names the compatibility matrix as the release gate.
-6. **Next:** Pi extension for enhanced mode (§4.2), following ponytail's
-   `pi-extension/index.js` shape. Never a correctness prerequisite — the skill
-   must stay fully functional on every harness without it.
+6. **Pi extension** for enhanced mode (§4.2) — implemented.
+   `src/pi-extension.ts` appends the active profile to the system prompt on
+   `before_agent_start`. Never a correctness prerequisite — the skill stays
+   fully functional on every harness without it, and a profile failure returns
+   no override.
 
 Steps 1–3 are additive and do not touch shipped prompt semantics. Step 4 is the
 behavioral revert and wants explicit user sign-off, because it will change M2
@@ -538,8 +540,11 @@ capture outcomes — which is the intended result, not a regression.
    documented project skill root.
 3. **Cohort: replace or delete?** **Replaced** (#43). Code retained,
    `k`-of-`n` threshold, scoped to per-model evidence.
-4. **AV (M5 phase 3)?** **Dropped from scope.** Generators need TTS/ffmpeg,
-   which collides with the no-network and dependency-free invariants. The skill
-   already declines audio and video plainly.
+4. **AV (M5 phase 3)?** **Dropped from scope.** Bundled generators need
+   TTS/ffmpeg, which collides with the no-network and dependency-free
+   invariants. The skill already declines audio and video plainly. If AV ever
+   returns it is as a host integration — a Pi extension or MCP server calling
+   an external generator, same class as enhanced mode, so the network call
+   stays outside the skill bundle. Stretch goal, not planned work.
 5. **Does the `.eduardo/` untracked tree matter here?** Left untouched per the
    handoff freeze; not inspected.

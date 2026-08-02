@@ -32,5 +32,13 @@
   "devDependencies": {
     "@types/node": "24.13.3",
     "typescript": "6.0.3"
+  },
+  "pi": {
+    "extensions": [
+      "./dist/pi-extension.js"
+    ],
+    "skills": [
+      "./skill"
+    ]
   }
 }

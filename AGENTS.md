@@ -39,6 +39,10 @@ There is no separate `installer/` package directory — the CLI lives in `src/in
 - Shared-directory aware: when `.agents/skills/` exists (or `--prefer-agents`), cursor+pi write once there; Claude and Codex still use native roots.
 - Out of scope v1: automated upload to Claude API `/v1/skills` or OpenAI hosted skills (manual step, documented).
 
+## Enhanced mode (optional, Pi only)
+
+`src/pi-extension.ts` (built to `dist/pi-extension.js`, registered through the `pi.extensions` field) appends the active profile to the system prompt on every `before_agent_start`. It raises per-turn adherence; it is **never** a correctness prerequisite, and the skill stays fully functional on every harness without it. A missing or unreadable profile returns no override, so a profile failure never blocks a turn. Claude, Cursor, and Codex get a weaker session-hook form later — their hooks run before generation, so they are the same class as prompt text. No mechanism on any harness guarantees exact output; enforcement stays in the Layer 1 checkers.
+
 ## Governance
 
 - **PR titles**: valid Conventional Commit headers (`feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`, `feat!:`/`BREAKING CHANGE:`). CI lints and blocks on failure. Version bumps derive from this history.
@@ -50,7 +54,7 @@ There is no separate `installer/` package directory — the CLI lives in `src/in
 
 M1 profile + language rules → M2 comprehension gate → M3 eval infrastructure (before M4/M5 ship) → M4 multi-harness packaging + installer → M5 learning assets (markdown/html → slides → av) → M6 governance hardening.
 
-M5 phases 1–2 are shipped: `skill/im-dumb/references/learning-assets.md`, the `learning-asset` Layer 1 structure checker (markdown, HTML, and `slides` formats), and the `learning-asset` golden category. A slide deck is HTML — one `<article>`, at least two `<section class="slide">`, each with its own heading. There is no PowerPoint binary output. AV (phase 3) is dropped from scope — generation needs TTS/ffmpeg, which collides with the no-network and dependency-free invariants. The SKILL.md body target is back to 900 words: the comprehension non-trigger examples and no-snapshot fallback moved into `references/comprehension.md`, which is only read once repair is in play. The checker's warn threshold stays 1000 (D12 unchanged). Prefer moving prose into `references/` over raising the target — only rules needed on *every* turn belong in the always-loaded body.
+M5 phases 1–2 are shipped: `skill/im-dumb/references/learning-assets.md`, the `learning-asset` Layer 1 structure checker (markdown, HTML, and `slides` formats), and the `learning-asset` golden category. A slide deck is HTML — one `<article>`, at least two `<section class="slide">`, each with its own heading. There is no PowerPoint binary output. AV (phase 3) is dropped from scope — bundled generation needs TTS/ffmpeg, which collides with the no-network and dependency-free invariants; a host integration calling an external generator is a stretch goal, not planned work. The SKILL.md body target is back to 900 words: the comprehension non-trigger examples and no-snapshot fallback moved into `references/comprehension.md`, which is only read once repair is in play. The checker's warn threshold stays 1000 (D12 unchanged). Prefer moving prose into `references/` over raising the target — only rules needed on *every* turn belong in the always-loaded body.
 
 ## Doc sync rule
 
