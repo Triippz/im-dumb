@@ -1,6 +1,6 @@
 # m6 implementation plan, release and governance hardening
 
-Revision 1, prior merge (`8fbbbbd`). No package is published by this milestone.
+Revision 1, written after the M5 merge (`8fbbbbd`). No package is published by this milestone.
 
 ## 1. Overview
 

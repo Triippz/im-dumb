@@ -1,6 +1,6 @@
 # m5 implementation plan, learning asset generation
 
-Revision 1, prior merge (`c0196ae`).
+Revision 1, written after the M4 merge (`c0196ae`).
 
 ## 1. Overview
 

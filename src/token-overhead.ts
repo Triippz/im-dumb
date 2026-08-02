@@ -330,7 +330,7 @@ export function formatHumanReport(report: TokenOverheadReport): string {
         `${item.caseId}: ${item.overheadPercent.toFixed(2)}% (${item.baselineEstimatedTokens} -> ${item.candidateEstimatedTokens})${item.exceedsCeiling ? ` EXCEEDS +${report.ceilings.perCasePercent}%` : ''}`,
     ),
     `Aggregate: ${report.aggregate.overheadPercent.toFixed(2)}% (${report.aggregate.baselineEstimatedTokens} -> ${report.aggregate.candidateEstimatedTokens})${report.aggregate.exceedsCeiling ? ` EXCEEDS +${report.ceilings.aggregatePercent}%` : ''}`,
-    'Ceilings are report-only.',
+    'Ceilings are report-only until the token gate blocks.',
   ];
   return `${lines.join('\n')}\n`;
 }

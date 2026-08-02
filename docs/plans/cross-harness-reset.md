@@ -23,7 +23,7 @@ prompt edit.
 Everything cited below was read directly during this research pass.
 
 | Source | Path |
-|---|
+|---|---|
 | Shipped skill body | `skill/im-dumb/SKILL.md` |
 | Comprehension reference | `skill/im-dumb/references/comprehension.md` |
 | Bundled script | `skill/im-dumb/scripts/profile.js` |
@@ -54,7 +54,7 @@ prompt, and per temperature.
 ### 1.1 Can promise (structural, harness-side, verifiable without a model)
 
 | Promise | Why it holds | Evidence |
-|---|---|
+|---|---|---|
 | The skill is discoverable by name and description | All four harnesses index `SKILL.md` frontmatter | §3 below |
 | Frontmatter fields are valid and within limits | Static file property; `checkSkillFrontmatter` already gates it | `src/checkers.ts:471` |
 | Directory name matches `name:` | Static file property; Cursor enforces | `AGENTS.md:7`; Cursor `name` rules at `~/.cursor/skills-cursor/create-skill/SKILL.md:96` |
@@ -142,7 +142,7 @@ already the gate.
 ### 2.2 Should become deterministic (currently advisory prose only)
 
 | Requirement | Today | Proposed |
-|---|---|
+|---|---|---|
 | Script path resolves in every harness | Relative path in prose (`SKILL.md:11`) | Script self-locates; prose stops carrying a path, §4.1 |
 | Skill tree is complete and internally consistent after install | Not checked post-install | A `verify` subcommand on the bundled script (offline, no network) |
 | References resolve from the skill root | Implicit | Layer 1 link check over `SKILL.md` + `references/**` |
@@ -307,7 +307,7 @@ retained.
 ### 3.6 Discovery/reference summary
 
 | Harness | Global skill root | Project skill root | Refs relative to skill dir | Skill-root var for shell | Hook events |
-|---|---|---|---|---|
+|---|---|---|---|---|---|
 | Claude Code | `~/.claude/skills/` | `.claude/skills/` | yes | plugins only (`${CLAUDE_PLUGIN_ROOT}`) | `SessionStart`, `SubagentStart`, `UserPromptSubmit` |
 | Cursor | `~/.cursor/skills/` | `.cursor/skills/` | yes | none found | `afterAgentResponse`, `beforeReadFile`, … (own vocabulary) |
 | Codex | `$CODEX_HOME/skills/` (defaults to `~/.codex/skills/`) | not documented; installer rejects project scope | yes | plugins only (`.codex-plugin/`) | `SessionStart` (needs `[features] hooks = true`) |
@@ -343,7 +343,7 @@ requirement, no prompt satisfies it. The mechanisms that could, ranked by
 portability:
 
 | Mechanism | Can enforce exact output? | Portability | Evidence |
-|---|---|---|
+|---|---|---|---|
 | Prompt text | No, bias only | All four | §1.2 |
 | Per-turn instruction injection (Pi extension) | Strongly biases; still no hard guarantee | Pi only | ponytail `pi-extension/index.js` |
 | Session/prompt hooks (Claude, Codex, Cursor) | No, they run *before* generation, so they inject context, same class as prompt | Claude + Codex + Cursor (three different configs) | caveman `plugin.json`, `.codex/hooks.json`; ponytail `hooks/claude-codex-hooks.json`, `hooks/copilot-hooks.json` |
@@ -464,7 +464,7 @@ product actually needs, and it is what §4 of the handoff asks for.
 ### 6.1 Dimensions
 
 | # | Dimension | What is asserted | How verified |
-|---|---|---|
+|---|---|---|---|
 | 1 | **Discovery** | Installed tree lands at the harness's documented root; `name:` matches the directory; frontmatter within Cursor's `name`≤64 / `description`≤1024 limits | Filesystem assert after a real install into a temp `HOME`; existing `checkSkillFrontmatter` |
 | 2 | **Profile script execution** | `profile.js load` succeeds when invoked from a **project-root cwd**, not the skill dir | Spawn `node <resolved>/scripts/profile.js load` with `cwd` set to a temp project; assert exit 0 and stdout JSON |
 | 3 | **Relative reference resolution** | Every relative link in `SKILL.md` and `references/**` resolves inside the installed tree | Static link walk over the installed tree |
@@ -478,7 +478,7 @@ blocking** in this matrix, that separation is the whole point.
 ### 6.2 Harness columns
 
 | Dimension | Claude Code | Cursor | Codex | Pi |
-|---|---|---|---|
+|---|---|---|---|---|
 | 1 Discovery | `~/.claude/skills/im-dumb` · `.claude/skills/im-dumb` | `~/.cursor/skills/im-dumb` · `.cursor/skills/im-dumb` | `$CODEX_HOME/skills/im-dumb` (global only; default `~/.codex/skills`) | `~/.pi/agent/skills/im-dumb` · `.pi/skills/im-dumb` · package `pi.skills` |
 | 2 Script exec | assert | assert | assert | assert |
 | 3 Refs | assert | assert | assert | assert |

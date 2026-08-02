@@ -207,7 +207,7 @@ test('reference freezes output precedence and only the gate exemptions', () => {
     'tone',
   ]);
   const output = prose('Output contract');
-  assert.match(output, /diagnose`, `rediagnose`, `repair`, and `direct-repair` are exempt from the default output shape and the ADHD\s+structure only/i);
+  assert.match(output, /diagnose`, `rediagnose`, `repair`, and `direct-repair` are exempt from the output-shape rule and the ADHD-structure\s+rule only/i);
   assert.match(output, /sentence cap, forbidden phrases, and one-term-per-concept still apply/i);
   assert.match(output, /format never authorizes false or unsafe content/i);
 });

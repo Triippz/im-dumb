@@ -104,7 +104,7 @@ The profile module and CLI, deterministic checkers, the golden dataset, and the 
 - [Token-overhead report](eval/baselines/m1-token-overhead-report.md), single-trial; corpus aggregate is **-12.56%** against the report-only ceilings, but three individual cases exceed the +60% per-case ceiling.
 - [Live spot-check report](eval/baselines/m1-live-spot-check.md), **0 of 5** golden cases passed the full judge rubric in a single-trial, manual run.
 
-Both reports are single-trial and report-only: they are recorded risk, not blocking gates, and not ground truth. This evidence is not a production-readiness signal. The multi-trial, variance-aware evaluation runner is what gates model-scored behavior before a release.
+Both reports are single-trial and report-only: they are recorded risk, not blocking gates, and not ground truth. This evidence is not a production-readiness signal. Model-scored behavior only gates a release once the multi-trial, variance-aware evaluation runner runs live, which needs judge credentials and is off by default.
 
 How the full stack fits together (Layer 1 checkers, golden dataset, rubrics, comprehension-gate runtime evidence) and why those gates are shaped the way they are: [eval/README.md](eval/README.md).
 
@@ -124,7 +124,7 @@ The project uses strict TypeScript, Node’s built-in test runner, Conventional 
 ## What is built
 
 - **Profile and language rules:** profile schema and CLI, deterministic checkers, golden dataset, captured evidence (see [evaluation status](#evaluation-status)). Prose gates stay report-only.
-- **Comprehension gate:** confusion diagnosis with named candidates, learned gaps. Runtime acceptance is per-model evidence, not a merge gate.
+- **Comprehension gate:** confusion diagnosis with named candidates, learned gaps. Runtime acceptance is still open: captures are per-model evidence, not a merge gate.
 - **Evaluation stack:** offline smoke runner, report-only token-overhead signal, nightly warn job.
 - **Packaging:** multi-harness installer CLI, unpublished until an owner-authorized npm run.
 - **Learning assets:** markdown and HTML explainers, HTML slide decks. Audio and video are out of scope; a host integration calling an external generator is a stretch goal.

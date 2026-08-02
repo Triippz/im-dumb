@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -86,6 +87,19 @@ test('shipped docs cite no planning coordinates', () => {
     assert.doesNotMatch(text, /\bM[1-6]\b/u, `${name} should not cite milestone ids`);
     assert.doesNotMatch(text, /(?:^|\s)#\d+\b/u, `${name} should not cite PR or issue numbers`);
     assert.doesNotMatch(text, /\u2014/u, `${name} should not use em dashes`);
+  }
+});
+
+test('shipped skill text and source cite no planning coordinates', () => {
+  const roots = ['skill/im-dumb', 'src', '.github'];
+  const files = execFileSync('git', ['ls-files', ...roots], { cwd: repoRoot, encoding: 'utf8' })
+    .split('\n')
+    .filter(Boolean);
+  assert.ok(files.length > 0);
+  for (const file of files) {
+    const text = readFileSync(path.join(repoRoot, file), 'utf8');
+    assert.doesNotMatch(text, /\u2014/u, `${file} should not use em dashes`);
+    assert.doesNotMatch(text, /(?:^|\s)#\d+\b/u, `${file} should not cite PR or issue numbers`);
   }
 });
 

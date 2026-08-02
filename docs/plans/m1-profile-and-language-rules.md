@@ -17,7 +17,7 @@ Revision 3, post round-3 interrogation (private review notes, not tracked in git
 - Baseline + candidate response capture; token-overhead measurement (no LLM calls in CI)
 - CI: minimal from first PR, completed at step 10
 
-**Out of scope (M1)**: comprehension gate, LLM judge runner / Layer 2+ execution, installer + multi-harness packaging, learning assets, release workflow + hosted publishing, hosted-harness (no-filesystem) profile transport (entry decision; `IM_DUMB_PROFILE` is the hook). Gate 3 (token budget) CI enforcement deferred until the eval runner lands, provisional ceilings recorded now (D12). Path filtering, audited override wiring, and spend alerting from prd.md §9.9–9.10 deferred with the same per-gate reading recorded in AGENTS.md invariant 7, deliberate, not drift.
+**Out of scope (M1)**: comprehension gate (M2), LLM judge runner / Layer 2+ execution (M3), installer + multi-harness packaging (M4), learning assets (M5), release workflow + hosted publishing (M6), hosted-harness (no-filesystem) profile transport (M4-entry decision; `IM_DUMB_PROFILE` is the hook). Gate 3 (token budget) CI enforcement deferred to M3 when the eval runner lands, provisional ceilings recorded now (D12). Path filtering, audited override wiring, and spend alerting from prd.md §9.9–9.10 deferred with the same per-milestone reading recorded in AGENTS.md invariant 7, deliberate, not drift.
 
 ## 2. Requirements
 

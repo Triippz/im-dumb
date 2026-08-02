@@ -1,6 +1,6 @@
 # m4 implementation plan, multi-harness packaging + installer
 
-Revision 1, prior merge (`d5ad12b`); no npm publish here.
+Revision 1, written after the M3 merge (`d5ad12b`); no npm publish in this milestone.
 
 ## 1. Overview
 
