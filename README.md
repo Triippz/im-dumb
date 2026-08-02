@@ -85,6 +85,10 @@ npx im-dumb install --targets claude,cursor,codex,pi --scope global
 
 Hosted upload automation is intentionally out of scope for v1 because it would require account credentials.
 
+### Enhanced mode (optional, Pi only)
+
+Pi can load `dist/pi-extension.js` through the `pi.extensions` field. It appends your active profile to the system prompt on every turn, which keeps the rules from drifting as a conversation grows. It is optional: the skill works the same on every harness without it, and a missing or unreadable profile simply adds nothing. Claude Code, Cursor, and Codex get a weaker session-hook form later — their hooks run before generation, so they are the same class as prompt text.
+
 ## Security
 
 - Bundled skill scripts make **no outbound network calls** at invocation time.
