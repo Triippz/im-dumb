@@ -39,6 +39,27 @@ const ALL_PASS = {
   },
 };
 
+test('a dry run prices the live run it stands in for', () => {
+  const artifact = buildDryRunArtifact({
+    skillVersion: '0.0.0',
+    datasetHash: 'd'.repeat(64),
+    cases: [],
+    trialsPerCase: 5,
+  });
+  assert.equal(artifact.plannedJudgeCalls, 0);
+
+  const withCases = buildDryRunArtifact({
+    skillVersion: '0.0.0',
+    datasetHash: 'd'.repeat(64),
+    cases: [
+      { caseId: 'a', candidateStatus: 'missing', layer1ErrorCount: 0, quarantined: false },
+      { caseId: 'b', candidateStatus: 'missing', layer1ErrorCount: 0, quarantined: false },
+    ] as never,
+    trialsPerCase: 5,
+  });
+  assert.equal(withCases.plannedJudgeCalls, 10);
+});
+
 test('parseEvalRunnerArgs: defaults to dry-run and repo eval paths', () => {
   const args = parseEvalRunnerArgs([]);
   assert.equal(args.dryRun, true);

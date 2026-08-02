@@ -38,6 +38,22 @@ with `im-dumb` loaded. A useful naming convention is
    settings. The extra text above is skill context, not a changed base model
    setting; `kind` and `skill_version` record that intentional difference.
 
+## Repeated trials and skill pinning
+
+A capture may carry `trial_responses`, an array holding one string per trial.
+When present it must hold exactly `trial_count` entries, and the report scores
+the case on the **median** code-point count across them, so one unusually long
+or short sample cannot swing a case. A `trial_count` above 1 without
+`trial_responses` is rejected. Captures with `trial_count: 1` and no array
+behave exactly as before.
+
+A capture may also carry `skill_sha256`, the SHA-256 of
+`skill/im-dumb/SKILL.md` at capture time. Both members of a pair must agree,
+and when the field is present the digest must match the skill document on disk.
+`skill_version` alone cannot catch skill text that changed without a version
+bump; the digest can. The field is optional so captures recorded before it
+existed stay valid, which also means they carry no such protection.
+
 M1 records one trial per response (`trial_count: 1`). A single generation is
 noisy and is not M3 ground truth. Do not infer model-quality changes from a
 small overhead movement; M3 adds repeated trials and variance-aware gates.
@@ -72,7 +88,8 @@ shasum -a 256 eval/golden/manifest.json
 ```
 
 The validator rejects malformed files, unknown or duplicate case ids, missing
-pair members, non-1 trial counts, an empty baseline, dataset/skill-version
+pair members, a trial count below 1, a trial count above 1 with no matching
+`trial_responses`, an empty baseline, dataset/skill-version
 mismatches, and model id/version/settings differences within a pair.
 
 ## Report

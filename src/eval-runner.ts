@@ -92,6 +92,8 @@ export interface EvalArtifact {
   cases: CaseSmokeResult[];
   /** Gate 3 signal for smoke ids that have both baseline+candidate captures. */
   tokenOverhead: TokenOverheadReport | null;
+  /** Judge calls a live run of this same set would spend. Dry runs only. */
+  plannedJudgeCalls?: number;
 }
 
 export interface EvalSmokeResult {
@@ -294,9 +296,11 @@ export function buildDryRunArtifact(input: {
   cases: Array<Omit<CaseSmokeResult, 'judge'>>;
   blockingCaseIds?: string[];
   tokenOverhead?: TokenOverheadReport | null;
+  trialsPerCase?: number;
 }): EvalArtifact {
   const cases = input.cases.map((item) => ({ ...item, judge: null }));
   return {
+    plannedJudgeCalls: cases.length * (input.trialsPerCase ?? MIN_JUDGE_TRIALS),
     mode: 'dry-run',
     skillVersion: input.skillVersion,
     datasetHash: input.datasetHash,
@@ -405,6 +409,7 @@ function runDrySmoke(options: EvalRunnerArgs): EvalSmokeResult {
         datasetHash,
         blockingCaseIds,
         cases,
+        trialsPerCase: options.trialsPerCase,
         tokenOverhead: buildTokenOverheadForSmoke({
           caseIds: cases.map((item) => item.caseId),
           baselinesDir: options.baselinesDir,
@@ -555,6 +560,9 @@ function formatHuman(artifact: EvalArtifact, error?: string): string {
     `skill: ${artifact.skillVersion}`,
     `dataset_hash: ${artifact.datasetHash}`,
     judgeLine,
+    ...(artifact.plannedJudgeCalls === undefined
+      ? []
+      : [`planned_judge_calls: ${artifact.plannedJudgeCalls} if this same set runs live`]),
     tokenLine,
     `cases: ${artifact.cases.length} (blocking ${artifact.blockingCaseIds.length}, failed ${artifact.failedBlockingCaseIds.length})`,
     ...artifact.cases.map((item) => {

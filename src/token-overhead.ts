@@ -6,7 +6,8 @@ import { pathToFileURL } from 'node:url';
 
 export const AGGREGATE_CEILING_PERCENT = 30;
 export const PER_CASE_CEILING_PERCENT = 60;
-export const REQUIRED_TRIAL_COUNT = 1;
+export const MIN_TRIAL_COUNT = 1;
+export const SKILL_DOC_PATH = 'skill/im-dumb/SKILL.md';
 
 export type CaptureKind = 'baseline' | 'candidate';
 
@@ -21,12 +22,15 @@ export interface Capture {
   trial_count: number;
   dataset_hash: string;
   response: string;
+  trial_responses?: string[];
+  skill_sha256?: string;
 }
 
 export interface ExpectedCaptureSet {
   caseIds: string[];
   datasetHash: string;
   skillVersion: string;
+  skillSha256?: string;
 }
 
 export interface CapturePair {
@@ -85,14 +89,38 @@ export function validateCapture(raw: unknown, source = 'capture'): Capture {
   if (!isPlainObject(raw.settings)) {
     throw new Error(`${source}: "settings" must be an object`);
   }
-  if (!Number.isInteger(raw.trial_count) || raw.trial_count !== REQUIRED_TRIAL_COUNT) {
-    throw new Error(`${source}: "trial_count" must be ${REQUIRED_TRIAL_COUNT}`);
+  if (!Number.isInteger(raw.trial_count) || (raw.trial_count as number) < MIN_TRIAL_COUNT) {
+    throw new Error(`${source}: "trial_count" must be an integer of at least ${MIN_TRIAL_COUNT}`);
   }
   if (typeof raw.response !== 'string') {
     throw new Error(`${source}: "response" must be a string`);
   }
 
+  const trialCount = raw.trial_count as number;
+  let trialResponses: string[] | undefined;
+  if (raw.trial_responses !== undefined) {
+    if (!Array.isArray(raw.trial_responses) || raw.trial_responses.some((item) => typeof item !== 'string')) {
+      throw new Error(`${source}: "trial_responses" must be an array of strings`);
+    }
+    if (raw.trial_responses.length !== trialCount) {
+      throw new Error(`${source}: "trial_responses" must hold exactly "trial_count" entries`);
+    }
+    trialResponses = raw.trial_responses as string[];
+  } else if (trialCount !== 1) {
+    throw new Error(`${source}: "trial_count" above 1 requires "trial_responses"`);
+  }
+
+  let skillSha256: string | undefined;
+  if (raw.skill_sha256 !== undefined) {
+    if (typeof raw.skill_sha256 !== 'string' || !/^[0-9a-f]{64}$/u.test(raw.skill_sha256)) {
+      throw new Error(`${source}: "skill_sha256" must be a 64-character lowercase hex digest`);
+    }
+    skillSha256 = raw.skill_sha256;
+  }
+
   return {
+    ...(trialResponses ? { trial_responses: trialResponses } : {}),
+    ...(skillSha256 ? { skill_sha256: skillSha256 } : {}),
     case_id: requiredString(raw, 'case_id', source),
     kind,
     model_id: requiredString(raw, 'model_id', source),
@@ -122,6 +150,10 @@ export function pairCaptures(rawCaptures: unknown[], expected: ExpectedCaptureSe
     if (capture.skill_version !== expected.skillVersion) {
       throw new Error(`case "${capture.case_id}" ${capture.kind}: skill_version must be ${expected.skillVersion}`);
     }
+    if (capture.skill_sha256 !== undefined && expected.skillSha256 !== undefined
+      && capture.skill_sha256 !== expected.skillSha256) {
+      throw new Error(`case "${capture.case_id}" ${capture.kind}: skill_sha256 does not match the skill document on disk`);
+    }
 
     const key = `${capture.case_id}\0${capture.kind}`;
     if (byKey.has(key)) throw new Error(`duplicate ${capture.kind} capture for case "${capture.case_id}"`);
@@ -149,8 +181,11 @@ export function validateCapturePair(pair: CapturePair): CapturePair {
   if (baseline.kind !== 'baseline' || candidate.kind !== 'candidate') {
     throw new Error(`case "${caseId}": capture kinds must be baseline and candidate`);
   }
-  if (countCodePoints(baseline.response) === 0) {
+  if (captureCodePoints(baseline) === 0) {
     throw new Error(`case "${caseId}": baseline response must not be empty`);
+  }
+  if (baseline.skill_sha256 !== candidate.skill_sha256) {
+    throw new Error(`case "${caseId}": baseline and candidate skill_sha256 must match`);
   }
   for (const field of ['model_id', 'model_version'] as const) {
     if (baseline[field] !== candidate[field]) {
@@ -165,6 +200,17 @@ export function validateCapturePair(pair: CapturePair): CapturePair {
 
 export function countCodePoints(text: string): number {
   return [...text].length;
+}
+
+export function median(values: readonly number[]): number {
+  if (values.length === 0) throw new Error('median needs at least one value');
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = sorted.length / 2;
+  return sorted.length % 2 === 1 ? sorted[Math.floor(middle)]! : (sorted[middle - 1]! + sorted[middle]!) / 2;
+}
+
+export function captureCodePoints(capture: Capture): number {
+  return median((capture.trial_responses ?? [capture.response]).map(countCodePoints));
 }
 
 export function estimateTokens(text: string): number {
@@ -184,8 +230,8 @@ export function buildTokenOverheadReportFromPairs(pairs: readonly CapturePair[])
   if (pairs.length === 0) throw new Error('capture pair set is empty');
   const cases = pairs.map(({ caseId, baseline, candidate }): CaseOverhead => {
     validateCapturePair({ caseId, baseline, candidate });
-    const baselineCodePoints = countCodePoints(baseline.response);
-    const candidateCodePoints = countCodePoints(candidate.response);
+    const baselineCodePoints = captureCodePoints(baseline);
+    const candidateCodePoints = captureCodePoints(candidate);
     const percent = overheadPercent(baselineCodePoints, candidateCodePoints);
     return {
       caseId,
@@ -307,7 +353,14 @@ function loadExpected(manifestPath: string, skillVersionArg: string | undefined)
     skillVersion = packageJson.version;
   }
 
-  return { caseIds, datasetHash: hashDatasetManifest(manifestContents), skillVersion };
+  let skillSha256: string | undefined;
+  try {
+    skillSha256 = hashDatasetManifest(readFileSync(SKILL_DOC_PATH, 'utf8'));
+  } catch {
+    skillSha256 = undefined;
+  }
+
+  return { caseIds, datasetHash: hashDatasetManifest(manifestContents), skillVersion, skillSha256 };
 }
 
 function loadCaptures(directory: string): unknown[] {

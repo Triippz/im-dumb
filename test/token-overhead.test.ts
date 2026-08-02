@@ -14,7 +14,9 @@ import {
   countCodePoints,
   estimateTokens,
   formatHumanReport,
+  captureCodePoints,
   hashDatasetManifest,
+  median,
   pairCaptures,
   parseArgs,
   validateCapture,
@@ -128,6 +130,68 @@ test('from-pairs report rejects mismatched pair metadata', () => {
     }]),
     /case_id|kinds/,
   );
+});
+
+test('median collapses trials, so one long sample cannot swing a case', () => {
+  assert.equal(median([3]), 3);
+  assert.equal(median([5, 1, 3]), 3);
+  assert.equal(median([1, 2, 3, 10]), 2.5);
+
+  const multi = capture('candidate', 'ignored', { trial_count: 3, trial_responses: ['aa', 'aaaa', 'a'.repeat(400)] });
+  assert.equal(captureCodePoints(multi), 4);
+  assert.equal(captureCodePoints(capture('baseline', 'abcd')), 4);
+});
+
+test('trial_responses must line up with trial_count, and many trials require them', () => {
+  assert.throws(
+    () => validateCapture({ ...capture('baseline', 'x'), trial_count: 3, trial_responses: ['a', 'b'] }),
+    /trial_responses" must hold exactly/u,
+  );
+  assert.throws(
+    () => validateCapture({ ...capture('baseline', 'x'), trial_count: 4 }),
+    /above 1 requires "trial_responses"/u,
+  );
+  assert.throws(
+    () => validateCapture({ ...capture('baseline', 'x'), trial_count: 2, trial_responses: ['a', 7] }),
+    /array of strings/u,
+  );
+  assert.throws(() => validateCapture({ ...capture('baseline', 'x'), trial_count: 0 }), /at least 1/u);
+});
+
+test('skill_sha256 is optional, format-checked, and pinned across a pair', () => {
+  assert.equal(validateCapture(capture('baseline', 'x')).skill_sha256, undefined);
+  assert.throws(() => validateCapture({ ...capture('baseline', 'x'), skill_sha256: 'nope' }), /64-character lowercase hex/u);
+
+  assert.throws(
+    () => buildTokenOverheadReportFromPairs([{
+      caseId: 'case-a',
+      baseline: capture('baseline', 'base', { skill_sha256: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' }),
+      candidate: capture('candidate', 'next', { skill_sha256: 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc' }),
+    }]),
+    /skill_sha256 must match/u,
+  );
+});
+
+test('a capture whose skill digest differs from the skill on disk is rejected', () => {
+  const expected: ExpectedCaptureSet = { ...EXPECTED, skillSha256: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' };
+  assert.throws(
+    () => pairCaptures([
+      capture('baseline', 'base', { skill_sha256: 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc' }),
+      capture('candidate', 'next', { skill_sha256: 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc' }),
+    ], expected),
+    /skill_sha256 does not match the skill document on disk/u,
+  );
+
+  const pairs = pairCaptures([
+    capture('baseline', 'base', { skill_sha256: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' }),
+    capture('candidate', 'next', { skill_sha256: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' }),
+  ], expected);
+  assert.equal(pairs.length, 1);
+});
+
+test('captures written before skill digests stay valid', () => {
+  const pairs = pairCaptures([capture('baseline', 'base'), capture('candidate', 'next')], { ...EXPECTED, skillSha256: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' });
+  assert.equal(pairs.length, 1);
 });
 
 test('zero-character baseline is a hard error', () => {
