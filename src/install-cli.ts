@@ -14,6 +14,7 @@ import {
   type InstallScope,
 } from './harness-detect.ts';
 import { installSkill, resolveSkillPackageDir } from './install.ts';
+import { load as loadProfile } from './profile.ts';
 
 export interface InstallCliArgs {
   command: 'install' | 'help';
@@ -196,6 +197,9 @@ export async function runInstallCli(
           (row.version ? ` (v${row.version})` : '') +
           (row.reason ? ` [${row.reason}]` : ''),
       );
+    }
+    if (!loadProfile().ok) {
+      log('no profile yet, so answers stay unchanged: ask your agent to "set up im-dumb"');
     }
   }
 

@@ -18,6 +18,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "prepare": "npm run build",
     "typecheck": "tsc --noEmit",
     "test": "node --test 'test/**/*.test.ts'",
     "check:skill": "node dist/check-cli.js --file skill/im-dumb/SKILL.md --skill-doc",
