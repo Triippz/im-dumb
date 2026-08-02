@@ -27,7 +27,7 @@ not drift.
 
 | # | prd.md §9.4 description | D14 `category` value | shape | status |
 |---|---|---|---|---|
-| 1 | Baseline explanations across three knowledge-level personas | `persona-baseline` | prompt (v1) | shipped |
+| 1 | Baseline explanations across knowledge-level personas, including one case per onboarding preset | `persona-baseline` | prompt (v1) | shipped |
 | 2 | Jargon-heavy source material requiring lossless decomposition | `jargon-decomposition` | prompt (v1) | shipped |
 | 3 | ADHD-mode on/off pairs on identical input | `adhd-pair` | prompt (v1) | shipped |
 | 4 | Comprehension-gate trigger cases, including false positives | `comprehension-gate` | turns (v2) | shipped in M2 slice 4 |
@@ -230,6 +230,7 @@ to every later in-place edit.
 
 ## Dataset size
 
-25-50 cases total (prd.md §9.4). Current count and per-category breakdown are
+25-60 cases total (prd.md §9.4, raised once every onboarding preset gained a
+case). Current count and per-category breakdown are
 enforced by `test/golden-dataset.test.ts`, not restated here as a number that
 would drift out of sync with the actual dataset.
