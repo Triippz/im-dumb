@@ -118,7 +118,7 @@ Enhanced mode is optional. The skill works on every harness without it, and a mi
 
 Installing changes nothing on its own. The skill applies a profile, and a fresh machine has no profile, so answers come back in the model's normal voice until you create one.
 
-**1. Create the profile.** Ask the agent to `set up im-dumb`. It walks one question at a time and writes `~/.im-dumb/profile.json`. Check it landed:
+**1. Create the profile.** Ask the agent to `set up im-dumb`. Pick a persona and it fills everything in one answer: `idiot` (eight-word sentences, no jargon, chunked), `beginner`, `curious` (the defaults), `practitioner`, `engineer`, or `expert`. Skip the persona and it asks one question at a time instead. Either way it writes `~/.im-dumb/profile.json`. Check it landed:
 
 ```bash
 node ~/.claude/skills/im-dumb/scripts/profile.js load

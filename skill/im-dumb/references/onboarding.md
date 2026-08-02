@@ -18,6 +18,26 @@ unanswered field. A skipped question uses its default.
 9. `learning_asset_preferences.formats`: zero or more of `markdown` and
    `html`; default `["markdown", "html"]`.
 
+## Personas
+
+Offer this list before asking field by field. A persona answers the first seven
+fields at once; ask only for the changes the user names afterwards. `curious`
+matches the schema defaults.
+
+| Persona | `vocabulary_level` | `jargon_policy` | `sentence_length_cap` | `paragraph_topic_limit` | `tone` | `output_shape` | `adhd_mode` |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `idiot` | `common` | `avoid` | 8 | 1 | `friendly` | `answer-first` | `true` |
+| `beginner` | `common` | `define-on-first-use` | 12 | 1 | `friendly` | `answer-first` | `true` |
+| `curious` | `common` | `define-on-first-use` | 20 | 1 | `direct` | `answer-first` | `false` |
+| `practitioner` | `technical-ok` | `define-on-first-use` | 25 | 2 | `direct` | `answer-first` | `false` |
+| `engineer` | `technical-ok` | `allow` | 30 | 2 | `direct` | `answer-first` | `false` |
+| `expert` | `expert` | `allow` | 40 | 3 | `neutral` | `narrative` | `false` |
+
+A persona is a shortcut for filling fields, never a field itself. Save the
+resulting values and never the persona name. `forbidden_phrases` and
+`learning_asset_preferences.formats` keep their defaults unless the user sets
+them.
+
 Initialize hidden fields as `schema_version: 1` and `known_gap_types: []` for a
 new profile. Never ask about or show hidden fields during onboarding. When
 editing, load the existing complete profile and change only confirmed visible

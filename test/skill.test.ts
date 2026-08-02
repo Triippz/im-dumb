@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 import { checkSkillFrontmatter } from '../src/checkers.ts';
-import { DEFAULT_PROFILE } from '../src/profile.ts';
+import { DEFAULT_PROFILE, validate } from '../src/profile.ts';
 
 const repoRoot = path.resolve(fileURLToPath(import.meta.url), '../..');
 const skillDir = path.join(repoRoot, 'skill', 'im-dumb');
@@ -173,6 +173,48 @@ test('comprehension reference carries the non-trigger examples and no-snapshot f
 test('onboarding asks every visible field one at a time in schema order', () => {
   assert.match(onboardingContent, /one question\s+at a time/i);
   assertOrder(onboardingContent, VISIBLE_FIELDS, 'visible onboarding field order');
+});
+
+test('every onboarding persona row saves as a valid profile', () => {
+  const rows = onboardingContent
+    .split('\n')
+    .filter((line) => /^\| `(idiot|beginner|curious|practitioner|engineer|expert)`/u.test(line))
+    .map((line) => line.split('|').slice(1, -1).map((cell) => cell.trim().replace(/`/gu, '')));
+
+  assert.deepEqual(rows.map((cells) => cells[0]), [
+    'idiot', 'beginner', 'curious', 'practitioner', 'engineer', 'expert',
+  ]);
+
+  for (const [persona, vocabulary, jargon, cap, topics, tone, shape, adhd] of rows) {
+    const outcome = validate({
+      ...DEFAULT_PROFILE,
+      vocabulary_level: vocabulary,
+      jargon_policy: jargon,
+      sentence_length_cap: Number(cap),
+      paragraph_topic_limit: Number(topics),
+      tone,
+      output_shape: shape,
+      adhd_mode: adhd === 'true',
+    }, 'save');
+    assert.deepEqual(outcome.errors, [], `persona ${persona} must be a valid profile`);
+  }
+
+  const idiot = rows[0]!;
+  assert.deepEqual(idiot, ['idiot', 'common', 'avoid', '8', '1', 'friendly', 'answer-first', 'true']);
+  assert.deepEqual(rows[2]!.slice(1), [
+    DEFAULT_PROFILE.vocabulary_level,
+    DEFAULT_PROFILE.jargon_policy,
+    String(DEFAULT_PROFILE.sentence_length_cap),
+    String(DEFAULT_PROFILE.paragraph_topic_limit),
+    DEFAULT_PROFILE.tone,
+    DEFAULT_PROFILE.output_shape,
+    String(DEFAULT_PROFILE.adhd_mode),
+  ]);
+});
+
+test('personas stay a shortcut and never become a stored field', () => {
+  assert.match(onboardingContent, /never a field itself/iu);
+  assert.match(onboardingContent, /never the persona name/iu);
 });
 
 test('onboarding reference records every enum, bound, and default', () => {

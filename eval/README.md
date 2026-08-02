@@ -149,6 +149,9 @@ Shipped: `eval/smoke-manifest.json`, quarantine list, `src/eval-aggregate.ts`,
 npm run eval:smoke
 ```
 
+A dry run also prints `planned_judge_calls`, the judge calls the same set would
+spend live, so the cost is visible before the money is.
+
 Dry-run validates the smoke set, runs Layer 1 when a baseline candidate exists,
 and records `judge: skipped`, no secrets, no network. CI always runs dry-run.
 

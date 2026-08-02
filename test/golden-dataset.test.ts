@@ -31,7 +31,7 @@ const goldenDir = path.join(repoRoot, 'eval', 'golden');
 const casesDir = path.join(goldenDir, 'cases');
 
 const MIN_CASES = 25;
-const MAX_CASES = 50;
+const MAX_CASES = 60;
 
 function caseFilenames(): string[] {
   return readdirSync(casesDir)
@@ -123,6 +123,32 @@ test('golden dataset: the full case set passes validateGoldenCaseSet (unique ids
 // ---------------------------------------------------------------------------
 // Count + category coverage
 // ---------------------------------------------------------------------------
+
+test('golden dataset: every onboarding persona has a case whose profile matches its row', () => {
+  const onboarding = readFileSync(
+    path.join(repoRoot, 'skill', 'im-dumb', 'references', 'onboarding.md'),
+    'utf8',
+  );
+  const rows = onboarding
+    .split('\n')
+    .filter((line) => /^\|\s*`[a-z]+`\s*\|\s*`(common|technical-ok|expert)`/u.test(line))
+    .map((line) => line.split('|').slice(1, -1).map((cell) => cell.trim().replace(/`/gu, '')));
+  assert.ok(rows.length >= 6, 'onboarding must document at least six personas');
+
+  for (const [persona, vocabulary, jargon, cap, topics, tone, shape, adhd] of rows) {
+    const file = path.join(casesDir, `persona-baseline-preset-${persona}.json`);
+    const golden = JSON.parse(readFileSync(file, 'utf8')) as GoldenCase;
+    assert.deepEqual(golden.profile, {
+      vocabulary_level: vocabulary,
+      jargon_policy: jargon,
+      sentence_length_cap: Number(cap),
+      paragraph_topic_limit: Number(topics),
+      tone,
+      output_shape: shape,
+      adhd_mode: adhd === 'true',
+    }, `persona ${persona} case must match its onboarding row`);
+  }
+});
 
 test(`golden dataset: total case count is within the milestone range [${MIN_CASES}, ${MAX_CASES}]`, () => {
   const count = loadCases().length;

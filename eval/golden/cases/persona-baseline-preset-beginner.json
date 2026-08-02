@@ -1,0 +1,37 @@
+{
+  "id": "persona-baseline-preset-beginner",
+  "category": "persona-baseline",
+  "prompt": "Explain what a database index is and when adding one helps.",
+  "profile": {
+    "vocabulary_level": "common",
+    "jargon_policy": "define-on-first-use",
+    "sentence_length_cap": 12,
+    "paragraph_topic_limit": 1,
+    "tone": "friendly",
+    "output_shape": "answer-first",
+    "adhd_mode": true
+  },
+  "reference_facts": [
+    "An index is a separate data structure that lets the database find matching rows without scanning the whole table.",
+    "An index speeds up reads that filter or sort on the indexed columns.",
+    "An index costs extra storage and slows writes, because every insert and update must keep it current."
+  ],
+  "must_preserve": [
+    "index",
+    "table"
+  ],
+  "expected_checks": [
+    {
+      "checker": "sentence-cap",
+      "expect": "pass"
+    },
+    {
+      "checker": "output-shape",
+      "expect": "pass"
+    },
+    {
+      "checker": "adhd-structure",
+      "expect": "pass"
+    }
+  ]
+}
