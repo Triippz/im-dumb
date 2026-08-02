@@ -32,13 +32,24 @@ Attempts 1–6 retain `comprehension-rubric v0.1`. Attempts 7 onward use
 `comprehension-rubric v0.2`; deterministic Layer 1 remains separately
 versioned in each result artifact.
 
-## Cohort acceptance
+## Cohort evidence (per model)
 
-M2 release acceptance uses five predeclared complete attempts for one pinned
-commit/model/harness. Every trial must pass deterministic thresholds with zero
-prose and suspicious-action errors. Independent semantic review must pass at
-least four trials. Failed trials remain in the cohort; retries are allowed only
-for documented transport failures. `src/m2-cohort.ts` owns this aggregation:
+A cohort is **per-model evidence, never release acceptance**. Release
+acceptance is the model-independent cross-harness compatibility matrix
+(`test/cross-harness-compatibility.test.ts`), which no sampled generator can
+swing. Prose quality is reported here per model and never blocks a merge.
+
+A cohort is five predeclared complete attempts for one pinned
+commit/model/harness. At least four trials must pass deterministic thresholds
+with zero prose and suspicious-action errors, and independent semantic review
+must pass at least four. The threshold is `k` of `n`, not all-of-`n`: a
+probabilistic generator has a nonzero per-sample failure rate, and demanding
+5/5 turns ordinary variance into pressure to tune shipped prompt text against
+one model. Recalibrating `M2_COHORT_SIZE`, `M2_CLEAN_TRIALS_REQUIRED`, or
+`M2_SEMANTIC_PASSES_REQUIRED` is a PATCH.
+
+Failed trials remain in the cohort; retries are allowed only for documented
+transport failures. `src/m2-cohort.ts` owns this aggregation:
 
 ```sh
 npm run eval:m2-cohort -- --attempts 40,41,42,43,44 --semantic-passes 40,41,42,43

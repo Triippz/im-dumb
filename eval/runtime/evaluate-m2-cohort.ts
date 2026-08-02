@@ -32,4 +32,4 @@ const trials = await Promise.all(attempts.map(async (attempt) => {
 
 const cohort = evaluateM2Cohort(trials);
 console.log(JSON.stringify(cohort, null, 2));
-process.exitCode = cohort.accepted ? 0 : 1;
+process.exitCode = cohort.meetsThreshold ? 0 : 1;
