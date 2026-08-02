@@ -3,9 +3,7 @@ node_modules/
 dist/
 .backups/
 .pi-subagents/
-.conductor/runs/
-.conductor/artifacts/
-.conductor/*.log
+.conductor/
 
 # Private planning artifacts kept locally, not published.
 prd.md
