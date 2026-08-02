@@ -76,7 +76,7 @@ test('README roadmap records shipped milestones and keeps unpublished status hon
   assert.match(roadmap, /\*\*M4[^*]*\*\*/);
   assert.match(roadmap, /\*\*M5[^*]*\*\*/);
   assert.match(roadmap, /\*\*M6[^*]*\*\*/);
-  assert.match(roadmap, /AV still ahead/i);
+  assert.match(roadmap, /AV dropped from scope/i);
   assert.match(roadmap, /No package published yet/i);
 });
 
