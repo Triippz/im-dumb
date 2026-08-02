@@ -39,6 +39,10 @@ There is no separate `installer/` package directory — the CLI lives in `src/in
 - Shared-directory aware: when `.agents/skills/` exists (or `--prefer-agents`), cursor+pi write once there; Claude and Codex still use native roots.
 - Out of scope v1: automated upload to Claude API `/v1/skills` or OpenAI hosted skills (manual step, documented).
 
+## Enhanced mode (optional, Pi only)
+
+`src/pi-extension.ts` (built to `dist/pi-extension.js`, registered through the `pi.extensions` field) appends the active profile to the system prompt on every `before_agent_start`. It raises per-turn adherence; it is **never** a correctness prerequisite, and the skill stays fully functional on every harness without it. A missing or unreadable profile returns no override, so a profile failure never blocks a turn. Claude, Cursor, and Codex get a weaker session-hook form later — their hooks run before generation, so they are the same class as prompt text. No mechanism on any harness guarantees exact output; enforcement stays in the Layer 1 checkers.
+
 ## Governance
 
 - **PR titles**: valid Conventional Commit headers (`feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`, `feat!:`/`BREAKING CHANGE:`). CI lints and blocks on failure. Version bumps derive from this history.
