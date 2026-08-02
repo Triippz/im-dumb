@@ -53,6 +53,25 @@ test('runInstallCli: non-interactive installs into temp home', async () => {
   assert.ok(lines.some((line) => line.includes('"action"')));
 });
 
+test('runInstallCli: human output says why answers look unchanged without a profile', async () => {
+  const home = tempDir();
+  mkdirSync(path.join(home, '.claude'), { recursive: true });
+  const args = parseInstallCliArgs(
+    ['install', '--targets', 'claude', '--scope', 'global', '--home', home],
+    { homeDir: home, cwd: home, isTTY: false },
+  );
+  const lines: string[] = [];
+  const previous = process.env.IM_DUMB_PROFILE;
+  process.env.IM_DUMB_PROFILE = path.join(home, 'absent-profile.json');
+  try {
+    await runInstallCli(args, { log: (line) => lines.push(line) });
+  } finally {
+    if (previous === undefined) delete process.env.IM_DUMB_PROFILE;
+    else process.env.IM_DUMB_PROFILE = previous;
+  }
+  assert.ok(lines.some((line) => /set up im-dumb/.test(line)));
+});
+
 test('runInstallCli: installs Codex into its native root', async () => {
   const home = tempDir();
   const args = parseInstallCliArgs(

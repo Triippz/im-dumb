@@ -85,9 +85,45 @@ npx im-dumb install --targets claude,cursor,codex,pi --scope global
 
 Hosted upload automation is intentionally out of scope for v1 because it would require account credentials.
 
-### Enhanced mode (optional, Pi only)
+### Enhanced mode (always on, Pi only)
 
-Pi can load `dist/pi-extension.js` through the `pi.extensions` field. It appends your active profile to the system prompt on every turn, which keeps the rules from drifting as a conversation grows. It is optional: the skill works the same on every harness without it, and a missing or unreadable profile simply adds nothing. Claude Code, Cursor, and Codex get a weaker session-hook form later, their hooks run before generation, so they are the same class as prompt text.
+Installing the skill copies files into a skill root. That makes the skill *available*, not *active*: every harness loads a skill only when the model decides the request matches its description, so on a plain question it may never load at all.
+
+Pi is the one harness that can keep it on for a whole session. Install the package rather than copying the skill directory:
+
+```bash
+pi install git:github.com/Triippz/im-dumb
+```
+
+That registers `pi.extensions`, which appends your active profile to the system prompt on every turn, so the rules cannot drift as a conversation grows. Nothing is set per session and nothing expires.
+
+Enhanced mode is optional. The skill works on every harness without it, and a missing or unreadable profile adds nothing rather than failing the turn. Claude Code, Cursor, and Codex get a weaker session-hook form later: their hooks run before generation, so they are the same class as prompt text.
+
+## Use it
+
+Installing changes nothing on its own. The skill applies a profile, and a fresh machine has no profile, so answers come back in the model's normal voice until you create one.
+
+**1. Create the profile.** Ask the agent to `set up im-dumb`. It walks one question at a time and writes `~/.im-dumb/profile.json`. Check it landed:
+
+```bash
+node ~/.claude/skills/im-dumb/scripts/profile.js load
+```
+
+That prints the profile as JSON, or `{"error":"missing"}` if onboarding never ran. Swap the path for whichever skill root you installed into.
+
+Any of these also work as triggers: `view my im-dumb profile`, `change my im-dumb profile`, `im-dumb`.
+
+**2. Confirm it is applying.** Ask a question in a domain you do not know. A working profile shows up as shorter sentences, defined jargon, and answer-first structure. If replies look unchanged, the usual cause is one of: no profile yet, the skill never loaded on that turn, or you are on a harness without enhanced mode.
+
+**3. Teach it.** When an answer loses you, say so plainly (`huh`, `I don't understand`). The skill names its best guesses at what confused you and asks one question, rather than repeating the same explanation louder. Confirm when a repair works and it records the gap for later answers.
+
+Point at a different profile file with `IM_DUMB_PROFILE`:
+
+```bash
+IM_DUMB_PROFILE=/path/to/profile.json
+```
+
+That is useful for a work profile and a personal profile on one machine, and for testing a profile without touching your real one.
 
 ## Security
 
