@@ -59,7 +59,7 @@ test('publish request validates package visibility and npm credentials before re
 test('package.json exposes release:prepare as a dry-run entrypoint', () => {
   const pkg = JSON.parse(readText('package.json')) as { scripts: Record<string, string>; private?: boolean };
   assert.equal(pkg.scripts['release:prepare'], 'node src/release-cli.ts');
-  assert.equal(pkg.private, true, 'package stays private until a release is explicitly authorized');
+  assert.equal(pkg.private, undefined, 'a private package cannot be published, and the workflow refuses to try');
 });
 
 test('governance plan documents the single override path', () => {

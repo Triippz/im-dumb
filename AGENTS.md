@@ -27,7 +27,7 @@ CLAUDE.md           # @AGENTS.md import, do not add content there
 README.md           # human-facing overview
 ```
 
-There is no separate `installer/` package directory, the CLI lives in `src/install-cli.ts` (built to `dist/install-cli.js`) and copies `skill/im-dumb/`. The package stays `private: true` until an owner-authorized npm publication; local verify via `npm run build && node dist/install-cli.js install …` or `npm run install:skill -- --targets …`.
+There is no separate `installer/` package directory, the CLI lives in `src/install-cli.ts` (built to `dist/install-cli.js`) and copies `skill/im-dumb/`. Publication happens only through an owner-authorized manual release run, never on merge; local verify via `npm run build && node dist/install-cli.js install …` or `npm run install:skill -- --targets …`.
 
 ## Installer contract (v1, implemented, unpublished)
 
