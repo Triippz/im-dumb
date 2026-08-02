@@ -12,6 +12,11 @@ function bumpFor(subjects: string[]): ReleaseBump {
   return parseConventionalSubjects(subjects).bump;
 }
 
+test('parseConventionalSubjects: squash-merge PR suffixes never reach the changelog', () => {
+  const { entries } = parseConventionalSubjects(['feat: add a thing (#52)', 'fix: repair a thing (#7)']);
+  assert.deepEqual(entries.map((entry) => entry.description), ['add a thing', 'repair a thing']);
+});
+
 test('parseConventionalSubjects: feat is minor, fix/docs/chore are patch', () => {
   assert.equal(bumpFor(['feat: add slides']), 'minor');
   assert.equal(bumpFor(['fix: correct cap']), 'patch');

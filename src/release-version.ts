@@ -29,7 +29,7 @@ export function parseConventionalSubjects(messages: readonly string[]): ParsedHi
       type: match.groups.type!,
       scope: match.groups.scope,
       breaking,
-      description: match.groups.description!,
+      description: match.groups.description!.replace(/\s*\(#\d+\)$/, ''),
     });
 
     if (breaking) bump = 'major';
