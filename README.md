@@ -123,7 +123,7 @@ The project uses strict TypeScript, Node’s built-in test runner, Conventional 
 - **M2 — shipped (runtime acceptance open):** comprehension gate and learned gaps
 - **M3 — shipped:** Layer 2 smoke runner, Gate 3 report-only token signal, Gate 4 nightly warn
 - **M4 — shipped:** multi-harness packaging and installer CLI (unpublished until M6)
-- **M5 — phases 1–2 shipped:** profile-aware learning assets (markdown/HTML explainers, HTML slide decks); AV dropped from scope
+- **M5 — phases 1–2 shipped:** profile-aware learning assets (markdown/HTML explainers, HTML slide decks); AV dropped from scope, host integration a stretch goal
 - **M6 — shipped:** release and governance hardening — manual `workflow_dispatch` release, SemVer derived from commit history, changelog generation. No package published yet; that needs an explicit owner-authorized run.
 
 ## Why “im-dumb”?

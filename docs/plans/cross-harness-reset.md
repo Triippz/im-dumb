@@ -540,8 +540,11 @@ capture outcomes — which is the intended result, not a regression.
    documented project skill root.
 3. **Cohort: replace or delete?** **Replaced** (#43). Code retained,
    `k`-of-`n` threshold, scoped to per-model evidence.
-4. **AV (M5 phase 3)?** **Dropped from scope.** Generators need TTS/ffmpeg,
-   which collides with the no-network and dependency-free invariants. The skill
-   already declines audio and video plainly.
+4. **AV (M5 phase 3)?** **Dropped from scope.** Bundled generators need
+   TTS/ffmpeg, which collides with the no-network and dependency-free
+   invariants. The skill already declines audio and video plainly. If AV ever
+   returns it is as a host integration — a Pi extension or MCP server calling
+   an external generator, same class as enhanced mode, so the network call
+   stays outside the skill bundle. Stretch goal, not planned work.
 5. **Does the `.eduardo/` untracked tree matter here?** Left untouched per the
    handoff freeze; not inspected.
