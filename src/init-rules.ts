@@ -1,6 +1,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
+import { resolveInstallDestinations } from './harness-detect.ts';
+
 export const RULE_SENTINEL = 'im-dumb: apply the saved communication profile';
 
 export type RuleTargetId = 'cursor' | 'agents';
@@ -100,4 +102,46 @@ export function parseRuleTargets(value: string): RuleTargetId[] {
   if (unknown.length > 0) throw new Error(`unknown rule target: ${unknown.join(', ')}`);
   if (ids.length === 0) throw new Error('--only requires at least one target');
   return ids as RuleTargetId[];
+}
+
+/**
+ * A rule file outlives the process that wrote it, so it must name a script that
+ * stays put. An npx run lives in a cache npm is free to delete.
+ */
+export function resolveInstalledProfileScript(options: {
+  homeDir: string;
+  projectRoot: string;
+  codexHome?: string;
+  packageDir: string;
+}): string {
+  const destinations = (['project', 'global'] as const).flatMap((scope) =>
+    [false, true].flatMap((preferAgents) =>
+      resolveInstallDestinations({
+        targets: scope === 'global' ? ['claude', 'cursor', 'codex', 'pi'] : ['claude', 'cursor', 'pi'],
+        scope,
+        homeDir: options.homeDir,
+        projectRoot: options.projectRoot,
+        preferAgents,
+        codexHome: options.codexHome,
+      }),
+    ),
+  );
+
+  for (const destination of destinations) {
+    const script = path.join(destination.destDir, 'scripts', 'profile.js');
+    if (existsSync(script)) return script;
+  }
+
+  const fallback = path.join(options.packageDir, 'scripts', 'profile.js');
+  if (isEphemeral(fallback)) {
+    throw new Error(
+      'no installed skill found, and this copy lives in a cache that npm can delete. Run "im-dumb install" first, then "im-dumb init".',
+    );
+  }
+  return fallback;
+}
+
+function isEphemeral(script: string): boolean {
+  const parts = script.split(path.sep);
+  return parts.includes('_npx') || parts.includes('.npm') || parts.includes('node_modules');
 }
