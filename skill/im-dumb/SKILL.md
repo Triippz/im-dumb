@@ -2,7 +2,7 @@
 name: im-dumb
 description: Applies a user's saved communication profile (vocabulary, jargon, sentence length, tone, structure, ADHD mode) to every answer. Trigger at the start of each response; when the user asks to set up, view, or change the profile or mentions im-dumb; and on a later turn when they signal confusion or non-understanding after an answer.
 metadata:
-  version: 0.3.1
+  version: 0.3.2
 ---
 
 ## Load the profile

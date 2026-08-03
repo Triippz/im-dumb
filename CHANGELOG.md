@@ -2,6 +2,12 @@
 
 All notable changes, grouped from Conventional Commit history.
 
+## 0.3.2 - 2026-08-03
+
+### Fixes
+
+- point repo rules at an installed skill, not a cache
+
 ## 0.3.1 - 2026-08-03
 
 ### Fixes
