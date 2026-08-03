@@ -231,7 +231,7 @@ test('parseArgs exports typed results and rejects missing or option-shaped value
 });
 
 test('all compiled CLI modules are safe to import from stdin and still execute through symlinks', () => {
-  const modules = ['dist/profile.js', 'dist/check-cli.js', 'dist/token-overhead.js'];
+  const modules = ['dist/profile.js', 'dist/check-cli.js', 'dist/token-overhead.js', 'dist/install-cli.js'];
   const urls = modules.map((file) => pathToFileURL(path.join(repoRoot, file)).href);
   const imported = spawnSync(process.execPath, ['--input-type=module', '-'], {
     cwd: repoRoot,
@@ -245,6 +245,7 @@ test('all compiled CLI modules are safe to import from stdin and still execute t
     { file: 'dist/profile.js', args: [] },
     { file: 'dist/check-cli.js', args: ['--unknown'] },
     { file: 'dist/token-overhead.js', args: ['--unknown'] },
+    { file: 'dist/install-cli.js', args: ['--unknown'] },
   ];
   for (const [index, execution] of executions.entries()) {
     const link = path.join(links, `cli-${index}.js`);

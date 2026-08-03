@@ -10,13 +10,14 @@ import { installSkill, parseSkillVersion, resolveSkillPackageDir } from '../src/
 
 const repoRoot = path.resolve(fileURLToPath(import.meta.url), '../..');
 const skillSource = path.join(repoRoot, 'skill', 'im-dumb');
+const packageVersion = (JSON.parse(readFileSync(path.join(repoRoot, 'package.json'), 'utf8')) as { version: string }).version;
 
 function tempDir(): string {
   return mkdtempSync(path.join(tmpdir(), 'im-dumb-install-'));
 }
 
 test('parseSkillVersion: reads metadata.version from frontmatter', () => {
-  assert.equal(parseSkillVersion(readFileSync(path.join(skillSource, 'SKILL.md'), 'utf8')), '0.2.0');
+  assert.equal(parseSkillVersion(readFileSync(path.join(skillSource, 'SKILL.md'), 'utf8')), packageVersion);
 });
 
 test('resolveSkillPackageDir: finds skill/im-dumb from repo layout', () => {
@@ -28,7 +29,7 @@ test('installSkill: copies tree and reports installed', () => {
   const dest = path.join(tempDir(), 'im-dumb');
   const result = installSkill({ sourceDir: skillSource, destDir: dest });
   assert.equal(result.action, 'installed');
-  assert.equal(result.version, '0.2.0');
+  assert.equal(result.version, packageVersion);
   const installedSkill = readFileSync(path.join(dest, 'SKILL.md'), 'utf8');
   assert.equal(installedSkill.includes('name: im-dumb'), true);
   assert.match(installedSkill, /node '.*\/scripts\/profile\.js' load/);
@@ -115,5 +116,5 @@ test('installSkill: different installed version upgrades', () => {
   const result = installSkill({ sourceDir: skillSource, destDir: dest });
   assert.equal(result.action, 'upgraded');
   assert.equal(result.previousVersion, '0.1.0');
-  assert.equal(result.version, '0.2.0');
+  assert.equal(result.version, packageVersion);
 });

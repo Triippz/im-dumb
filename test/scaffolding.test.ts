@@ -17,7 +17,7 @@ function readText(relPath: string): string {
 test('package.json declares the M1 step-1 scaffolding contract', () => {
   const pkg = readJson('package.json');
   assert.equal(pkg.name, 'im-dumb');
-  assert.equal(pkg.version, '0.2.0');
+  assert.match(pkg.version, /^\d+\.\d+\.\d+$/);
   assert.equal(pkg.type, 'module');
   assert.equal(pkg.private, undefined);
   assert.equal(pkg.engines.node, '>=24');
