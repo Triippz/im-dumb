@@ -2,6 +2,12 @@
 
 All notable changes, grouped from Conventional Commit history.
 
+## 0.3.1 - 2026-08-03
+
+### Fixes
+
+- run the CLI when invoked through its installed bin name
+
 ## 0.3.0 - 2026-08-02
 
 ### Features
