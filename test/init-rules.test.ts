@@ -6,6 +6,7 @@ import { test } from 'node:test';
 
 import {
   RULE_SENTINEL,
+  resolveInstalledProfileScript,
   RULE_TARGETS,
   initRules,
   parseRuleTargets,
@@ -84,4 +85,38 @@ test('parseRuleTargets rejects unknown or empty selections', () => {
   assert.deepEqual(parseRuleTargets('cursor,agents'), ['cursor', 'agents']);
   assert.throws(() => parseRuleTargets('windsurf'), /unknown rule target/u);
   assert.throws(() => parseRuleTargets(''), /at least one target/u);
+});
+
+test('init points at an installed skill, never at a cache npm can delete', () => {
+  const home = repo();
+  const projectRoot = repo();
+  const installed = path.join(home, '.claude', 'skills', 'im-dumb', 'scripts');
+  mkdirSync(installed, { recursive: true });
+  writeFileSync(path.join(installed, 'profile.js'), '// installed');
+
+  assert.equal(
+    resolveInstalledProfileScript({ homeDir: home, projectRoot, packageDir: '/anywhere' }),
+    path.join(installed, 'profile.js'),
+  );
+});
+
+test('init refuses to write a path inside the npx cache', () => {
+  const home = repo();
+  assert.throws(
+    () => resolveInstalledProfileScript({
+      homeDir: home,
+      projectRoot: repo(),
+      packageDir: '/home/someone/.npm/_npx/abc123/node_modules/im-dumb/skill/im-dumb',
+    }),
+    /Run "im-dumb install" first/u,
+  );
+});
+
+test('a checkout outside any cache stays usable', () => {
+  const home = repo();
+  const packageDir = path.join(repo(), 'skill', 'im-dumb');
+  assert.equal(
+    resolveInstalledProfileScript({ homeDir: home, projectRoot: repo(), packageDir }),
+    path.join(packageDir, 'scripts', 'profile.js'),
+  );
 });

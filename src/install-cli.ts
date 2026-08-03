@@ -13,7 +13,7 @@ import {
   type HarnessId,
   type InstallScope,
 } from './harness-detect.ts';
-import { initRules, parseRuleTargets, type RuleTargetId } from './init-rules.ts';
+import { initRules, parseRuleTargets, resolveInstalledProfileScript, type RuleTargetId } from './init-rules.ts';
 import { installSkill, resolveSkillPackageDir } from './install.ts';
 import { load as loadProfile } from './profile.ts';
 
@@ -166,7 +166,12 @@ export async function runInstallCli(
   if (args.command === 'init') {
     const results = initRules({
       projectRoot: args.projectRoot,
-      profileScript: path.join(resolveSkillPackageDir(), 'scripts', 'profile.js'),
+      profileScript: resolveInstalledProfileScript({
+        homeDir: args.homeDir,
+        projectRoot: args.projectRoot,
+        codexHome: process.env.CODEX_HOME,
+        packageDir: resolveSkillPackageDir(),
+      }),
       dryRun: args.dryRun,
       force: args.force,
       only: args.only ?? undefined,
