@@ -29,7 +29,7 @@ README.md           # human-facing overview
 
 There is no separate `installer/` package directory, the CLI lives in `src/install-cli.ts` (built to `dist/install-cli.js`) and copies `skill/im-dumb/`. Publication happens only through an owner-authorized manual release run, never on merge; local verify via `npm run build && node dist/install-cli.js install …` or `npm run install:skill -- --targets …`.
 
-## Installer contract (v1, implemented, unpublished)
+## Installer contract (v1, implemented, published)
 
 - Bin entry `im-dumb` → `dist/install-cli.js` (ready for `npx` once published).
 - Auto-detects harnesses: `~/.claude/`/`.claude/` (Claude Code), `~/.cursor/`/`.cursor/` (Cursor), `$CODEX_HOME` (defaults to `~/.codex/`) (Codex), and `~/.pi/agent/`/`~/.agents/`/`.pi/`/`.agents/` (Pi).

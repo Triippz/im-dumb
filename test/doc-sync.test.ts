@@ -17,9 +17,10 @@ function section(content: string, heading: string): string {
   return content.slice(start, end === -1 ? undefined : end);
 }
 
-test('README preserves hero image and pre-release badge', () => {
+test('README preserves hero image and links the npm badge to the package', () => {
   assert.match(readme, /<img src="assets\/im-dumb-full\.png"/);
-  assert.match(readme, /status-pre--release/);
+  assert.match(readme, /npmjs\.com\/package\/im-dumb/);
+  assert.match(readme, /img\.shields\.io\/npm\/v\/im-dumb/);
 });
 
 test('README documents profile location and IM_DUMB_PROFILE override together', () => {
@@ -72,14 +73,14 @@ test('README discloses the spot-check and token-overhead results honestly', () =
   assert.doesNotMatch(readme, /production[- ]ready/i);
 });
 
-test('README records what is built and keeps unpublished status honest', () => {
+test('README records what is built and how releases are cut', () => {
   const built = section(readme, '## What is built');
   assert.match(built, /\*\*Packaging:\*\*/);
   assert.match(built, /\*\*Learning assets:\*\*/);
   assert.match(built, /\*\*Release and governance:\*\*/);
-  assert.match(built, /unpublished until an owner-authorized npm run/i);
+  assert.match(built, /published to npm by an owner-authorized release run/i);
   assert.match(built, /Audio and video are out of scope/i);
-  assert.match(built, /No package published yet/i);
+  assert.match(built, /second explicit opt-in/i);
 });
 
 test('shipped docs cite no planning coordinates', () => {
@@ -116,8 +117,8 @@ test('AGENTS repo layout is labeled actual and omits a separate installer/ direc
   assert.match(layout, /install-cli|no separate `installer\/`/i);
 });
 
-test('AGENTS installer contract section is marked implemented but unpublished', () => {
-  assert.match(agents, /## Installer contract \(v1, implemented, unpublished\)/);
+test('AGENTS installer contract section is marked implemented and published', () => {
+  assert.match(agents, /## Installer contract \(v1, implemented, published\)/);
 });
 
 test('CLAUDE.md remains exactly the AGENTS.md import', () => {

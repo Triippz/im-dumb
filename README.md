@@ -7,7 +7,7 @@
 <p align="center"><strong>Makes AI explain things the way your brain actually gets them.</strong></p>
 
 <p align="center">
-  <img alt="Status: pre-release" src="https://img.shields.io/badge/status-pre--release-f59e0b">
+  <a href="https://www.npmjs.com/package/im-dumb"><img alt="npm version" src="https://img.shields.io/npm/v/im-dumb?color=cb3837&logo=npm"></a>
   <img alt="Node.js 24 or newer" src="https://img.shields.io/badge/node-%3E%3D24-5fa04e">
   <img alt="No invocation-time network calls" src="https://img.shields.io/badge/runtime_network-none-7c3aed">
   <a href="https://github.com/Triippz/im-dumb/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Triippz/im-dumb/actions/workflows/ci.yml/badge.svg"></a>
@@ -73,16 +73,13 @@ The same profile is designed to travel across Claude Code, Cursor, OpenAI Codex/
 
 ## Install
 
-> [!IMPORTANT]
-> **Not on npm yet.** The package is publishable, but no release run has been made, so `npx im-dumb` does not resolve until the first owner-authorized release. Until then, install from a clone.
-
 ```bash
 npx im-dumb install --targets claude,cursor,codex,pi --scope global
 ```
 
-Each published version is cut by an owner-authorized manual release run, never on merge.
+Each version is cut by an owner-authorized manual release run, never on merge.
 
-From a clone, which needs no publish:
+From a clone, which needs no npm at all:
 
 ```bash
 npm run build
@@ -199,9 +196,9 @@ The project uses strict TypeScript, Node’s built-in test runner, Conventional 
 - **Profile and language rules:** profile schema and CLI, deterministic checkers, golden dataset, captured evidence (see [evaluation status](#evaluation-status)). Prose gates stay report-only.
 - **Comprehension gate:** confusion diagnosis with named candidates, learned gaps. Runtime acceptance is still open: captures are per-model evidence, not a merge gate.
 - **Evaluation stack:** offline smoke runner, report-only token-overhead signal, nightly warn job.
-- **Packaging:** multi-harness installer CLI, unpublished until an owner-authorized npm run.
+- **Packaging:** multi-harness installer CLI, published to npm by an owner-authorized release run.
 - **Learning assets:** markdown and HTML explainers, HTML slide decks. Audio and video are out of scope; a host integration calling an external generator is a stretch goal.
-- **Release and governance:** manual `workflow_dispatch` release, SemVer derived from commit history, changelog generation. No package published yet.
+- **Release and governance:** manual `workflow_dispatch` release, SemVer derived from commit history, changelog generation. Publishing needs a second explicit opt-in.
 
 ## Why “im-dumb”?
 
