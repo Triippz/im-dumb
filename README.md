@@ -180,6 +180,9 @@ How the full stack fits together (Layer 1 checkers, golden dataset, rubrics, com
 
 ## Development
 
+Before any release, `npm run verify:package` packs the tarball, installs it into a throwaway prefix, and runs the linked `im-dumb` binary. Every other gate reads the source tree, so only this one catches a package that builds and tests clean but does nothing once installed.
+
+
 Requires Node.js 24.12 or newer for stable TypeScript type stripping.
 
 ```bash

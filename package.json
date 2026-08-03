@@ -23,6 +23,7 @@
     "check:skill": "node dist/check-cli.js --file skill/im-dumb/SKILL.md --skill-doc",
     "verify:golden": "node --test test/golden-dataset.test.ts",
     "verify:dist-sync": "diff -u dist/profile.js skill/im-dumb/scripts/profile.js",
+    "verify:package": "node src/verify-package.ts",
     "eval:smoke": "node src/eval-runner.ts --dry-run",
     "eval:smoke:live": "node src/eval-runner.ts --live",
     "eval:m2-cohort": "node eval/runtime/evaluate-m2-cohort.ts",
