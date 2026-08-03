@@ -41,6 +41,7 @@ jobs:
       - run: npm run verify:dist-sync
       - run: npm run check:skill
       - run: npm run eval:smoke
+      - run: npm run verify:package
 
       - name: Live judge gate (only when configured)
         if: vars.JUDGE_SMOKE_ENABLED == 'true'

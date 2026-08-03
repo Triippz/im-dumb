@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-import { existsSync } from 'node:fs';
+import { existsSync, realpathSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { stdin as input, stdout as output } from 'node:process';
 import { createInterface } from 'node:readline/promises';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import {
   detectHarnesses,
@@ -294,8 +294,15 @@ async function main(): Promise<void> {
   }
 }
 
-const entry = process.argv[1] ? path.resolve(process.argv[1]) : '';
-const self = path.resolve(fileURLToPath(import.meta.url));
-if (entry === self || entry.endsWith(`${path.sep}install-cli.ts`) || entry.endsWith(`${path.sep}install-cli.js`)) {
+function isDirectExecution(argv1: string | undefined): boolean {
+  if (argv1 === undefined) return false;
+  try {
+    return import.meta.url === pathToFileURL(realpathSync(argv1)).href;
+  } catch {
+    return false;
+  }
+}
+
+if (isDirectExecution(process.argv[1])) {
   void main();
 }

@@ -29,7 +29,7 @@ README.md           # human-facing overview
 
 There is no separate `installer/` package directory, the CLI lives in `src/install-cli.ts` (built to `dist/install-cli.js`) and copies `skill/im-dumb/`. Publication happens only through an owner-authorized manual release run, never on merge; local verify via `npm run build && node dist/install-cli.js install …` or `npm run install:skill -- --targets …`.
 
-## Installer contract (v1, implemented, unpublished)
+## Installer contract (v1, implemented, published)
 
 - Bin entry `im-dumb` → `dist/install-cli.js` (ready for `npx` once published).
 - Auto-detects harnesses: `~/.claude/`/`.claude/` (Claude Code), `~/.cursor/`/`.cursor/` (Cursor), `$CODEX_HOME` (defaults to `~/.codex/`) (Codex), and `~/.pi/agent/`/`~/.agents/`/`.pi/`/`.agents/` (Pi).
@@ -48,6 +48,7 @@ There is no separate `installer/` package directory, the CLI lives in `src/insta
 
 - **PR titles**: valid Conventional Commit headers (`feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`, `feat!:`/`BREAKING CHANGE:`). CI lints and blocks on failure. Version bumps derive from this history.
 - **CI green before merge**, single override path only: the `override-gate` label plus a second approving review from someone who did not write the change, per-PR, never carried forward, and never valid for a release run. Shared with the eval-gate override; the release governance plan documents it.
+- **Packaged-artifact gate**: `npm run verify:package` packs, installs into a temp prefix, and runs the linked bin. The other gates all read the source tree, so this is the only one that exercises what a user actually downloads. It runs in the release workflow before any tagging or publishing.
 - **Required PR checks**: PR-title semantic lint, TypeScript build/typecheck, Layer 1 deterministic skill-constraint checks, Layer 2 offline eval smoke suite.
 - **Releases are manual**: `.github/workflows/release.yml` is `workflow_dispatch` only. It computes the next SemVer from Conventional Commit history (`src/release-version.ts`), runs the full offline suite as a release-blocking gate, then writes `package.json` + skill `metadata.version` + `CHANGELOG.md`, tags, and uploads a skill-bundle zip artifact. `dry_run` defaults to true and npm publish needs a second explicit `publish_npm` opt-in, so nothing ships by accident. Never auto-publish on merge. `npm run release:prepare` is the local dry run.
 
